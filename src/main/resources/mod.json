@@ -1,0 +1,11 @@
+{
+	"main" : "fr.wseduc.stats.Stats",
+	"port" : "8025",
+	"app-name" : "Stats",
+	"app-address" : "/stats",
+	"app-icon" : "stats-large",
+	"app-displayName" : "Stats",
+	"mode": "dev",
+	"entcore.port" : 8090,
+	"auto-redeploy": true
+}
