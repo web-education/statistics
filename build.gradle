@@ -1,19 +1,20 @@
 apply from: "gradle/vertx.gradle"
 
+repositories {
+	maven {
+		url "http://maven.web-education.net/nexus/content/groups/public"
+	}
+}
+
 dependencies {
 	compile "org.entcore:common:$entCoreVersion"
+    compile "fr.wseduc:vertx-cron-timer:$vertxCronTimer"
 }
 
 javadoc {
   options.encoding = 'UTF-8'
   classpath  = configurations.provided
   classpath += configurations.compile
-}
-
-repositories {
-    maven {
-        url "http://maven.web-education.net/nexus/content/groups/public"
-    }
 }
 
 configurations.all {
@@ -29,7 +30,7 @@ def configurePom(def pom) {
 
 		developers {
 			developer {
-				id 'jeln'
+				id 'jelb'
 				name 'Julien Elbaz'
 				email 'julien.elbaz@web-education.net'
 			}
