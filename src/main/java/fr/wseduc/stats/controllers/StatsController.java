@@ -1,8 +1,17 @@
 package fr.wseduc.stats.controllers;
 
+import static org.entcore.common.http.response.DefaultResponseHandler.*;
+
+import fr.wseduc.stats.filters.StatsFilter;
 import fr.wseduc.stats.services.StatsService;
 import fr.wseduc.stats.services.StatsServiceMongoImpl;
+import fr.wseduc.rs.*;
+import fr.wseduc.security.ActionType;
+import fr.wseduc.security.SecuredAction;
+
+import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.vertx.java.core.http.HttpServerRequest;
 
 /**
  * Vert.x backend controller for the application using Mongodb.
@@ -14,7 +23,8 @@ public class StatsController extends MongoDbControllerHelper {
 	
 	//Permissions
 	private static final String
-		read_only = "stats.view";
+		view = "stats.view",
+		list = "stats.list";
 
 	/**
 	 * Creates a new controller.
@@ -25,5 +35,26 @@ public class StatsController extends MongoDbControllerHelper {
 		statsService = new StatsServiceMongoImpl(collection);
 	}
 	
-	//TODO : controller methods for querying MongoDb stats collection
+	/**
+	 * Displays the home view.
+	 * @param request Client request
+	 */
+	@Get("")
+	@SecuredAction(value = view)
+	public void view(HttpServerRequest request) {
+		renderView(request);
+	}
+	
+	/**
+	 * Returns the list of statistics.<br>
+	 * Request may contain filters as query parameters.
+	 * @param request Client request
+	 */
+	@Get("/list")
+	@SecuredAction(value = list, type = ActionType.RESOURCE)
+	@ResourceFilter(StatsFilter.class)
+	public void listStats(final HttpServerRequest request) {
+		statsService.listStats(request.params().entries(), arrayResponseHandler(request));	
+	}
+
 }

@@ -1,0 +1,55 @@
+{
+	"stats.title"					: "Statistiques",
+	"stats.project"					: "Projet",
+
+	"stats.lastSeptember"			: "depuis le 1er Septembre",
+	"stats.lastMonth"				: "depuis le mois dernier",
+	"stats.last30days"				: "les 30 derniers jours",
+	"stats.allProfiles"				: "tous profils confondus",
+
+	"stats.connections"				: "Connexion(s)",
+	"stats.uniqueVisitors"			: "Visiteur(s) unique(s)",
+	"stats.connectionsByUniqueVisitors" : "Visite(s) / Vu",
+	"stats.mostUsedTool"			: "Outil le plus utilisé",
+	"stats.dailyPeak"				: "Pic de connexions journalier",
+	"stats.weeklyPeak"				: "Pic de connexions hebdomadaire",
+	"stats.activatedAccounts"		: "Compte(s) activé(s)",
+
+	"stats.none"					: "Aucun",
+	"stats.showMore"				: "Plus de statistiques",
+
+	"stats.total"					: "Total",
+	"stats.teacher"					: "Enseignants",
+	"stats.personnel"				: "Personnels",
+	"stats.relative"				: "Parents",
+	"stats.student"					: "Elèves",
+	"stats.others"					: "Autres",
+
+	"stats.day"						: "Jour",
+	"stats.week"					: "Semaine",
+	"stats.month"					: "Mois",
+	"stats.monday" 					: "Lundi",
+	"stats.tuesday" 				: "Mardi",
+	"stats.wednesday" 				: "Mercredi",
+	"stats.thursday" 				: "Jeudi",
+	"stats.friday" 					: "Vendredi",
+	"stats.saturday" 				: "Samedi",
+	"stats.sunday" 					: "Dimanche",
+
+	"stats.definitions"				: "Définitions",
+	"stats.uniqueVisitor"			: "Visiteur unique",
+	"stats.def.uniqueVisitor"		: "Il s'agit d'un utilisateur se connectant à ONE  identifié comme unique sur une période donnée.",
+	"stats.contents"				: "Contenus",
+	"stats.def.contents"			: "Les contenus font référence à tous les objets que peuvent créer les utilisateurs dans ONE (blog, cahier multimédia, document, message, etc.).",
+
+	"stats.legendTitle"				: "Légende",
+	"stats.groupBy"					: "Grouper par",
+
+	"stats.labels.connections"						: "Evolution du nombre de connections",
+	"stats.labels.uniqueVisitors"					: "Evolution du nombre de visiteurs uniques",
+	"stats.labels.connectionsByUniqueVisitors"		: "Evolution du nombre de connections par visiteur unique",
+	"stats.labels.activatedAccounts"				: "Evolution du nombre de comptes activés",
+	"stats.labels.dailyPeak"						: "Nombre de visites par tranche horaire",
+	"stats.labels.weeklyPeak"						: "Nombre de visites par jour de la semaine",
+	"stats.labels.mostUsedTool"						: "Outils les plus utilisés"
+}

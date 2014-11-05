@@ -1,0 +1,27 @@
+<article>
+
+	<div ng-repeat="container in indicatorContainers.all" class="row">
+		<div class="row" ng-click="container.folded  = container.folded ? false : true" ng-init="container.folded = $index === 0 ? false : true">
+			<i style="margin-right: 10px; height: 20px" class="right-magnet" ng-class="{ 'arrow-top': container.folded, 'arrow-bottom': !container.folded }"></i>
+			<h4 style="margin-top: 0px">[[container.name]]</h4>
+		</div>
+		<div class="indicator-icons-container" ng-class="{ 'folded' : container.folded }">
+			<div ng-repeat="indicator in indicators" class="indicator-icon-box">
+				<i class="[[indicator.icon]] indicator-icon"/>
+				<h1 class="indicator-number">[[indicator.getValue(container)]]</h1>
+				<div class="indicator-name">[[lang.translate(indicator.name)]]</div>
+				<div class="indicator-since">[[lang.translate(indicator.since)]]</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="stats-definitions">
+		<h1 style="margin-top: 0px">[[lang.translate('stats.definitions')]]</h1>
+		<div ng-repeat="definition in definitions" style="margin-bottom: 10px">
+			<b>[[lang.translate('stats.'+definition)]]</b>:&nbsp
+			<span>[[lang.translate('stats.def.'+definition)]]</span>
+			<br>
+		</div>
+	</div>
+
+</article>
