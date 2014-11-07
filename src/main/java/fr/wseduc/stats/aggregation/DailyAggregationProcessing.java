@@ -195,6 +195,10 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 	 * @param callBack : Handler called when processing is over.
 	 */
 	public void process(Date day, Handler<Message<JsonObject>> callBack){
+		//Sets recording date to midnight at "day" parameter time
+		Calendar dayCalendar = Calendar.getInstance();
+		dayCalendar.setTime(day);
+		Date recordingDate = AggregationTools.setToMidnight(dayCalendar);
 		
 		//Clean up stats from the day if they already exist.
 		cleanUp(day);
@@ -239,6 +243,11 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 						  .addGroup(structureModuleGroup);
 		
 		indicators.add(serviceAccessIndicator);
+		
+		////// Setting the recording time for all indicators
+		for(Indicator i : indicators){
+			i.setWriteDate(recordingDate);
+		}
 		
 		////// Chaining Indicators and executing the process.
 		chainIndicators().executeChain(callBack);
