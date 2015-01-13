@@ -27,12 +27,12 @@ public class StatsController extends MongoDbControllerHelper {
 
 	//Computation service
 	private final StatsService statsService;
-	
+
 	//Permissions
 	private static final String
 		view = "stats.view",
-		list = "stats.list",
-		export = "stats.export";
+		list = "",
+		export = "";
 
 	/**
 	 * Creates a new controller.
@@ -42,7 +42,7 @@ public class StatsController extends MongoDbControllerHelper {
 		super(collection);
 		statsService = new StatsServiceMongoImpl(collection);
 	}
-	
+
 	/**
 	 * Displays the home view.
 	 * @param request Client request
@@ -52,7 +52,7 @@ public class StatsController extends MongoDbControllerHelper {
 	public void view(HttpServerRequest request) {
 		renderView(request);
 	}
-	
+
 	/**
 	 * Returns the list of statistics.<br>
 	 * Request may contain filters as query parameters.
@@ -62,9 +62,9 @@ public class StatsController extends MongoDbControllerHelper {
 	@SecuredAction(value = list, type = ActionType.RESOURCE)
 	@ResourceFilter(StatsFilter.class)
 	public void listStats(final HttpServerRequest request) {
-		statsService.listStats(request.params().entries(), arrayResponseHandler(request));	
+		statsService.listStats(request.params().entries(), arrayResponseHandler(request));
 	}
-	
+
 	/**
 	 * Exports global aggregations.
 	 * @param request Client request

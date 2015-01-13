@@ -4,11 +4,6 @@
 			<a><i class="statistics"></i><span translate content="stats.title"></span></a>
 		</h1>
 		<nav class="contextual-buttons eight cell">
-			<div class="action-buttons">
-				<button workflow="stats.create" workflow="stats.create" ng-click="newstats()">
-					<i class="add"></i><span translate content="create"></span>
-				</button>
-			</div>
 			<div class="display-buttons" ng-if="template.contains('list', 'table-list') || template.contains('list', 'icons-list')">
 				<i class="show-list"
 				   ng-class="{ selected: template.contains('list', 'table-list') }"
