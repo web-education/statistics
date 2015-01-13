@@ -1,6 +1,6 @@
-function executeHook(hook){
+var executeHook = function(hook){
     if(typeof hook === 'function')
-        hook()
+        hook.apply(this, Array.prototype.slice.call(arguments).slice(1))
 }
 
 ///////////////
@@ -15,7 +15,7 @@ Classe.prototype = {
         var classe = this
         return http().get(this.API_PATH + this.id).done(function(data){
             classe.updateData(data)
-            executeHook(hook)
+            executeHook(hook, classe)
         })
     }
 }
@@ -292,12 +292,11 @@ model.build = function(){
     this.collection(Classe, {
         sync: function(){
             var class_ids = model.me.classes
-            var classe
-            var pushIndicator = function(){
+            var pushIndicator = function(classe){
                 model.indicatorContainers.push(new IndicatorContainer({name: classe.data.name, groups: {"structures": model.me.structures[0], "classes" : classe.data.id}}))
             }
             for(var i = 0; i < class_ids.length; i++){
-                classe = new Classe(class_ids[i])
+                var classe = new Classe(class_ids[i])
                 this.push(classe)
                 classe.get(pushIndicator)
             }
