@@ -6,7 +6,7 @@
 			<h4 style="margin-top: 0px">[[container.name]]</h4>
 		</div>
 		<div class="indicator-icons-container" ng-class="{ 'folded' : container.folded }">
-			<div ng-repeat="indicator in indicators" class="indicator-icon-box">
+			<div ng-repeat="indicator in indicators" class="indicator-icon-box" ng-click="indicatorDetail(indicator, container)">
 				<i class="[[indicator.icon]] indicator-icon"/>
 				<h1 class="indicator-number">[[indicator.getValue(container)]]</h1>
 				<div class="indicator-name">[[lang.translate(indicator.name)]]</div>

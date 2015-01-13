@@ -2,7 +2,7 @@
 
     <!-- Upper combo box - Indicator containers (total / structures / classes) -->
     <select ng-model="currentContainer"
-            ng-init="currentContainer = indicatorContainers.all[0]"
+            ng-init="setCurrentContainer(indicatorContainers.all[0])"
             ng-options="container.name for container in indicatorContainers.all"
             ng-change="openIndicator(currentIndicator, currentContainer)"
             class="indicator-container-combo"></select>

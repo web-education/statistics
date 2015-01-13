@@ -3,7 +3,7 @@
 	------------------
 	Main controller.
 **/
-function StatsController($scope, $rootScope, model, template, route, date){
+function StatsController($scope, $rootScope, $timeout, model, template, route, date){
 
 	/////////////////////////////////////////////
 	/*               INIT & VIEWS              */
@@ -383,7 +383,7 @@ function StatsController($scope, $rootScope, model, template, route, date){
 		{
 			name: "stats.weeklyPeak",
 			since: "stats.lastSeptember",
-			icon: "calendar-icon",
+			icon: "calendar-button",
 			type: "LOGIN",
 			chartType: "StackedBar",
 			chartLabel: lang.translate("stats.labels.weeklyPeak"),
@@ -794,6 +794,28 @@ function StatsController($scope, $rootScope, model, template, route, date){
 
 
 		$("#chart-legend-container").html($scope.chart.generateLegend())
+	}
+
+	$scope.setCurrentContainer = function(container){
+		$scope.currentContainer = container
+	}
+
+	$scope.indicatorDetail = function(indicator, container){
+		$scope.openView('list', 'table-list')
+
+		var timeoutFunction = function(count){
+			if(count < 10 && $('#chart').length < 0){
+				$timeout(function(){ timeoutFunction(count+1) }, 50*count)
+			} else {
+				$scope.setCurrentContainer(container)
+				$scope.openIndicator(indicator, container)
+			}
+		}
+
+		$timeout(function(){
+			timeoutFunction(1)
+		}, 50)
+
 	}
 
 	//// ACTIONS ON CONTROLLER INIT
