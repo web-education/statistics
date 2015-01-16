@@ -45,9 +45,9 @@
 	"stats.legendTitle"				: "Légende",
 	"stats.groupBy"					: "Grouper par",
 
-	"stats.labels.connections"						: "Evolution du nombre de connections",
+	"stats.labels.connections"						: "Evolution du nombre de connexions",
 	"stats.labels.uniqueVisitors"					: "Evolution du nombre de visiteurs uniques",
-	"stats.labels.connectionsByUniqueVisitors"		: "Evolution du nombre de connections par visiteur unique",
+	"stats.labels.connectionsByUniqueVisitors"		: "Evolution du nombre de connexions par visiteur unique",
 	"stats.labels.activatedAccounts"				: "Evolution du nombre de comptes activés",
 	"stats.labels.dailyPeak"						: "Nombre de visites par tranche horaire",
 	"stats.labels.weeklyPeak"						: "Nombre de visites par jour de la semaine",
