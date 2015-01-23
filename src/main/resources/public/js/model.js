@@ -28,11 +28,11 @@ function Structure(id){
 }
 Structure.prototype = {
     API_PATH 	: "/directory/school/",
-    get: function(hook){
+    get: function(hook, name, id){
         var school = this
         return http().get(this.API_PATH + this.id).done(function(data){
             school.updateData(data)
-            executeHook(hook)
+            executeHook(hook, data.name, data.id)
         })
     }
 }
@@ -277,12 +277,12 @@ model.build = function(){
     this.collection(Structure, {
         sync: function(){
             var structure_ids = model.me.structures
-            var struct
-            var pushIndicator = function(){
-                model.indicatorContainers.push(new IndicatorContainer({name: struct.data.name, groups: {"structures" : struct.data.id}}))
+            var pushIndicator = function(name, id){
+                model.indicatorContainers.push(new IndicatorContainer({name: name, groups: {"structures" : id}}))
             }
+
             for(var i = 0; i < structure_ids.length; i++){
-                struct = new Structure(structure_ids[i])
+                var struct = new Structure(structure_ids[i])
                 this.push(struct)
                 struct.get(pushIndicator)
             }
@@ -291,15 +291,27 @@ model.build = function(){
 
     this.collection(Classe, {
         sync: function(){
+            var that = this
             var class_ids = model.me.classes
-            var pushIndicator = function(classe){
-                model.indicatorContainers.push(new IndicatorContainer({name: classe.data.name, groups: {"structures": model.me.structures[0], "classes" : classe.data.id}}))
-            }
-            for(var i = 0; i < class_ids.length; i++){
-                var classe = new Classe(class_ids[i])
-                this.push(classe)
-                classe.get(pushIndicator)
-            }
+            var structure_ids = model.me.structures
+
+            _.forEach(structure_ids, function(id){
+                http().get('/directory/api/classes?id=' + id).done(function(result){
+                    //Filter to keep only the user classes.
+                    result = _.filter(result.result, function(r){
+                        return model.me.classes.indexOf(r.classId) >= 0;
+                    })
+
+                    for(var item in result){
+                        var classData = result[item]
+                        var classe = new Classe(classData.classId)
+                        classe.updateData(classData)
+                        that.push(classe)
+                        model.indicatorContainers.push(new IndicatorContainer({name: classe.data.name, groups: {"structures": classData.schoolId, "classes" : classData.classId}}))
+                    }
+                })
+            })
+
         }
     })
 
