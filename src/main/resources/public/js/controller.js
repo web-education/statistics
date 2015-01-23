@@ -515,6 +515,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 
 	$scope.definitions = [
 		"uniqueVisitor",
+		"connectionsByUniqueVisitor",
 		"contents"
 	]
 
