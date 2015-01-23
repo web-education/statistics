@@ -10,7 +10,7 @@
 	"stats.connections"				: "Connexion(s)",
 	"stats.uniqueVisitors"			: "Visiteur(s) unique(s)",
 	"stats.connectionsByUniqueVisitors" : "Visite(s) / Vu",
-	"stats.mostUsedTool"			: "Outil le plus utilisé",
+	"stats.mostUsedTool"			: "Appli la plus utilisée",
 	"stats.dailyPeak"				: "Pic de connexions journalier",
 	"stats.weeklyPeak"				: "Pic de connexions hebdomadaire",
 	"stats.activatedAccounts"		: "Compte(s) activé(s)",
@@ -51,5 +51,5 @@
 	"stats.labels.activatedAccounts"				: "Evolution du nombre de comptes activés",
 	"stats.labels.dailyPeak"						: "Nombre de visites par tranche horaire",
 	"stats.labels.weeklyPeak"						: "Nombre de visites par jour de la semaine",
-	"stats.labels.mostUsedTool"						: "Outils les plus utilisés"
+	"stats.labels.mostUsedTool"						: "Applis les plus utilisées"
 }
