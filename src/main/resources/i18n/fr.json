@@ -9,7 +9,7 @@
 
 	"stats.connections"				: "Connexion(s)",
 	"stats.uniqueVisitors"			: "Visiteur(s) unique(s)*",
-	"stats.connectionsByUniqueVisitors" : "Visite(s) / Vu*",
+	"stats.connectionsByUniqueVisitors" : "Visite(s) / visiteur unique*",
 	"stats.mostUsedTool"			: "Appli la plus utilisée",
 	"stats.dailyPeak"				: "Pic de connexions journalier",
 	"stats.weeklyPeak"				: "Pic de connexions hebdomadaire",
