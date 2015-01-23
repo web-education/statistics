@@ -478,7 +478,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 		/* NUMBER OF ACTIVATED ACCOUNTS */
 		{
 			name: "stats.activatedAccounts",
-			since: "stats.allProfiles",
+			since: "stats.lastSeptember",
 			icon: "people-icon",
 			type: "ACTIVATION",
 			chartType: "Line",
