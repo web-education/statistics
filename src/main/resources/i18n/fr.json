@@ -1,4 +1,13 @@
 {
+	"conversation"					: "Messagerie",
+	"rack"							: "Casier",
+	"stats"							: "Statistiques",
+	"archive"						: "Export",
+	"blog"							: "Blog",
+	"scrapbook"						: "Cahier multimédia",
+	"homeworks"						: "Cahier de texte",
+	"workspace"						: "Espace documentaire",
+
 	"stats.title"					: "Statistiques",
 	"stats.project"					: "Projet",
 

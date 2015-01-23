@@ -262,6 +262,10 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 					datasets = sortingFunction(sumByModuleByProfile[this.chartProfile], 5)
 				}
 
+				datasets = _.map(datasets, function(item){
+					return lang.translate(item.toLocaleLowerCase())
+				})
+
 				return datasets
 			},
 			getValue: function(container){
