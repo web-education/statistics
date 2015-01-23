@@ -8,8 +8,8 @@
 	"stats.allProfiles"				: "tous profils confondus",
 
 	"stats.connections"				: "Connexion(s)",
-	"stats.uniqueVisitors"			: "Visiteur(s) unique(s)",
-	"stats.connectionsByUniqueVisitors" : "Visite(s) / Vu",
+	"stats.uniqueVisitors"			: "Visiteur(s) unique(s)*",
+	"stats.connectionsByUniqueVisitors" : "Visite(s) / Vu*",
 	"stats.mostUsedTool"			: "Appli la plus utilisée",
 	"stats.dailyPeak"				: "Pic de connexions journalier",
 	"stats.weeklyPeak"				: "Pic de connexions hebdomadaire",
@@ -36,7 +36,7 @@
 	"stats.saturday" 				: "Samedi",
 	"stats.sunday" 					: "Dimanche",
 
-	"stats.definitions"				: "Définitions",
+	"stats.definitions"				: "*Définitions",
 	"stats.uniqueVisitor"			: "Visiteur unique",
 	"stats.def.uniqueVisitor"		: "Il s'agit d'un utilisateur se connectant à ONE  identifié comme unique sur une période donnée.",
 	"stats.contents"				: "Contenus",
