@@ -804,7 +804,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 		$scope.openView('list', 'table-list')
 
 		var timeoutFunction = function(count){
-			if(count < 10 && $('#chart').length < 0){
+			if(count < 10 && $('#chart').length <= 0){
 				$timeout(function(){ timeoutFunction(count+1) }, 50*count)
 			} else {
 				$scope.setCurrentContainer(container)
