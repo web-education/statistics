@@ -220,13 +220,20 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 			chartProfile: "total",
 			chartProfiles: ["total", "Teacher", "Personnel", "Relative", "Student"],
 			// Memoize
+			cache: {},
 			getSumByModule: function(container){
-				this.sumByModule = this.sumByModule ? this.sumByModule : container.getAggregatedGroupMap(this.type, 'module')
-				return this.sumByModule
+				if(this.cache.container !== container || !this.cache.sumByModule){
+					this.cache.container = container
+					this.cache.sumByModule = container.getAggregatedGroupMap(this.type, 'module')
+				}
+				return this.cache.sumByModule
 			},
 			getSumByModuleByProfile : function(container){
-				this.sumByModuleByProfile = this.sumByModuleByProfile ? this.sumByModuleByProfile : container.getAggregatedGroupMapByProfile(this.type)
-				return this.sumByModuleByProfile
+				if(this.cache.container !== container || !this.cache.sumByModuleByProfile){
+					this.cache.container = container
+					this.cache.sumByModuleByProfile =  container.getAggregatedGroupMapByProfile(this.type)
+				}
+				return this.cache.sumByModuleByProfile
 			},
 			chartDatasets: function(){ return $scope.singleBarDataSets(this.chartProfile) },
 			chartLabels: function(container){
