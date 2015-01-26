@@ -2,7 +2,7 @@
 
 	<div ng-repeat="container in indicatorContainers.all" class="row">
 		<div class="row" ng-click="container.folded  = container.folded ? false : true" ng-init="container.folded = $index === 0 ? false : true">
-			<i style="margin-right: 10px; height: 20px" class="right-magnet" ng-class="{ 'arrow-top': container.folded, 'arrow-bottom': !container.folded }"></i>
+			<i style="margin-left: 2px; margin-right: 5px; height: 20px" class="left-magnet" ng-class="{ 'arrow-top': container.folded, 'arrow-bottom': !container.folded }"></i>
 			<h4 style="margin-top: 0px">[[container.name]]</h4>
 		</div>
 		<div class="indicator-icons-container" ng-class="{ 'folded' : container.folded }">
