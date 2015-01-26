@@ -295,20 +295,21 @@ model.build = function(){
             var class_ids = model.me.classes
             var structure_ids = model.me.structures
 
-            _.forEach(structure_ids, function(id){
-                http().get('/directory/api/classes?id=' + id).done(function(result){
+            _.forEach(structure_ids, function(structureId){
+                http().get('/userbook/structure/' + structureId).done(function(result){
+                    classes = result.classes
+
                     //Filter to keep only the user classes.
-                    result = _.filter(result.result, function(r){
-                        return model.me.classes.indexOf(r.classId) >= 0;
+                    classes = _.filter(classes, function(c){
+                        return model.me.classes.indexOf(c.id) >= 0;
                     })
 
-                    for(var item in result){
-                        var classData = result[item]
-                        var classe = new Classe(classData.classId)
+                    _.forEach(classes, function(classData){
+                        var classe = new Classe(classData.id)
                         classe.updateData(classData)
                         that.push(classe)
-                        model.indicatorContainers.push(new IndicatorContainer({name: classe.data.name, groups: {"structures": classData.schoolId, "classes" : classData.classId}}))
-                    }
+                        model.indicatorContainers.push(new IndicatorContainer({name: classData.name, groups: {"structures": structureId, "classes" : classData.id}}))
+                    })
                 })
             })
 
