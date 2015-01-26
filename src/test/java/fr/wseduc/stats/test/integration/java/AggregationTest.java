@@ -27,7 +27,7 @@ import fr.wseduc.stats.aggregation.DailyAggregationProcessing;
 import fr.wseduc.stats.aggregation.Indicators.UniqueVisitorIndicator;
 
 public class AggregationTest extends TestVerticle {
-	
+
 	private static final String MONGO_PERSISTOR = "wse.mongodb.persistor";
 	private final MongoDb mongo = MongoDb.getInstance();
 
@@ -98,7 +98,7 @@ public class AggregationTest extends TestVerticle {
 		}
 	}
 
-	
+
 
 	private void feedEvents(Handler<Message<JsonObject>> handler) {
 		// 6 Users total
@@ -157,7 +157,7 @@ public class AggregationTest extends TestVerticle {
 				assertNotNull(
 						"MongoDB persistor deploymentID should not be null",
 						asyncResult.result());
-	
+
 				if(asyncResult.succeeded()){
 					mongo.init(vertx.eventBus(), MONGO_PERSISTOR);
 					// Cleanup before
@@ -170,7 +170,7 @@ public class AggregationTest extends TestVerticle {
 						}
 					});
 				}
-	
+
 			}
 		});
 	}
@@ -198,7 +198,7 @@ public class AggregationTest extends TestVerticle {
 					} else if(row.getString("profil_id").equals("Relative")){
 						assertEquals("[profil : Relative] ["+TRACE_TYPE_CONNEXION+"]", 1, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertEquals("[profil : Relative] ["+TRACE_TYPE_RSC_ACCESS+"]", 1, row.getNumber(TRACE_TYPE_RSC_ACCESS));
-					} 
+					}
 					return;
 				case "structures":
 					if(row.getString("structures_id").equals("1")){
@@ -223,7 +223,7 @@ public class AggregationTest extends TestVerticle {
 						} else if(row.getString("profil_id").equals("Relative")){
 							assertNull("[structure : 1 & profil : Relative] ["+TRACE_TYPE_CONNEXION+"]", row.getNumber(TRACE_TYPE_CONNEXION));
 							assertNull("[structure : 1 & profil : Relative] ["+TRACE_TYPE_RSC_ACCESS+"]", row.getNumber(TRACE_TYPE_RSC_ACCESS));
-						} 
+						}
 					} else if(row.getString("structures_id").equals("2")){
 						if(row.getString("profil_id").equals("Teacher")){
 							assertEquals("[structure : 2 & profil : Teacher] ["+TRACE_TYPE_CONNEXION+"]", 1, row.getNumber(TRACE_TYPE_CONNEXION));
@@ -237,63 +237,63 @@ public class AggregationTest extends TestVerticle {
 						} else if(row.getString("profil_id").equals("Relative")){
 							assertEquals("[structure : 2 & profil : Relative] ["+TRACE_TYPE_CONNEXION+"]", 1, row.getNumber(TRACE_TYPE_CONNEXION));
 							assertEquals("[structure : 2 & profil : Relative] ["+TRACE_TYPE_RSC_ACCESS+"]", 1, row.getNumber(TRACE_TYPE_RSC_ACCESS));
-						} 
+						}
 					}
 					return;
 			}
 		}
-		
+
 	}
-	
+
 	@Test
 	public void aggregationTest(){
 		DailyAggregationProcessing processor = new DailyAggregationProcessing();
-		
+
 		IndicatorMongoImpl connexion_indicator = new IndicatorMongoImpl(TRACE_TYPE_CONNEXION);
 		IndicatorMongoImpl ressource_indicator = new IndicatorMongoImpl(TRACE_TYPE_RSC_ACCESS);
 		IndicatorMongoImpl unique_visits_indicator = new UniqueVisitorIndicator();
 		processor.addIndicator(connexion_indicator).addIndicator(ressource_indicator).addIndicator(unique_visits_indicator);
-		
+
 		//Profile
 		IndicatorGroup profileGroup = new IndicatorGroup(TRACE_FIELD_PROFILE);
 		//Structure + Structure/Profile + Structure/Classes + Structure/Classes/Profile
 		IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES);
 		IndicatorGroup classesGroup = new IndicatorGroup(TRACE_FIELD_CLASSES);
-		structureGroup.addGroup(classesGroup.addGroup(TRACE_FIELD_PROFILE))
-					  .addGroup(new IndicatorGroup(TRACE_FIELD_PROFILE));
+		structureGroup.addChild(classesGroup.addChild(TRACE_FIELD_PROFILE))
+					  .addChild(new IndicatorGroup(TRACE_FIELD_PROFILE));
 		//Group
 		IndicatorGroup groupGroup = new IndicatorGroup(TRACE_FIELD_GROUPS);
-		
+
 		for(Indicator indic : processor.getIndicators()){
 			indic.addGroup(profileGroup)
 				 .addGroup(structureGroup)
 				 .addGroup(groupGroup);
 		}
-		
+
 		processor.processBlank(new Handler<Message<JsonObject>>(){
 			public void handle(Message<JsonObject> event) {
 				mongo.find(COLLECTIONS.stats.name(), new JsonObject(), new Handler<Message<JsonObject>>() {
 					public void handle(Message<JsonObject> message) {
 						if ("ok".equals(message.body().getString("status"))) {
 							JsonArray results = message.body().getArray("results", new JsonArray());
-							
+
 							for(Object obj : results){
 								JsonObject row = (JsonObject) obj;
 								checkRow(row);
 							}
-							
+
 							testComplete();
-							
+
 						} else {
 							fail("Error querying the stats collection.");
 						}
-						
+
 						// Cleanup after completion
 						mongo.command("{ dropDatabase: 1 }");
 					}
 				});
-				
-				
+
+
 			}
 		});
 	}

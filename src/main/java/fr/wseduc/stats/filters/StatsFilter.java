@@ -12,23 +12,23 @@ import org.vertx.java.core.http.HttpServerRequest;
 import fr.wseduc.webutils.http.Binding;
 
 public class StatsFilter implements ResourcesProvider {
-	
+
 	private static final ArrayList<String> authorizedGroupedBy = new ArrayList<>();
 	private static UserInfos.Action mainAuthorization = new UserInfos.Action();
-	
+
 	static {
 		authorizedGroupedBy.add("module");
 		authorizedGroupedBy.add("profil");
 		authorizedGroupedBy.add("profil/module");
-		
+
 		mainAuthorization.setDisplayName("stats.view");
 		mainAuthorization.setName("fr.wseduc.stats.controllers.StatsController|view");
 		mainAuthorization.setType("SECURED_ACTION_WORKFLOW");
 	}
-	
+
 	@Override
 	public void authorize(HttpServerRequest resourceRequest, Binding binding, UserInfos user, Handler<Boolean> handler) {
-		
+
 		//Checks whether the user has the workflow credentials to perform operations on statistics.
 		List<UserInfos.Action> authorizedActions = user.getAuthorizedActions();
 		boolean isAuthorized = false;
@@ -41,12 +41,12 @@ public class StatsFilter implements ResourcesProvider {
 				break;
 			}
 		}
-		
+
 		if(!isAuthorized){
 			handler.handle(false);
 			return;
 		}
-		
+
 		//Structure and class check + GroupedBy check
 		List<String> userStructures = user.getStructures();
 		List<String> userClasses = user.getClasses();
@@ -70,9 +70,9 @@ public class StatsFilter implements ResourcesProvider {
 				}
 			}
 		}
-		
+
 		handler.handle(true);
 	}
 
-	
+
 }

@@ -223,6 +223,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 			cache: {},
 			getSumByModule: function(container){
 				if(this.cache.container !== container || !this.cache.sumByModule){
+					this.cache = {}
 					this.cache.container = container
 					this.cache.sumByModule = container.getAggregatedGroupMap(this.type, 'module')
 				}
@@ -230,6 +231,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 			},
 			getSumByModuleByProfile : function(container){
 				if(this.cache.container !== container || !this.cache.sumByModuleByProfile){
+					this.cache = {}
 					this.cache.container = container
 					this.cache.sumByModuleByProfile =  container.getAggregatedGroupMapByProfile(this.type)
 				}

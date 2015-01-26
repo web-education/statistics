@@ -30,7 +30,7 @@ import fr.wseduc.stats.aggregation.Indicators.UniqueVisitorIndicator;
 public class DailyAggregationProcessing extends AggregationProcessing{
 
 	private final MongoDb mongo = MongoDb.getInstance();
-	
+
 	/**
 	 * Cleanup if stats documents already exist.
 	 * @param day : Day to clean up.
@@ -41,41 +41,41 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
 		calendarDay.add(Calendar.DATE, 1);
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
-		
+
 		QueryBuilder statsFilter = QueryBuilder.start().put(STATS_FIELD_DATE).greaterThanEquals(MongoDb.formatDate(lowerDay)).lessThan(MongoDb.formatDate(higherDay));
 		mongo.delete(COLLECTIONS.stats.name(), MongoQueryBuilder.build(statsFilter));
 	}
-	
+
 	private IndicatorMongoImpl createHourPeakIndicator(final Date day, int hour){
 		IndicatorMongoImpl hourPeakIndicator = new IndicatorMongoImpl(TRACE_TYPE_CONNEXION);
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
 		final Date lowerHour = AggregationTools.setHourTo(calendarDay, hour);
 		final Date higherHour = AggregationTools.setHourTo(calendarDay, hour+1);
-		
+
 		hourPeakIndicator.setWriteKey(TRACE_TYPE_CONNEXION+"_H"+hour);
 		hourPeakIndicator.addFilter(new DateFilter(lowerHour, higherHour));
-		
+
 		return hourPeakIndicator;
 	}
-	
+
 	private void addDayFilter(Indicator i, Date day){
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
 		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
 		calendarDay.add(Calendar.DATE, 1);
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
-		
+
 		IndicatorFilter dayFilter = new DateFilter(lowerDay, higherDay);
-		
+
 		i.addFilter(dayFilter);
 	}
-	
+
 	private void addDefaultDayIndicators(Date day){
 		ArrayList<IndicatorMongoImpl> dayIndicators = new ArrayList<>();
-		
+
 		/// SET INDICATORS HERE & ADD THEM TO THE ARRAY LIST
-		
+
 		//Connexions
 		IndicatorMongoImpl connexionIndicator = new IndicatorMongoImpl(TRACE_TYPE_CONNEXION);
 		//Connexion hour peaks
@@ -83,32 +83,32 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		for(int i = 0; i < 24; i++){
 			hourPeakIndicators[i] = createHourPeakIndicator(day, i);
 		}
-		
+
 		//Account creation, deletion & activation
 		IndicatorMongoImpl userCreationIndicator = new IndicatorMongoImpl(TRACE_TYPE_CREATE_USER);
 		IndicatorMongoImpl userDeletionIndicator = new IndicatorMongoImpl(TRACE_TYPE_DELETE_USER);
 		IndicatorMongoImpl userActivationIndicator = new IndicatorMongoImpl(TRACE_TYPE_ACTIVATION);
-		
+
 		//Add to arraylist
 		dayIndicators.add(connexionIndicator);
 		dayIndicators.add(userCreationIndicator);
 		dayIndicators.add(userDeletionIndicator);
 		dayIndicators.add(userActivationIndicator);
-		
+
 		////////////////////////////////////////////////////
-		
+
 		//Add to every indicator a filter by day
 		for(Indicator indicator: dayIndicators){
 			addDayFilter(indicator, day);
 			indicators.add(indicator);
 		}
-		
+
 		//For hour peaks, skip adding the day filter
 		for(IndicatorMongoImpl i : hourPeakIndicators){
 			indicators.add(i);
 		}
 	}
-	
+
 	private void addDefaultMonthlyIndicators(Date day){
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
@@ -116,71 +116,71 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
 		calendarDay.add(Calendar.DATE, -30);
 		Date lowerDay = calendarDay.getTime();
-		
+
 		ArrayList<IndicatorMongoImpl> monthlyIndicators = new ArrayList<>();
-		
+
 		/// SET INDICATORS HERE & ADD THEM TO THE ARRAY LIST
-		
+
 		//Unique visitors
 		IndicatorMongoImpl uniqueVisitorIndicator = new UniqueVisitorIndicator();
-		
+
 		//Add to arraylist
 		monthlyIndicators.add(uniqueVisitorIndicator);
-		
+
 		////////////////////////////////////////////////////
-				
+
 		//Add to every indicator a filter to get traces from the last 30 days
 		IndicatorFilter monthlyFilter = new DateFilter(lowerDay, higherDay);
-		
+
 		for(Indicator indicator: monthlyIndicators){
 			indicator.addFilter(monthlyFilter);
 			indicators.add(indicator);
 		}
 	}
-	
+
 	private void addDefaultSeptemberIndicators(Date day){
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
 		calendarDay.add(Calendar.DATE, 1);
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
-		
+
 		int year = calendarDay.get(Calendar.YEAR);
-		if(calendarDay.get(Calendar.MONTH) < 9)
+		if(calendarDay.get(Calendar.MONTH) < 8)
 			year--;
-		
-		calendarDay.set(year, 9, 1, 0, 0, 0);
+
+		calendarDay.set(year, 8, 1, 0, 0, 0);
 		calendarDay.set(Calendar.MILLISECOND, 0);
 		Date september = calendarDay.getTime();
-		
+
 		ArrayList<IndicatorMongoImpl> septemberIndicators = new ArrayList<>();
-		
+
 		/// SET INDICATORS HERE & ADD THEM TO THE ARRAY LIST
-		
+
 		////////////////////////////////////////////////////
-		
+
 		//Add to every indicator a filter to get traces from september 1
 		IndicatorFilter septemberFilter = new DateFilter(september, higherDay);
-		
+
 		for(Indicator indicator: septemberIndicators){
 			indicator.addFilter(septemberFilter);
 			indicators.add(indicator);
 		}
 	}
-	
+
 	private HandlerChainer<Indicator, Message<JsonObject>> chainIndicators(){
 		HandlerChainer<Indicator, Message<JsonObject>> chainer = new HandlerChainer<Indicator, Message<JsonObject>>(){
 			protected void executeItem(Indicator indicator, Handler<Message<JsonObject>> nextCallback) {
 				indicator.aggregate(nextCallback);
 			}
 		};
-		
+
 		for(Indicator indicator: indicators){
 			chainer.chainItem(indicator);
 		}
-		
+
 		return chainer;
 	}
-	
+
 	/**
 	 * Launch the aggregation routine for the current day with default indicators.
 	 * @param callBack : Handler called when processing is over.
@@ -199,61 +199,72 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		Calendar dayCalendar = Calendar.getInstance();
 		dayCalendar.setTime(day);
 		Date recordingDate = AggregationTools.setToMidnight(dayCalendar);
-		
+
 		//Clean up stats from the day if they already exist.
 		cleanUp(day);
-		
+
 		//Adding default indicators
 		addDefaultDayIndicators(day);
 		addDefaultMonthlyIndicators(day);
 		addDefaultSeptemberIndicators(day);
-		
+
 		///// Default groups :
 		//Profile
 		IndicatorGroup profileGroup = new IndicatorGroup(TRACE_FIELD_PROFILE);
 		//Structure + Structure/Profile + Structure/Classes + Structure/Classes/Profile
-		IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES);
-		IndicatorGroup classesGroup = new IndicatorGroup(TRACE_FIELD_CLASSES);
-		structureGroup.addGroup(classesGroup.addGroup(TRACE_FIELD_PROFILE))
-					  .addGroup(new IndicatorGroup(TRACE_FIELD_PROFILE));
-		
+		IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES)
+			.addChild(new IndicatorGroup(TRACE_FIELD_CLASSES).addChild(TRACE_FIELD_PROFILE))
+			.addChild(new IndicatorGroup(TRACE_FIELD_PROFILE));
+
 		//Adding groups
 		for(Indicator indic : indicators){
 			indic.addGroup(profileGroup)
 				 .addGroup(structureGroup);
 		}
-		
+
 		///// Special treatment for the service access Indicator : indicator has to be also grouped by module name :
 		IndicatorMongoImpl serviceAccessIndicator = new IndicatorMongoImpl(TRACE_TYPE_SVC_ACCESS);
-		
+
 		//Add day filter
 		addDayFilter(serviceAccessIndicator, day);
-		
+
 		//Module
 		IndicatorGroup moduleGroup = new IndicatorGroup(TRACE_FIELD_MODULE);
-		//Profile + Profile/Module
-		IndicatorGroup profileModuleGroup = new IndicatorGroup(TRACE_FIELD_PROFILE).addGroup(TRACE_FIELD_MODULE);
-		//Structure + Structure/Module + Structure/Classe + Structure/Profile + Structure/Classe/Module + Structure/Classes/Profile
-		IndicatorGroup structureModuleGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES).addGroup(TRACE_FIELD_MODULE).addGroup(TRACE_FIELD_PROFILE);
-		IndicatorGroup classesModuleGroup = new IndicatorGroup(TRACE_FIELD_CLASSES).addGroup(TRACE_FIELD_MODULE).addGroup(TRACE_FIELD_PROFILE);
-		structureModuleGroup.addGroup(classesModuleGroup);
-		
-		serviceAccessIndicator.addGroup(moduleGroup)
-						  .addGroup(profileModuleGroup)
-						  .addGroup(structureModuleGroup);
-		
+		//Profile/Module
+		IndicatorGroup profileModuleGroup = new IndicatorGroup(TRACE_FIELD_PROFILE).addChild(TRACE_FIELD_MODULE);
+
+		//Structure
+		IndicatorGroup structGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES);
+		//Structure/Module
+		structGroup.addChild(TRACE_FIELD_MODULE)
+		//Structure/Profil/Module
+			.addAndReturnChild(TRACE_FIELD_PROFILE)
+				.addChild(TRACE_FIELD_MODULE);
+		//Structure/Class/Profile/Module
+		IndicatorGroup classGroup = new IndicatorGroup(TRACE_FIELD_CLASSES);
+		structGroup
+			.addAndReturnChild(classGroup)
+				.addChild(TRACE_FIELD_MODULE)
+			.addAndReturnChild(TRACE_FIELD_PROFILE)
+				.addChild(TRACE_FIELD_MODULE);
+
+		serviceAccessIndicator
+			.addGroup(moduleGroup)
+			.addGroup(profileModuleGroup)
+			.addGroup(structGroup);
+
 		indicators.add(serviceAccessIndicator);
-		
+
 		////// Setting the recording time for all indicators
 		for(Indicator i : indicators){
 			i.setWriteDate(recordingDate);
 		}
-		
+
 		////// Chaining Indicators and executing the process.
 		chainIndicators().executeChain(callBack);
-		
+
 	}
-	
+
 	/**
 	 * Process without default indicators.
 	 * @param callBack : Handler called when processing is over.
@@ -262,5 +273,5 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		// Chaining Indicators
 		chainIndicators().executeChain(callBack);
 	}
-	
+
 }
