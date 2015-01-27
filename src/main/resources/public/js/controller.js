@@ -3,7 +3,7 @@
 	------------------
 	Main controller.
 **/
-function StatsController($scope, $rootScope, $timeout, model, template, route, date){
+function StatsController($scope, $rootScope, $timeout, $http, model, template, route, date){
 
 	/////////////////////////////////////////////
 	/*               INIT & VIEWS              */
@@ -14,6 +14,23 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 	$scope.structures = model.structures
 	$scope.classes = model.classes
 	$scope.indicatorContainers = model.indicatorContainers
+
+	$scope.allowedProjectFunctions = function(){
+		return !$scope.allowed ||
+			!$scope.allowed instanceof Array ? true :
+			$scope.allowed.length === 0 ? true :
+			_.find(model.me.functions, function(f){ return _.contains($scope.allowed, f.code) })
+	}
+
+	// Retrieve allowed functions for project view
+	$http.get('/stats/allowed').success(function(allowedArray) {
+		$scope.allowed = allowedArray
+		//If the user is allowed
+		if($scope.allowedProjectFunctions()){
+			//Project container - added manually
+			$scope.indicatorContainers.all.unshift(new IndicatorContainer({name: lang.translate("stats.project"), groups: {}}))
+		}
+	})
 
 	var DEFAULT_VIEW = function(){
 		$scope.openView('main', 'global')
@@ -101,9 +118,6 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 			}
 		}
 	}
-
-	//Project container - added manually
-	$scope.indicatorContainers.push(new IndicatorContainer({name: lang.translate("stats.project"), groups: {}}))
 
 	/**** LIST OF INDICATORS ****/
 

@@ -12,9 +12,12 @@ import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
+import fr.wseduc.webutils.request.RequestUtils;
 
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.entcore.common.user.UserInfos;
+import org.entcore.common.user.UserUtils;
 import org.vertx.java.core.Handler;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.json.JsonArray;
@@ -54,6 +57,32 @@ public class StatsController extends MongoDbControllerHelper {
 	}
 
 	/**
+	 * Returns the user functions allowed to see the statistics at project scope and export them, if put in the configuration Json file.
+	 * @param request
+	 */
+	@Get("/allowed")
+	@SecuredAction(value="", type = ActionType.AUTHENTICATED)
+	public void listAllowedFunctions(HttpServerRequest request) {
+		renderJson(request, container.config().getArray("overviewAllowedFunctions", new JsonArray()));
+	}
+
+	//True : If the user has a function contained in the allowed array.
+	private boolean isUserAllowed(UserInfos user){
+		JsonArray allowedFunctions = container.config().getArray("overviewAllowedFunctions", new JsonArray());
+
+		if(allowedFunctions.size() == 0)
+			return true;
+
+		for(Object functionObj : allowedFunctions){
+			String function = (String) functionObj;
+			if(user.getFunctions().containsKey(function))
+					return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Returns the list of statistics.<br>
 	 * Request may contain filters as query parameters.
 	 * @param request Client request
@@ -62,7 +91,24 @@ public class StatsController extends MongoDbControllerHelper {
 	@SecuredAction(value = list, type = ActionType.RESOURCE)
 	@ResourceFilter(StatsFilter.class)
 	public void listStats(final HttpServerRequest request) {
-		statsService.listStats(request.params().entries(), arrayResponseHandler(request));
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					//If no structures or classes filters are specified, meaning we are listing at a global scope :
+					if(!request.params().contains("structures") && !request.params().contains("classes")){
+						//Then we check if specific functions are configured, if so we ensure that the user is at proper credentials level.
+						if(!isUserAllowed(user)){
+							//If not: return 401
+							unauthorized(request);
+							return;
+						}
+					}
+					statsService.listStats(request.params().entries(), arrayResponseHandler(request));
+				} else {
+					badRequest(request);
+				}
+			}
+		});
 	}
 
 	/**
@@ -73,7 +119,7 @@ public class StatsController extends MongoDbControllerHelper {
 	@SecuredAction(value = export, type = ActionType.RESOURCE)
 	@ResourceFilter(StatsFilter.class)
 	public void export(final HttpServerRequest request) {
-		Handler<Either<String, JsonArray>> handler = new Handler<Either<String, JsonArray>>() {
+		final Handler<Either<String, JsonArray>> handler = new Handler<Either<String, JsonArray>>() {
 			@Override
 			public void handle(Either<String, JsonArray> r) {
 				if (r.isRight()) {
@@ -96,6 +142,20 @@ public class StatsController extends MongoDbControllerHelper {
 				}
 			}
 		};
-		statsService.listStats(new ArrayList<Map.Entry<String,String>>(), handler);
+
+		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
+			public void handle(final UserInfos user) {
+				if (user != null) {
+					//If only specific functions can access export :
+					if(isUserAllowed(user)){
+						statsService.listStats(new ArrayList<Map.Entry<String,String>>(), handler);
+					} else {
+						unauthorized(request);;
+					}
+				} else {
+					badRequest(request);
+				}
+			}
+		});
 	}
 }

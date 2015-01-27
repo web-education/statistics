@@ -1,5 +1,7 @@
 package fr.wseduc.stats.filters;
 
+import static org.entcore.common.user.DefaultFunctions.SUPER_ADMIN;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -28,6 +30,12 @@ public class StatsFilter implements ResourcesProvider {
 
 	@Override
 	public void authorize(HttpServerRequest resourceRequest, Binding binding, UserInfos user, Handler<Boolean> handler) {
+		
+		//Super-admin "hack"
+		if(user.getFunctions().containsKey(SUPER_ADMIN)) {
+			handler.handle(true);
+			return;
+		}
 
 		//Checks whether the user has the workflow credentials to perform operations on statistics.
 		List<UserInfos.Action> authorizedActions = user.getAuthorizedActions();

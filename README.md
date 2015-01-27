@@ -29,12 +29,14 @@ Dans le fichier template :
         "auto-redeploy": false,
         "mode" : "${mode}",
         "entcore.port" : 8009,
+        "overviewAllowedFunctions": ["SUPER_ADMIN"],
         "aggregation-cron": "0 59 23 * * ?"
     }
 }
 ```
-Le champ "aggregation-cron" permet de spécifier la fréquence d'aggrégation. Ici elle est fixée à tous les jours à 23h59.
+Le champ `aggregation-cron` permet de spécifier la fréquence d'aggrégation. Ici elle est fixée à tous les jours à 23h59.
 
+Le champ `overviewAllowedFunctions` est *optionnel*, il limite l'accès du niveau 'projet' ainsi que l'export à une ou des fonctions.
 
 - Associer une route à la configuration du module proxy intégré.
 

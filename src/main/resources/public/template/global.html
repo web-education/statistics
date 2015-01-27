@@ -19,6 +19,7 @@
 		<div ng-include="template.containers.list" class="row"></div>
 	</div>
 
-	<a href="stats/export" translate content="stats.showMore" style="padding: 10px; display: block;" target="_blank"></a>
+	<a href="stats/export" translate content="stats.showMore" style="padding: 10px; display: block;" target="_blank"
+	   ng-if="allowedProjectFunctions()"></a>
 
 </div>
