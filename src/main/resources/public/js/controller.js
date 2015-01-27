@@ -596,7 +596,8 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 		var todayDate = date.create(new Date())
 
 		while(refDate.isBefore(todayDate)){
-			labels.push(lang.translate("stats.week")+" "+refDate.format("wo"))
+			labels.push(lang.translate("stats.weekOf")+" "+refDate.isoWeekday(1).format("DD/MM"))
+			//labels.push(lang.translate("stats.week")+" "+refDate.format("wo"))
 			refDate = refDate.add(1, 'w')
 		}
 
