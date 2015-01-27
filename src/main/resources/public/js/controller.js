@@ -9,6 +9,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 	/*               INIT & VIEWS              */
 
 	$scope.lang = lang
+	$scope.date = date
 	$scope.template = template
 	$scope.structures = model.structures
 	$scope.classes = model.classes
@@ -30,6 +31,14 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 		$scope.currentContainer = null
 
 		template.open(container, view)
+	}
+
+	$scope.toMidnight = function(d){
+		d.setHours(0)
+		d.setMinutes(0)
+		d.setSeconds(0)
+		d.setMilliseconds(0)
+		return d
 	}
 
 	/////////////////////////////////////////////
@@ -59,6 +68,37 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 		var monthValue = chartData[chartData.length - 1]
 		for(var i = 0; i < monthValue.length; i++){
 			monthValue[i] = monthValue[i] + dayValue[i]
+		}
+	}
+
+	//Chart data aggregation functions
+
+	$scope.lastDayOfMonthAggregationFunction = function(refDate, dayValue, chartData){
+		var endOfMonth = date.create(refDate).endOf('month')
+		var today = date.create()
+
+		if(refDate.date() === 1){
+			chartData.push([0, 0, 0, 0, 0, 0])
+		}
+		if(refDate.date() === endOfMonth.date() || refDate.dayOfYear() === today.dayOfYear()){
+			var monthValue = chartData[chartData.length - 1]
+			for(var i = 0; i < monthValue.length; i++){
+				monthValue[i] = dayValue[i]
+			}
+		}
+	}
+
+	$scope.lastDayOfWeekAggregationFunction = function(refDate, dayValue, chartData){
+		var today = date.create()
+
+		if(refDate.weekday() === 0){
+			chartData.push([0, 0, 0, 0, 0, 0])
+		}
+		if(refDate.weekday() === 6 || refDate.dayOfYear() === today.dayOfYear()){
+			var weekValue = chartData[chartData.length - 1]
+			for(var i = 0; i < weekValue.length; i++){
+				weekValue[i] = dayValue[i]
+			}
 		}
 	}
 
@@ -103,7 +143,7 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 		/* UNIQUE VISITORS */
 		{
 			name: "stats.uniqueVisitors",
-			since: "stats.last30days",
+			since: "stats.firstDayOfMonth",
 			icon: "unique-visitors-icon",
 			type: "UNIQUE_VISITORS",
 			chartType: "Line",
@@ -112,90 +152,76 @@ function StatsController($scope, $rootScope, $timeout, model, template, route, d
 			chartGranularity: "month",
 			chartDatasets: function(){ return $scope.profileDataSets() },
 			getValue: function(container){
+				var default_granularity = this.type + "_MONTH"
 				var lastAggreg = container.getLastAggregation()
-				return (typeof lastAggreg === "object" && !isNaN(lastAggreg[this.type])) ? lastAggreg[this.type] : 0
+				return (typeof lastAggreg === "object" && !isNaN(lastAggreg[default_granularity])) ? lastAggreg[default_granularity] : 0
 			},
 			getChartData: function(container){
 				var aggregationFunction
+				var type = this.type
 
 				switch(this.chartGranularity){
 					case "month":
-						aggregationFunction = function(refDate, dayValue, chartData){
-							var endOfMonth = date.create(refDate).endOf('month')
-							var today = date.create()
-
-							if(refDate.date() === 1){
-								chartData.push([0, 0, 0, 0, 0, 0])
-							}
-							if(refDate.date() === endOfMonth.date() || refDate.dayOfYear() === today.dayOfYear() - 1){
-								var monthValue = chartData[chartData.length - 1]
-								for(var i = 0; i < monthValue.length; i++){
-									monthValue[i] = dayValue[i]
-								}
-							}
-						}
+						aggregationFunction = $scope.lastDayOfMonthAggregationFunction
+						type = type + "_MONTH"
 						break
 					case "week":
-						aggregationFunction = function(refDate, dayValue, chartData){
-							var today = date.create()
-
-							if(refDate.weekday() === 0){
-								chartData.push([0, 0, 0, 0, 0, 0])
-							}
-							if(refDate.weekday() === 6 || refDate.dayOfYear() === today.dayOfYear() - 1){
-								var weekValue = chartData[chartData.length - 1]
-								for(var i = 0; i < weekValue.length; i++){
-									weekValue[i] = dayValue[i]
-								}
-							}
-						}
+						aggregationFunction = $scope.lastDayOfWeekAggregationFunction
+						type = type + "_WEEK"
 						break
 					case "day":
 						aggregationFunction = $scope.dailySumFunction
+						type = type + "_DAY"
 						break
 				}
 
-				return container.getChartData(this.type, aggregationFunction, date);
+				return container.getChartData(type, aggregationFunction, date);
 			}
 		},
 		/* CONNECTIONS DIVIDED BY UNIQUE VISITORS*/
 		{
 			name: "stats.connectionsByUniqueVisitors",
-			since: "stats.last30days",
+			since: "stats.firstDayOfMonth",
 			icon: "connection-by-visitors-icon",
 			chartType: "Line",
 			chartLabel: lang.translate("stats.labels.connectionsByUniqueVisitors"),
-			chartGranularities: ["month"],
+			chartGranularities: ["day", "week", "month"],
 			chartGranularity: "month",
 			chartDatasets: function(){ return $scope.profileDataSets() },
 			getValue: function(container){
 				var refDate = new Date()
-				refDate.setDate(refDate.getDate() - 30)
+				$scope.toMidnight(refDate).setDate(1)
 				var lastAggreg = container.getLastAggregation()
 
 				var connections = container.getAggregatedSum("LOGIN", refDate)
-				var uniqueVisitors = (typeof lastAggreg === "object" && !isNaN(lastAggreg["UNIQUE_VISITORS"])) ? lastAggreg["UNIQUE_VISITORS"] : 0
+				var uniqueVisitors = (typeof lastAggreg === "object" && !isNaN(lastAggreg["UNIQUE_VISITORS_MONTH"])) ? lastAggreg["UNIQUE_VISITORS_MONTH"] : 0
 				return uniqueVisitors > 0 ? Math.round((connections / uniqueVisitors) * 100)/100 : 0
 			},
 			getChartData: function(container){
-				var aggregationFunction = function(refDate, dayValue, chartData){
-					var endOfMonth = date.create(refDate).endOf('month')
-					var today = date.create()
+				var connectionsAggregationFunction
+				var uniqueVisitorsAggregationFunction
+				var visitorsType = "UNIQUE_VISITORS"
 
-					if(refDate.date() === 1){
-						chartData.push([0, 0, 0, 0, 0, 0])
-					}
-					if(refDate.date() === endOfMonth.date() || refDate.dayOfYear() === today.dayOfYear() - 1){
-						var monthValue = chartData[chartData.length - 1]
-						for(var i = 0; i < monthValue.length; i++){
-							monthValue[i] = dayValue[i]
-						}
-					}
+				switch(this.chartGranularity){
+					case "month":
+						uniqueVisitorsAggregationFunction = $scope.lastDayOfMonthAggregationFunction
+						connectionsAggregationFunction = $scope.monthlySumFunction
+						visitorsType = visitorsType + "_MONTH"
+						break
+					case "week":
+						uniqueVisitorsAggregationFunction = $scope.lastDayOfWeekAggregationFunction
+						connectionsAggregationFunction = $scope.weeklySumFunction
+						visitorsType = visitorsType + "_WEEK"
+						break
+					case "day":
+						uniqueVisitorsAggregationFunction = $scope.dailySumFunction
+						connectionsAggregationFunction = $scope.dailySumFunction
+						visitorsType = visitorsType + "_DAY"
+						break
 				}
 
-
-				var connectionData = container.getChartData("LOGIN", $scope.monthlySumFunction, date)
-				var uniqueVisitorsData = container.getChartData("UNIQUE_VISITORS", aggregationFunction, date)
+				var connectionData = container.getChartData("LOGIN", connectionsAggregationFunction, date)
+				var uniqueVisitorsData = container.getChartData(visitorsType, uniqueVisitorsAggregationFunction, date)
 
 				var finalResult = []
 				for(var i = 0; i < connectionData.length; i++){

@@ -89,11 +89,16 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		IndicatorMongoImpl userDeletionIndicator = new IndicatorMongoImpl(TRACE_TYPE_DELETE_USER);
 		IndicatorMongoImpl userActivationIndicator = new IndicatorMongoImpl(TRACE_TYPE_ACTIVATION);
 
+		//Unique visitors
+		IndicatorMongoImpl uniqueVisitorIndicator = new UniqueVisitorIndicator();
+		uniqueVisitorIndicator.setWriteKey(uniqueVisitorIndicator.getWriteKey() + "_DAY");
+
 		//Add to arraylist
 		dayIndicators.add(connexionIndicator);
 		dayIndicators.add(userCreationIndicator);
 		dayIndicators.add(userDeletionIndicator);
 		dayIndicators.add(userActivationIndicator);
+		dayIndicators.add(uniqueVisitorIndicator);
 
 		////////////////////////////////////////////////////
 
@@ -109,13 +114,44 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		}
 	}
 
+	private void addDefaultWeekIndicators(Date day){
+		Calendar calendarDay = Calendar.getInstance();
+		calendarDay.setTime(day);
+		calendarDay.add(Calendar.DATE, 1);
+		Date higherDay = AggregationTools.setToMidnight(calendarDay);
+		if(calendarDay.get(Calendar.DAY_OF_WEEK) < calendarDay.getFirstDayOfWeek())
+			calendarDay.add(Calendar.WEEK_OF_YEAR, -1);
+		calendarDay.set(Calendar.DAY_OF_WEEK, calendarDay.getFirstDayOfWeek());
+		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
+
+		ArrayList<IndicatorMongoImpl> weekIndicators = new ArrayList<>();
+
+		/// SET INDICATORS HERE & ADD THEM TO THE ARRAY LIST
+		//Unique visitors
+		IndicatorMongoImpl uniqueVisitorIndicator = new UniqueVisitorIndicator();
+		uniqueVisitorIndicator.setWriteKey(uniqueVisitorIndicator.getWriteKey() + "_WEEK");
+
+		//Add to arraylist
+		weekIndicators.add(uniqueVisitorIndicator);
+
+		////////////////////////////////////////////////////
+
+		//Add to every indicator a filter to get traces from the first day of the week.
+		IndicatorFilter weeklyFilter = new DateFilter(lowerDay, higherDay);
+
+		for(Indicator indicator: weekIndicators){
+			indicator.addFilter(weeklyFilter);
+			indicators.add(indicator);
+		}
+	}
+
 	private void addDefaultMonthlyIndicators(Date day){
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
 		calendarDay.add(Calendar.DATE, 1);
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
-		calendarDay.add(Calendar.DATE, -30);
-		Date lowerDay = calendarDay.getTime();
+		calendarDay.set(Calendar.DATE, 1);
+		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
 
 		ArrayList<IndicatorMongoImpl> monthlyIndicators = new ArrayList<>();
 
@@ -123,13 +159,14 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 
 		//Unique visitors
 		IndicatorMongoImpl uniqueVisitorIndicator = new UniqueVisitorIndicator();
+		uniqueVisitorIndicator.setWriteKey(uniqueVisitorIndicator.getWriteKey() + "_MONTH");
 
 		//Add to arraylist
 		monthlyIndicators.add(uniqueVisitorIndicator);
 
 		////////////////////////////////////////////////////
 
-		//Add to every indicator a filter to get traces from the last 30 days
+		//Add to every indicator a filter to get traces from first day of the month.
 		IndicatorFilter monthlyFilter = new DateFilter(lowerDay, higherDay);
 
 		for(Indicator indicator: monthlyIndicators){
@@ -205,6 +242,7 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 
 		//Adding default indicators
 		addDefaultDayIndicators(day);
+		addDefaultWeekIndicators(day);
 		addDefaultMonthlyIndicators(day);
 		addDefaultSeptemberIndicators(day);
 

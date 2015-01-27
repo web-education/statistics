@@ -14,6 +14,7 @@
 	"stats.lastSeptember"			: "depuis le 1er Septembre",
 	"stats.lastMonth"				: "depuis le mois dernier",
 	"stats.last30days"				: "les 30 derniers jours",
+	"stats.firstDayOfMonth"			: "depuis le début du mois",
 	"stats.allProfiles"				: "tous profils confondus",
 
 	"stats.connections"				: "Connexion(s)",
