@@ -63,9 +63,11 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 
 	//Chart data adapters
 
+		//Daily value
 	$scope.dailySumFunction = function(refDate, dayValue, chartData){
 		chartData.push(dayValue.slice(0))
 	}
+		//Sum of all daily values in a week
 	$scope.weeklySumFunction = function(refDate, dayValue, chartData){
 		if(refDate.weekday() === 0){
 			chartData.push([0, 0, 0, 0, 0, 0])
@@ -77,6 +79,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 		}
 
 	}
+		//Sum of all daily values in the month
 	$scope.monthlySumFunction = function(refDate, dayValue, chartData){
 		if(refDate.date() === 1){
 			chartData.push([0, 0, 0, 0, 0, 0])
@@ -90,6 +93,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 
 	//Chart data aggregation functions
 
+		//Aggregate only the last day of the month
 	$scope.lastDayOfMonthAggregationFunction = function(refDate, dayValue, chartData){
 		var endOfMonth = date.create(refDate).endOf('month')
 		var today = date.create()
@@ -97,26 +101,24 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 		if(refDate.date() === 1){
 			chartData.push([0, 0, 0, 0, 0, 0])
 		}
-		if(refDate.date() === endOfMonth.date() || refDate.dayOfYear() === today.dayOfYear()){
-			var monthValue = chartData[chartData.length - 1]
-			for(var i = 0; i < monthValue.length; i++){
-				monthValue[i] = dayValue[i]
-			}
+
+		var monthValue = chartData[chartData.length - 1]
+		for(var i = 0; i < monthValue.length; i++){
+			monthValue[i] = monthValue[i] <= dayValue[i] ? dayValue[i] : monthValue[i]
 		}
 	}
-
+		//Aggregate only the last day of the week
 	$scope.lastDayOfWeekAggregationFunction = function(refDate, dayValue, chartData){
 		var today = date.create()
 
 		if(refDate.weekday() === 0){
 			chartData.push([0, 0, 0, 0, 0, 0])
 		}
-		if(refDate.weekday() === 6 || refDate.dayOfYear() === today.dayOfYear()){
-			var weekValue = chartData[chartData.length - 1]
-			for(var i = 0; i < weekValue.length; i++){
-				weekValue[i] = dayValue[i]
-			}
+		var weekValue = chartData[chartData.length - 1]
+		for(var i = 0; i < weekValue.length; i++){
+			weekValue[i] = weekValue[i] <= dayValue[i] ? dayValue[i] : weekValue[i]
 		}
+
 	}
 
 	/**** LIST OF INDICATORS ****/
