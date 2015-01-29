@@ -4,7 +4,6 @@ import java.text.ParseException;
 
 import org.entcore.common.aggregation.MongoConstants.COLLECTIONS;
 import org.entcore.common.http.BaseServer;
-import org.entcore.common.http.filter.ShareAndOwner;
 import org.entcore.common.mongodb.MongoDbConf;
 import org.vertx.java.core.logging.Logger;
 import org.vertx.java.core.logging.impl.LoggerFactory;
@@ -12,15 +11,16 @@ import org.vertx.java.core.logging.impl.LoggerFactory;
 import fr.wseduc.cron.CronTrigger;
 import fr.wseduc.stats.controllers.StatsController;
 import fr.wseduc.stats.cron.CronAggregationTask;
+import fr.wseduc.stats.filters.WorkflowFilter;
 
 public class Stats extends BaseServer {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(Stats.class);
 
 	@Override
 	public void start() {
 		super.start();
-		
+
 		//CRON
 		//Default at 11:59PM every day
 		final String aggregationCron = container.config().getString("aggregation-cron", "0 59 23 * * ?");
@@ -31,11 +31,11 @@ public class Stats extends BaseServer {
 			vertx.stop();
 			return;
 		}
-		
+
 		//REST BASICS
 		addController(new StatsController(COLLECTIONS.stats.name()));
 		MongoDbConf.getInstance().setCollection(COLLECTIONS.stats.name());
-		setDefaultResourceFilter(new ShareAndOwner());
+		addFilter(new WorkflowFilter(this.vertx.eventBus(), "stats.view", "fr.wseduc.stats.controllers.StatsController|view"));
 	}
 
 }

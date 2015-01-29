@@ -13,52 +13,39 @@ import org.vertx.java.core.http.HttpServerRequest;
 
 import fr.wseduc.webutils.http.Binding;
 
-public class StatsFilter implements ResourcesProvider {
+public class ListStatsResourceProvider implements ResourcesProvider {
 
 	private static final ArrayList<String> authorizedGroupedBy = new ArrayList<>();
-	private static UserInfos.Action mainAuthorization = new UserInfos.Action();
 
 	static {
 		authorizedGroupedBy.add("module");
 		authorizedGroupedBy.add("profil");
 		authorizedGroupedBy.add("profil/module");
-
-		mainAuthorization.setDisplayName("stats.view");
-		mainAuthorization.setName("fr.wseduc.stats.controllers.StatsController|view");
-		mainAuthorization.setType("SECURED_ACTION_WORKFLOW");
 	}
 
 	@Override
-	public void authorize(HttpServerRequest resourceRequest, Binding binding, UserInfos user, Handler<Boolean> handler) {
-		
+	public void authorize(HttpServerRequest request, Binding binding, UserInfos user, Handler<Boolean> handler) {
+
 		//Super-admin "hack"
 		if(user.getFunctions().containsKey(SUPER_ADMIN)) {
 			handler.handle(true);
 			return;
 		}
 
-		//Checks whether the user has the workflow credentials to perform operations on statistics.
-		List<UserInfos.Action> authorizedActions = user.getAuthorizedActions();
-		boolean isAuthorized = false;
-		for(UserInfos.Action action : authorizedActions){
-			if(action.getDisplayName().equals(mainAuthorization.getDisplayName()) &&
-			   action.getName().equals(mainAuthorization.getName()) &&
-			   action.getType().equals(mainAuthorization.getType())
-			  ){
-				isAuthorized = true;
-				break;
+		//If no structures or classes filters are specified, meaning we are listing at a global scope :
+		if(!request.params().contains("structures") && !request.params().contains("classes")){
+			//Then we check if specific functions are configured, if so we ensure that the user is at proper credentials level.
+			if(!StatsSecurityUtils.isUserAllowed(user)){
+				//If not: return 401
+				handler.handle(false);
+				return;
 			}
-		}
-
-		if(!isAuthorized){
-			handler.handle(false);
-			return;
 		}
 
 		//Structure and class check + GroupedBy check
 		List<String> userStructures = user.getStructures();
 		List<String> userClasses = user.getClasses();
-		for(Entry<String, String> entry : resourceRequest.params().entries()){
+		for(Entry<String, String> entry : request.params().entries()){
 			String key = entry.getKey();
 			String value = entry.getValue();
 			if(key.equals("structures")){
