@@ -150,7 +150,7 @@ public class StatsController extends MongoDbControllerHelper {
 					if(isUserAllowed(user)){
 						statsService.listStats(new ArrayList<Map.Entry<String,String>>(), handler);
 					} else {
-						unauthorized(request);;
+						unauthorized(request);
 					}
 				} else {
 					badRequest(request);
