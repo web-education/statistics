@@ -63,6 +63,6 @@
 	"stats.labels.connectionsByUniqueVisitors"		: "Evolution du nombre de connexions par visiteur unique",
 	"stats.labels.activatedAccounts"				: "Evolution du nombre de comptes activés",
 	"stats.labels.dailyPeak"						: "Nombre de visites par tranche horaire depuis le 1er septembre",
-	"stats.labels.weeklyPeak"						: "Nombre de visites par jour de la semaine depuis le premier septembre",
+	"stats.labels.weeklyPeak"						: "Nombre de visites par jour de la semaine depuis le 1er septembre",
 	"stats.labels.mostUsedTool"						: "Applis les plus utilisées"
 }
