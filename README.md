@@ -30,11 +30,14 @@ Dans le fichier template :
         "mode" : "${mode}",
         "entcore.port" : 8009,
         "overviewAllowedFunctions": ["SUPER_ADMIN"],
-        "aggregation-cron": "0 59 23 * * ?"
+        "aggregation-cron": "0 0 0 * * ?",
+        "dayDelta": -1
     }
 }
 ```
-Le champ `aggregation-cron` permet de spécifier la fréquence d'aggrégation. Ici elle est fixée à tous les jours à 23h59.
+Le champ `aggregation-cron` permet de spécifier la fréquence d'aggrégation. Ici elle est fixée à tous les jours à minuit.
+
+Le champ `dayDelta` fixe l'agrégation à un jour spécifique. Ici, -1 signifie que le jour cible est la veille, 0 étant le jour courant.
 
 Le champ `overviewAllowedFunctions` est *optionnel*, il limite l'accès du niveau 'projet' ainsi que l'export à une ou des fonctions.
 

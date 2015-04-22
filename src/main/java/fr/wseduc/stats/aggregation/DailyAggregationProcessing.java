@@ -14,6 +14,7 @@ import org.entcore.common.aggregation.indicators.Indicator;
 import org.entcore.common.aggregation.indicators.mongo.IndicatorMongoImpl;
 import org.entcore.common.aggregation.processing.AggregationProcessing;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.VoidHandler;
 import org.vertx.java.core.eventbus.Message;
 import org.vertx.java.core.json.JsonObject;
 
@@ -35,7 +36,7 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 	 * Cleanup if stats documents already exist.
 	 * @param day : Day to clean up.
 	 */
-	public void cleanUp(Date day){
+	public void cleanUp(Date day, final VoidHandler next){
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
 		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
@@ -43,7 +44,11 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
 
 		QueryBuilder statsFilter = QueryBuilder.start().put(STATS_FIELD_DATE).greaterThanEquals(MongoDb.formatDate(lowerDay)).lessThan(MongoDb.formatDate(higherDay));
-		mongo.delete(COLLECTIONS.stats.name(), MongoQueryBuilder.build(statsFilter));
+		mongo.delete(COLLECTIONS.stats.name(), MongoQueryBuilder.build(statsFilter), new Handler<Message<JsonObject>>() {
+			public void handle(Message<JsonObject> event) {
+				next.handle(null);
+			}
+		});
 	}
 
 	private IndicatorMongoImpl createHourPeakIndicator(final Date day, int hour){
@@ -204,9 +209,9 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		}
 	}
 
-	private HandlerChainer<Indicator, Message<JsonObject>> chainIndicators(){
-		HandlerChainer<Indicator, Message<JsonObject>> chainer = new HandlerChainer<Indicator, Message<JsonObject>>(){
-			protected void executeItem(Indicator indicator, Handler<Message<JsonObject>> nextCallback) {
+	private HandlerChainer<Indicator, JsonObject> chainIndicators(){
+		HandlerChainer<Indicator, JsonObject> chainer = new HandlerChainer<Indicator, JsonObject>(){
+			protected void executeItem(Indicator indicator, Handler<JsonObject> nextCallback) {
 				indicator.aggregate(nextCallback);
 			}
 		};
@@ -223,7 +228,7 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 	 * @param callBack : Handler called when processing is over.
 	 */
 	@Override
-	public void process(Handler<Message<JsonObject>> callBack){
+	public void process(Handler<JsonObject> callBack){
 		process(new Date(), callBack);
 	}
 	/**
@@ -231,83 +236,85 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 	 * @param day : Traces from that day will be processed.
 	 * @param callBack : Handler called when processing is over.
 	 */
-	public void process(Date day, Handler<Message<JsonObject>> callBack){
-		//Sets recording date to midnight at "day" parameter time
-		Calendar dayCalendar = Calendar.getInstance();
-		dayCalendar.setTime(day);
-		Date recordingDate = AggregationTools.setToMidnight(dayCalendar);
-
+	@Override
+	public void process(final Date day, final Handler<JsonObject> callBack){
 		//Clean up stats from the day if they already exist.
-		cleanUp(day);
+		cleanUp(day, new VoidHandler() {
+			protected void handle() {
+				//Sets recording date to midnight at "day" parameter time
+				Calendar dayCalendar = Calendar.getInstance();
+				dayCalendar.setTime(day);
+				Date recordingDate = AggregationTools.setToMidnight(dayCalendar);
 
-		//Adding default indicators
-		addDefaultDayIndicators(day);
-		addDefaultWeekIndicators(day);
-		addDefaultMonthlyIndicators(day);
-		addDefaultSeptemberIndicators(day);
+				//Adding default indicators
+				addDefaultDayIndicators(day);
+				addDefaultWeekIndicators(day);
+				addDefaultMonthlyIndicators(day);
+				addDefaultSeptemberIndicators(day);
 
-		///// Default groups :
-		//Profile
-		IndicatorGroup profileGroup = new IndicatorGroup(TRACE_FIELD_PROFILE);
-		//Structure + Structure/Profile + Structure/Classes + Structure/Classes/Profile
-		IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES)
-			.addChild(new IndicatorGroup(TRACE_FIELD_CLASSES).addChild(TRACE_FIELD_PROFILE))
-			.addChild(new IndicatorGroup(TRACE_FIELD_PROFILE));
+				///// Default groups :
+				//Profile
+				IndicatorGroup profileGroup = new IndicatorGroup(TRACE_FIELD_PROFILE);
+				//Structure + Structure/Profile + Structure/Classes + Structure/Classes/Profile
+				IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES).setArray(true)
+					.addChild(new IndicatorGroup(TRACE_FIELD_CLASSES).setArray(true).addChild(TRACE_FIELD_PROFILE))
+					.addChild(new IndicatorGroup(TRACE_FIELD_PROFILE));
 
-		//Adding groups
-		for(Indicator indic : indicators){
-			indic.addGroup(profileGroup)
-				 .addGroup(structureGroup);
-		}
+				//Adding groups
+				for(Indicator indic : indicators){
+					indic.addGroup(profileGroup)
+						 .addGroup(structureGroup);
+				}
 
-		///// Special treatment for the service access Indicator : indicator has to be also grouped by module name :
-		IndicatorMongoImpl serviceAccessIndicator = new IndicatorMongoImpl(TRACE_TYPE_SVC_ACCESS);
+				///// Special treatment for the service access Indicator : indicator has to be also grouped by module name :
+				IndicatorMongoImpl serviceAccessIndicator = new IndicatorMongoImpl(TRACE_TYPE_SVC_ACCESS);
 
-		//Add day filter
-		addDayFilter(serviceAccessIndicator, day);
+				//Add day filter
+				addDayFilter(serviceAccessIndicator, day);
 
-		//Module
-		IndicatorGroup moduleGroup = new IndicatorGroup(TRACE_FIELD_MODULE);
-		//Profile/Module
-		IndicatorGroup profileModuleGroup = new IndicatorGroup(TRACE_FIELD_PROFILE).addChild(TRACE_FIELD_MODULE);
+				//Module
+				IndicatorGroup moduleGroup = new IndicatorGroup(TRACE_FIELD_MODULE);
+				//Profile/Module
+				IndicatorGroup profileModuleGroup = new IndicatorGroup(TRACE_FIELD_PROFILE).addChild(TRACE_FIELD_MODULE);
 
-		//Structure
-		IndicatorGroup structGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES);
-		//Structure/Module
-		structGroup.addChild(TRACE_FIELD_MODULE)
-		//Structure/Profil/Module
-			.addAndReturnChild(TRACE_FIELD_PROFILE)
-				.addChild(TRACE_FIELD_MODULE);
-		//Structure/Class/Profile/Module
-		IndicatorGroup classGroup = new IndicatorGroup(TRACE_FIELD_CLASSES);
-		structGroup
-			.addAndReturnChild(classGroup)
-				.addChild(TRACE_FIELD_MODULE)
-			.addAndReturnChild(TRACE_FIELD_PROFILE)
-				.addChild(TRACE_FIELD_MODULE);
+				//Structure
+				IndicatorGroup structGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES).setArray(true);
+				//Structure/Module
+				structGroup.addChild(TRACE_FIELD_MODULE)
+				//Structure/Profil/Module
+					.addAndReturnChild(TRACE_FIELD_PROFILE)
+						.addChild(TRACE_FIELD_MODULE);
+				//Structure/Class/Profile/Module
+				IndicatorGroup classGroup = new IndicatorGroup(TRACE_FIELD_CLASSES).setArray(true);
+				structGroup
+					.addAndReturnChild(classGroup)
+						.addChild(TRACE_FIELD_MODULE)
+						.addAndReturnChild(TRACE_FIELD_PROFILE)
+							.addChild(TRACE_FIELD_MODULE);
 
-		serviceAccessIndicator
-			.addGroup(moduleGroup)
-			.addGroup(profileModuleGroup)
-			.addGroup(structGroup);
+				serviceAccessIndicator
+					.addGroup(moduleGroup)
+					.addGroup(profileModuleGroup)
+					.addGroup(structGroup);
 
-		indicators.add(serviceAccessIndicator);
+				indicators.add(serviceAccessIndicator);
 
-		////// Setting the recording time for all indicators
-		for(Indicator i : indicators){
-			i.setWriteDate(recordingDate);
-		}
+				////// Setting the recording time for all indicators
+				for(Indicator i : indicators){
+					i.setWriteDate(recordingDate);
+				}
 
-		////// Chaining Indicators and executing the process.
-		chainIndicators().executeChain(callBack);
-
+				////// Chaining Indicators and executing the process.
+				chainIndicators().executeChain(callBack);
+			}
+		});
 	}
 
 	/**
 	 * Process without default indicators.
 	 * @param callBack : Handler called when processing is over.
 	 */
-	public void processBlank(Handler<Message<JsonObject>> callBack){
+	public void processBlank(Handler<JsonObject> callBack){
 		// Chaining Indicators
 		chainIndicators().executeChain(callBack);
 	}

@@ -8,5 +8,6 @@
 	"mode": "dev",
 	"entcore.port" : 8090,
 	"auto-redeploy": true,
-	"aggregation-cron": "0 59 23 * * ?"
+	"aggregation-cron": "0 0 0 * * ?",
+	"dayDelta": -1
 }

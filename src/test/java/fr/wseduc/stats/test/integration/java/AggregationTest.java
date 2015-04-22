@@ -180,6 +180,7 @@ public class AggregationTest extends TestVerticle {
 		if(!row.containsField(STATS_FIELD_GROUPBY)){
 			assertEquals("[Ungrouped] ["+TRACE_TYPE_CONNEXION+"] = 9", 9, row.getNumber(TRACE_TYPE_CONNEXION));
 			assertEquals("[Ungrouped] ["+TRACE_TYPE_RSC_ACCESS+"] = 3", 3, row.getNumber(TRACE_TYPE_RSC_ACCESS));
+			assertEquals("[Ungrouped] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"] = 6", 6, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 			return;
 		}
 		else {
@@ -189,24 +190,30 @@ public class AggregationTest extends TestVerticle {
 					if(row.getString("profil_id").equals("Teacher")){
 						assertEquals("[profil : Teacher] ["+TRACE_TYPE_CONNEXION+"]", 6, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertEquals("[profil : Teacher] ["+TRACE_TYPE_RSC_ACCESS+"]", 1, row.getNumber(TRACE_TYPE_RSC_ACCESS));
+						assertEquals("[profil : Teacher] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"]", 3, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 					} else if(row.getString("profil_id").equals("Personnel")){
 						assertEquals("[profil : Personnel] ["+TRACE_TYPE_CONNEXION+"]", 1, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertNull("[profil : Personnel] ["+TRACE_TYPE_RSC_ACCESS+"]", row.getNumber(TRACE_TYPE_RSC_ACCESS));
+						assertEquals("[profil : Personnel] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"]", 1, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 					} else if(row.getString("profil_id").equals("Student")){
 						assertEquals("[profil : Student] ["+TRACE_TYPE_CONNEXION+"]", 1, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertEquals("[profil : Student] ["+TRACE_TYPE_RSC_ACCESS+"]", 1, row.getNumber(TRACE_TYPE_RSC_ACCESS));
+						assertEquals("[profil : Student] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"]", 1, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 					} else if(row.getString("profil_id").equals("Relative")){
 						assertEquals("[profil : Relative] ["+TRACE_TYPE_CONNEXION+"]", 1, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertEquals("[profil : Relative] ["+TRACE_TYPE_RSC_ACCESS+"]", 1, row.getNumber(TRACE_TYPE_RSC_ACCESS));
+						assertEquals("[profil : Relative] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"]", 1, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 					}
 					return;
 				case "structures":
 					if(row.getString("structures_id").equals("1")){
 						assertEquals("[structure : 1] ["+TRACE_TYPE_CONNEXION+"]", 7, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertEquals("[structure : 1] ["+TRACE_TYPE_RSC_ACCESS+"]", 1, row.getNumber(TRACE_TYPE_RSC_ACCESS));
+						assertEquals("[structure : 1] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"]", 4, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 					} else if(row.getString("structures_id").equals("2")){
 						assertEquals("[structure : 2] ["+TRACE_TYPE_CONNEXION+"]", 3, row.getNumber(TRACE_TYPE_CONNEXION));
 						assertEquals("[structure : 2] ["+TRACE_TYPE_RSC_ACCESS+"]", 2, row.getNumber(TRACE_TYPE_RSC_ACCESS));
+						assertEquals("[structure : 2] ["+UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY+"]", 3, row.getNumber(UniqueVisitorIndicator.STATS_UNIQUEVISITORS_KEY));
 					}
 					return;
 				case "structures/profil":
@@ -257,12 +264,12 @@ public class AggregationTest extends TestVerticle {
 		//Profile
 		IndicatorGroup profileGroup = new IndicatorGroup(TRACE_FIELD_PROFILE);
 		//Structure + Structure/Profile + Structure/Classes + Structure/Classes/Profile
-		IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES);
-		IndicatorGroup classesGroup = new IndicatorGroup(TRACE_FIELD_CLASSES);
+		IndicatorGroup structureGroup = new IndicatorGroup(TRACE_FIELD_STRUCTURES).setArray(true);
+		IndicatorGroup classesGroup = new IndicatorGroup(TRACE_FIELD_CLASSES).setArray(true);
 		structureGroup.addChild(classesGroup.addChild(TRACE_FIELD_PROFILE))
 					  .addChild(new IndicatorGroup(TRACE_FIELD_PROFILE));
 		//Group
-		IndicatorGroup groupGroup = new IndicatorGroup(TRACE_FIELD_GROUPS);
+		IndicatorGroup groupGroup = new IndicatorGroup(TRACE_FIELD_GROUPS).setArray(true);
 
 		for(Indicator indic : processor.getIndicators()){
 			indic.addGroup(profileGroup)
@@ -270,8 +277,8 @@ public class AggregationTest extends TestVerticle {
 				 .addGroup(groupGroup);
 		}
 
-		processor.processBlank(new Handler<Message<JsonObject>>(){
-			public void handle(Message<JsonObject> event) {
+		processor.processBlank(new Handler<JsonObject>(){
+			public void handle(JsonObject event) {
 				mongo.find(COLLECTIONS.stats.name(), new JsonObject(), new Handler<Message<JsonObject>>() {
 					public void handle(Message<JsonObject> message) {
 						if ("ok".equals(message.body().getString("status"))) {
