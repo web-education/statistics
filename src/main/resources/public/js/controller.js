@@ -44,8 +44,8 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 			ui.hideLightbox()
 
 		//RESET VARS ON VIEW CHANGE
-		$scope.currentIndicator = null
-		$scope.currentContainer = null
+		$scope.currentIndicator = null;
+		$scope.currentContainer = $scope.indicatorContainers.first();
 
 		template.open(container, view)
 	}
