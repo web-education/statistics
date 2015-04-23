@@ -1,4 +1,5 @@
 apply from: "gradle/vertx.gradle"
+apply plugin: 'scala'
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 
@@ -10,13 +11,36 @@ repositories {
 
 dependencies {
 	compile "org.entcore:common:$entCoreVersion"
-    compile "fr.wseduc:vertx-cron-timer:$vertxCronTimer"
+  compile "fr.wseduc:vertx-cron-timer:$vertxCronTimer"
+  testCompile "org.entcore:tests:$entCoreVersion"
+  testCompile 'io.gatling.highcharts:gatling-charts-highcharts:2.0.3'
 }
 
 javadoc {
   options.encoding = 'UTF-8'
-  classpath  = configurations.provided
+  classpath = configurations.provided
   classpath += configurations.compile
+}
+
+task testJar(type: Jar) {
+  classifier = 'tests'
+  from sourceSets.test.output
+}
+
+task deploymentJar(type: Jar) {
+  classifier = 'deployment'
+  from 'deployment'
+}
+
+artifacts {
+  archives testJar
+  archives deploymentJar
+}
+
+repositories {
+    maven {
+        url "http://maven.web-education.net/nexus/content/groups/public"
+    }
 }
 
 configurations.all {
