@@ -14,16 +14,17 @@ public class CronAggregationTask implements Handler<Long>{
 
 	private static final Logger log = LoggerFactory.getLogger(CronAggregationTask.class);
 
-	private final Date processingDate;
+	private final int dayDelta;
 
 	public CronAggregationTask(int dayDelta) {
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_YEAR, dayDelta);
-		processingDate = cal.getTime();
+		this.dayDelta = dayDelta;
 	}
 
 	@Override
 	public void handle(Long event) {
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_YEAR, dayDelta);
+		final Date processingDate = cal.getTime();
 		log.info("[Aggregation][Processing] Executing aggregation task, date marker set at : {"+processingDate.toString()+"}");
 		ServiceLoader<AggregationProcessing> implementations = ServiceLoader.load(AggregationProcessing.class);
 
