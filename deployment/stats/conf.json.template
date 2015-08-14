@@ -12,7 +12,7 @@
             "app-registry.port" : 8012,
             "auto-redeploy": false,
             "mode" : "${mode}",
-            "entcore.port" : 8009,
-            "aggregation-cron": "0 0 0 * * ?"
+            "aggregation-cron": "0 0 0 * * ?",
+            "entcore.port" : 8009
         }
     }

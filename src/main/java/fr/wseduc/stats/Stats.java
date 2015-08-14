@@ -23,16 +23,18 @@ public class Stats extends BaseServer {
 
 		//CRON
 		//Default at 00:00AM every day
-		final String aggregationCron = container.config().getString("aggregation-cron", "0 0 0 * * ?");
+		final String aggregationCron = container.config().getString("aggregation-cron");
 		//Day delta, default : processes yesterday events
 		int dayDelta = container.config().getInteger("dayDelta", -1);
 
-		try {
-			new CronTrigger(vertx, aggregationCron).schedule(new CronAggregationTask(dayDelta));
-		} catch (ParseException e) {
-			logger.fatal(e.getMessage(), e);
-			vertx.stop();
-			return;
+		if (aggregationCron != null && !aggregationCron.trim().isEmpty()) {
+			try {
+				new CronTrigger(vertx, aggregationCron).schedule(new CronAggregationTask(dayDelta));
+			} catch (ParseException e) {
+				logger.fatal(e.getMessage(), e);
+				vertx.stop();
+				return;
+			}
 		}
 
 		//REST BASICS
