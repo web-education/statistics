@@ -579,9 +579,12 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 
 	///// LABELS
 
+	$scope.schoolYearRef = date.create("1970-09-01")
+	$scope.schoolYearRef.year(date.create().month() < 8 ? date.create().year() - 1 : date.create().year())
+
 	$scope.fillMonthLabels = function(){
 		labels = []
-		var refDate = date.create("2014-09-01")
+		var refDate = date.create($scope.schoolYearRef)
 		var todayDate = date.create(new Date())
 
 		while(refDate.isBefore(todayDate)){
@@ -594,7 +597,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 
 	$scope.fillWeekLabels = function(){
 		labels = []
-		var refDate = date.create("2014-09-01")
+		var refDate = date.create($scope.schoolYearRef)
 		var todayDate = date.create(new Date())
 
 		while(refDate.isBefore(todayDate)){
@@ -608,7 +611,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 
 	$scope.fillDayLabels = function(){
 		labels = []
-		var refDate = date.create("2014-09-01")
+		var refDate = date.create($scope.schoolYearRef)
 		var todayDate = date.create(new Date())
 
 		while(refDate.isBefore(todayDate)){

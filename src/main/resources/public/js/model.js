@@ -197,7 +197,8 @@ IndicatorContainer.prototype = {
         //0 : total, 1 : teacher, 2: personnel, 3: relative, 4: student: 5: other
         var chartData = []
 
-        var refDate = date.create("2014-09-01")
+        var refDate = date.create("1970-09-01")
+        refDate.year(date.create().month() < 8 ? date.create().year() - 1 : date.create().year())
         var todayDate = date.create(new Date())
 
         var dayData = []
@@ -211,14 +212,21 @@ IndicatorContainer.prototype = {
         var profile
 
         while(refDate.isBefore(todayDate)){
-            dayData = []
+            dayData = [0, 0, 0, 0, 0, 0]
 
             if(iTotal >= 0){
-                totalDataDate = date.create(totalData[iTotal].date.substring(0, 10))
-                if(totalDataDate.isSame(refDate)){
+                while(true){
+                    if(iTotal < 0)
+                        break
+
+                    totalDataDate = date.create(totalData[iTotal].date.substring(0, 10))
+
+                    if(!totalDataDate.isSame(refDate))
+                        break
+
                     dayValue = totalData[iTotal][indicatorType]
-                    dayData[0] = !isNaN(dayValue) ? dayValue : 0
-                    iTotal--;
+                    dayData[0] += !isNaN(dayValue) ? dayValue : 0
+                    iTotal--
                 }
             }
             if(iProfile >= 0){
@@ -233,19 +241,19 @@ IndicatorContainer.prototype = {
                     profile = profileData[iProfile].profil_id
                     switch(profile){
                         case "Teacher":
-                            dayData[1] = !isNaN(dayValue) ? dayValue : 0
+                            dayData[1] += !isNaN(dayValue) ? dayValue : 0
                             break;
                         case "Personnel":
-                            dayData[2] = !isNaN(dayValue) ? dayValue : 0
+                            dayData[2] += !isNaN(dayValue) ? dayValue : 0
                             break;
                         case "Relative":
-                            dayData[3] = !isNaN(dayValue) ? dayValue : 0
+                            dayData[3] += !isNaN(dayValue) ? dayValue : 0
                             break;
                         case "Student":
-                            dayData[4] = !isNaN(dayValue) ? dayValue : 0
+                            dayData[4] += !isNaN(dayValue) ? dayValue : 0
                             break;
                         default:
-                            dayData[5] = !isNaN(dayValue) ? dayValue : 0
+                            dayData[5] += !isNaN(dayValue) ? dayValue : 0
                             break;
                     }
                     iProfile--;
