@@ -69,7 +69,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 	}
 		//Sum of all daily values in a week
 	$scope.weeklySumFunction = function(refDate, dayValue, chartData){
-		if(refDate.weekday() === 0){
+		if(refDate.weekday() === 0 || chartData.length === 0){
 			chartData.push([0, 0, 0, 0, 0, 0])
 		}
 
@@ -77,11 +77,10 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 		for(var i = 0; i < weekValue.length; i++){
 			weekValue[i] = weekValue[i] + dayValue[i]
 		}
-
 	}
 		//Sum of all daily values in the month
 	$scope.monthlySumFunction = function(refDate, dayValue, chartData){
-		if(refDate.date() === 1){
+		if(refDate.date() === 1  || chartData.length === 0){
 			chartData.push([0, 0, 0, 0, 0, 0])
 		}
 
