@@ -97,7 +97,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 		var endOfMonth = date.create(refDate).endOf('month')
 		var today = date.create()
 
-		if(refDate.date() === 1){
+		if(refDate.date() === 1 || chartData.length === 0){
 			chartData.push([0, 0, 0, 0, 0, 0])
 		}
 
@@ -110,7 +110,7 @@ function StatsController($scope, $rootScope, $timeout, $http, model, template, r
 	$scope.lastDayOfWeekAggregationFunction = function(refDate, dayValue, chartData){
 		var today = date.create()
 
-		if(refDate.weekday() === 0){
+		if(refDate.weekday() === 0 || chartData.length === 0){
 			chartData.push([0, 0, 0, 0, 0, 0])
 		}
 		var weekValue = chartData[chartData.length - 1]

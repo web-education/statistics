@@ -47,29 +47,28 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 		}
 
 		if(!data.isEmpty()){
-			StringBuilder groupedBy = new StringBuilder();
 			String groupedByModifier = "";
+			boolean structuresCheck = false;
+			boolean classesCheck = false;
 
 			for(Entry<String, String> entry : data){
 				if(entry.getKey().equals("groupedBy")){
 					groupedByModifier = entry.getValue();
 					continue;
 				}
-
-				if(groupedBy.length() == 0)
-					groupedBy.append(entry.getKey());
-				else
-					groupedBy.append("/"+entry.getKey());
+				else if(entry.getKey().equals("structures"))
+					structuresCheck = true;
+				else if(entry.getKey().equals("classes"))
+					classesCheck = true;
 
 				filterBuilder.and(entry.getKey()+"_id").is(entry.getValue());
 			}
 
-			if(groupedBy.length() == 0)
-				groupedBy.append(groupedByModifier);
-			else if(groupedByModifier.length() > 0)
-				groupedBy.append("/"+groupedByModifier);
+			String groupedBy = classesCheck ? "structures/classes" : structuresCheck ? "structures" : "";
+			if(groupedByModifier.length() > 0)
+				groupedBy = groupedBy.length() == 0 ? groupedByModifier : groupedBy + "/" + groupedByModifier;
 
-			filterBuilder.and(STATS_FIELD_GROUPBY).is(groupedBy.toString());
+			filterBuilder.and(STATS_FIELD_GROUPBY).is(groupedBy);
 		} else {
 			filterBuilder.put(STATS_FIELD_GROUPBY).exists(false);
 		}
