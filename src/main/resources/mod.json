@@ -1,6 +1,6 @@
 {
 	"main" : "fr.wseduc.stats.Stats",
-	"port" : "8025",
+	"port" : "8225",
 	"app-name" : "Stats",
 	"app-address" : "/stats",
 	"app-icon" : "stats-large",

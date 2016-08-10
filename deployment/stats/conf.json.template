@@ -2,7 +2,7 @@
         "name": "fr.wseduc~stats~0.2-SNAPSHOT",
         "config": {
             "main" : "fr.wseduc.stats.Stats",
-            "port" : 8025,
+            "port" : 8225,
             "app-name" : "Statistiques",
             "app-address" : "/stats",
             "app-icon" : "stats-large",
