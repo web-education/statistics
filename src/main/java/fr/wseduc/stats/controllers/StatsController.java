@@ -22,10 +22,15 @@
 
 package fr.wseduc.stats.controllers;
 
+import static fr.wseduc.webutils.Utils.getOrElse;
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
+import java.util.ServiceLoader;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.wseduc.stats.filters.ExportStatsResourceProvider;
 import fr.wseduc.stats.filters.ListStatsResourceProvider;
@@ -36,9 +41,13 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 
+import org.entcore.common.aggregation.processing.AggregationProcessing;
 import org.entcore.common.http.filter.ResourceFilter;
+import org.entcore.common.http.filter.SuperAdminFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.joda.time.DateTime;
 import org.vertx.java.core.Handler;
+import org.vertx.java.core.VoidHandler;
 import org.vertx.java.core.http.HttpServerRequest;
 import org.vertx.java.core.json.JsonArray;
 import org.vertx.java.core.json.JsonObject;
@@ -131,5 +140,96 @@ public class StatsController extends MongoDbControllerHelper {
 		};
 
 		statsService.listStats(new ArrayList<Map.Entry<String,String>>(), handler);
+	}
+
+	@Post("/recalculate/:from/:to")
+	@SecuredAction(value = "", type = ActionType.RESOURCE)
+	@ResourceFilter(SuperAdminFilter.class)
+	public void recalculate(final HttpServerRequest request) {
+		final String fromDateStr 	= request.params().get("from");
+		final String toDateStr	 	= request.params().get("to");
+		long fromDate;
+		long toDate;
+
+		try {
+			fromDate = Long.parseLong(fromDateStr);
+		} catch (NumberFormatException e) {
+			try {
+				fromDate = DateTime.parse(fromDateStr).getMillis();
+			} catch (RuntimeException e2) {
+				badRequest(request, "invalid.from.date");
+				return;
+			}
+		}
+
+		try {
+			toDate = Long.parseLong(toDateStr);
+		} catch (NumberFormatException e) {
+			try {
+				toDate = DateTime.parse(toDateStr).getMillis();
+			} catch (RuntimeException e2) {
+				badRequest(request, "invalid.to.date");
+				return;
+			}
+		}
+
+		if(fromDate >= toDate) {
+			badRequest(request, "from.date.must.be.lesser.than.to.date");
+			return;
+		}
+
+		ok(request);
+
+		log.info("[Aggregation][Recalculate] Starting ... (from " + new Date(fromDate) + " / to " + new Date(toDate) + ")");
+
+		final Calendar cal = Calendar.getInstance();
+		final Calendar endCal = Calendar.getInstance();
+		cal.setTimeInMillis(fromDate);
+		endCal.setTimeInMillis(toDate);
+		final ServiceLoader<AggregationProcessing> implementations = ServiceLoader.load(AggregationProcessing.class);
+
+		final AtomicInteger countdown = new AtomicInteger(0);
+		final AtomicInteger implNb = new AtomicInteger(0);
+		for(@SuppressWarnings("unused") AggregationProcessing _ : implementations){
+			implNb.incrementAndGet();
+		}
+		countdown.set(implNb.get());
+
+		final VoidHandler processing = new VoidHandler() {
+
+			final VoidHandler that = this;
+			final VoidHandler continuation = new VoidHandler() {
+				protected void handle() {
+					if(countdown.decrementAndGet() <= 0) {
+						cal.add(Calendar.DAY_OF_MONTH, 1);
+						if(cal.getTimeInMillis() >= endCal.getTimeInMillis()) {
+							log.info("[Aggregation][Recalculate] Over");
+							return;
+						}
+						countdown.set(implNb.get());
+						that.handle(null);
+					}
+				}
+			};
+
+			protected void handle() {
+				log.info("[Aggregation][Processing] Date marker set at : {"+cal.getTime()+"}");
+				for(AggregationProcessing processor : implementations) {
+					final Date start = new Date();
+					log.info("[Aggregation][Processing] Launching implementation : "+processor.getClass().getName());
+					processor.getIndicators().clear();
+					processor.process(cal.getTime(), new Handler<JsonObject>() {
+						public void handle(JsonObject event) {
+							final Date end = new Date();
+							log.info("[Aggregation][Processing] Over, took ["+(end.getTime() - start.getTime())+"] ms");
+							continuation.handle(null);
+						}
+					});
+				}
+			}
+		};
+
+		processing.handle(null);
+
 	}
 }

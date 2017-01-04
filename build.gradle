@@ -10,8 +10,9 @@ repositories {
 }
 
 dependencies {
-	compile "org.entcore:common:$entCoreVersion"
+  compile "org.entcore:common:$entCoreVersion"
   compile "fr.wseduc:vertx-cron-timer:$vertxCronTimer"
+  compile "joda-time:joda-time:$jodaTimeVersion"
   testCompile "org.entcore:tests:$entCoreVersion"
   testCompile 'io.gatling.highcharts:gatling-charts-highcharts:2.0.3'
 }
@@ -96,4 +97,3 @@ def generateMissingI18n() {
 task generateI18n(description:'Generate missing keys in i18n files') << {
   generateMissingI18n()
 }
-
