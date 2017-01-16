@@ -177,6 +177,7 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		calendarDay.setTime(day);
 		calendarDay.add(Calendar.DATE, 1);
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
+		calendarDay.add(Calendar.DATE, -1);
 		calendarDay.set(Calendar.DATE, 1);
 		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
 
