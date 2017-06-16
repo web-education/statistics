@@ -6,3 +6,11 @@
 /.gradle
 /.settings
 .jshintrc
+**/dist
+**/temp
+**/resources/view
+node_modules
+bower_components
+rev-manifest.json
+**/ts/entcore
+**/template/entcore

@@ -1,0 +1,4 @@
+"Date";"Connexions";"Visiteurs uniques [jour]";"Visiteurs uniques [depuis le début de semaine]";"Visiteurs uniques [depuis le début du mois]";"Créations de compte";"Suppressions de compte";"Activations de compte";"Accès aux applis"
+{{#list}}
+"{{date}}";"{{LOGIN}}";"{{UNIQUE_VISITORS_DAY}}";"{{UNIQUE_VISITORS_WEEK}}";"{{UNIQUE_VISITORS_MONTH}}";"{{CREATE_USER}}";"{{DELETE_USER}}";"{{ACTIVATION}}";"{{ACCESS}}"
+{{/list}}

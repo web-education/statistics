@@ -1,15 +1,37 @@
-var executeHook = function(hook){
+import { model as baseModel, http } from 'entcore';
+import { _ } from 'entcore/libs/underscore/underscore';
+
+
+const model = baseModel as any;
+
+var executeHook = function(hook, ...args){
     if(typeof hook === 'function')
-        hook.apply(this, Array.prototype.slice.call(arguments).slice(1))
+        hook.apply(this, args)
+}
+
+export const statistics = {
+    Classe: function(id){
+        this.id = id;
+    },
+    Structure: function(id){
+        this.id = id;
+    },
+    IndicatorContainer: function(data){
+        this.name = data.name
+        this.groups = data.groups ? data.groups : {}
+        this.data = []
+        this.get()
+        this.getProfiles()
+        this.getModules()
+        this.getModulesByProfile()
+    },
+    scope: {} as any
 }
 
 ///////////////
 /// Classes ///
 
-function Classe(id){
-    this.id = id;
-}
-Classe.prototype = {
+statistics.Classe.prototype = {
     API_PATH 	: "/directory/class/",
     get: function(hook){
         var classe = this
@@ -23,10 +45,7 @@ Classe.prototype = {
 //////////////////
 /// Structures ///
 
-function Structure(id){
-    this.id = id;
-}
-Structure.prototype = {
+statistics.Structure.prototype = {
     API_PATH 	: "/directory/school/",
     get: function(hook, name, id){
         var school = this
@@ -40,17 +59,7 @@ Structure.prototype = {
 ///////////////////
 /// Indicators ///
 
-function IndicatorContainer(data){
-    this.name = data.name
-    this.groups = data.groups ? data.groups : {}
-    this.data = []
-    this.get()
-    this.getProfiles()
-    this.getModules()
-    this.getModulesByProfile()
-}
-
-IndicatorContainer.prototype = {
+statistics.IndicatorContainer.prototype = {
 	API_PATH 	: "/stats/",
     //AJAX get - retrieves cumulated values
     get: function(){
@@ -64,7 +73,7 @@ IndicatorContainer.prototype = {
             for(prop in data){
                 stats.data[prop] = data[prop]
             }
-            if(model.scope) model.scope.$apply()
+            if(statistics.scope) statistics.scope.$apply()
         })
     },
     //AJAX get - retrieves values by profile
@@ -78,7 +87,7 @@ IndicatorContainer.prototype = {
         getquery += (getquery.length === 0 ? "?" : "&") + "groupedBy=profil"
         return http().get(this.API_PATH + 'list' + getquery).done(function(data){
             stats.data.profil = data
-            if(model.scope) model.scope.$apply()
+            if(statistics.scope) statistics.scope.$apply()
         })
     },
     //AJAX get - retrieves values by module
@@ -92,7 +101,7 @@ IndicatorContainer.prototype = {
         getquery += (getquery.length === 0 ? "?" : "&") + "groupedBy=module"
         return http().get(this.API_PATH + 'list' + getquery).done(function(data){
             stats.data.module = data
-            if(model.scope) model.scope.$apply()
+            if(statistics.scope) statistics.scope.$apply()
         })
     },
     //AJAX GET - retrieves values by profile by module
@@ -106,7 +115,7 @@ IndicatorContainer.prototype = {
         getquery += (getquery.length === 0 ? "?" : "&") + "groupedBy=profil/module"
         return http().get(this.API_PATH + 'list' + getquery).done(function(data){
             stats.data.moduleByProfile = data
-            if(model.scope) model.scope.$apply()
+            if(statistics.scope) statistics.scope.$apply()
         })
     },
     //Returns the last value (date wise)
@@ -277,27 +286,27 @@ IndicatorContainer.prototype = {
 ///////////////////////
 ///   MODEL.BUILD   ///
 
-model.build = function(){
-    this.makeModels([Classe, Structure, IndicatorContainer])
+export const build = function(){
+    this.makeModels(statistics)
 
-    this.collection(IndicatorContainer, {})
+    this.collection(statistics.IndicatorContainer, {})
 
-    this.collection(Structure, {
+    this.collection(statistics.Structure, {
         sync: function(){
             var structure_ids = model.me.structures
             var pushIndicator = function(name, id){
-                model.indicatorContainers.push(new IndicatorContainer({name: name, groups: {"structures" : id}}))
+                model.indicatorContainers.push(new statistics.IndicatorContainer({name: name, groups: {"structures" : id}}))
             }
 
             for(var i = 0; i < structure_ids.length; i++){
-                var struct = new Structure(structure_ids[i])
+                var struct = new statistics.Structure(structure_ids[i])
                 this.push(struct)
                 struct.get(pushIndicator)
             }
         }
     })
 
-    this.collection(Classe, {
+    this.collection(statistics.Classe, {
         sync: function(){
             var that = this
             var class_ids = model.me.classes
@@ -305,7 +314,7 @@ model.build = function(){
 
             _.forEach(structure_ids, function(structureId){
                 http().get('/userbook/structure/' + structureId).done(function(result){
-                    classes = result.classes
+                    let classes = result.classes
 
                     //Filter to keep only the user classes.
                     classes = _.filter(classes, function(c){
@@ -313,10 +322,10 @@ model.build = function(){
                     })
 
                     _.forEach(classes, function(classData){
-                        var classe = new Classe(classData.id)
+                        var classe = new statistics.Classe(classData.id)
                         classe.updateData(classData)
                         that.push(classe)
-                        model.indicatorContainers.push(new IndicatorContainer({name: classData.name, groups: {"structures": structureId, "classes" : classData.id}}))
+                        model.indicatorContainers.push(new statistics.IndicatorContainer({name: classData.name, groups: {"structures": structureId, "classes" : classData.id}}))
                     })
                 })
             })
