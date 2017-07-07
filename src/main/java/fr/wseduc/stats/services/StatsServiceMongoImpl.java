@@ -98,13 +98,12 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 
 		//Stats from September the 1st
 		Calendar cal = Calendar.getInstance();
-
-		int year = cal.get(Calendar.YEAR);
-		if(cal.get(Calendar.MONTH) < 8)
-			year--;
-
+		cal.add(Calendar.MONTH, -12);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-		cal.set(year, 8, 1, 0, 0, 0);
 
 		filterBuilder.and(STATS_FIELD_DATE).greaterThanEquals(MongoDb.formatDate(cal.getTime()));
 

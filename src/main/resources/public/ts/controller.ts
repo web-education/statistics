@@ -29,6 +29,9 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 	$scope.structures = model.structures
 	$scope.classes = model.classes
 	$scope.indicatorContainers = model.indicatorContainers
+	$scope.sinceDate = 	new Date(date.create().year() - 1, date.create().month(), 1, 0, 0, 0, 0);
+	$scope.sinceDateLabel = lang.translate("stats.since")  + $scope.sinceDate.toLocaleString([], {month: "long", year: "numeric"});
+	$scope.schoolYearRef = date.create($scope.sinceDate);
 
 	$scope.allowedProjectFunctions = function(){
 		return !$scope.allowed ||
@@ -141,7 +144,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		/* CONNECTIONS */
 		{
 			name: "stats.connections",
-			since: "stats.lastSeptember",
+			since: $scope.sinceDateLabel,
 			icon: "connection-icon",
 			type: "LOGIN",
 			chartType: "Line",
@@ -268,7 +271,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		/* MOST USED TOOLS */
 		{
 			name: "stats.mostUsedTool",
-			since: "stats.lastSeptember",
+			since: $scope.sinceDateLabel,
 			icon: "stats-service-icon",
 			type: "ACCESS",
 			chartType: "Bar",
@@ -386,7 +389,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		/* CONNECTIONS - DAILY PEAK */
 		{
 			name: "stats.dailyPeak",
-			since: "stats.lastSeptember",
+			since: $scope.sinceDateLabel,
 			icon: "clock-icon",
 			type: "LOGIN",
 			chartType: "StackedBar",
@@ -451,7 +454,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		/* CONNECTIONS - WEEKLY PEAK */
 		{
 			name: "stats.weeklyPeak",
-			since: "stats.lastSeptember",
+			since: $scope.sinceDateLabel,
 			icon: "calendar-button",
 			type: "LOGIN",
 			chartType: "StackedBar",
@@ -547,7 +550,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		/* NUMBER OF ACTIVATED ACCOUNTS */
 		{
 			name: "stats.activatedAccounts",
-			since: "stats.lastSeptember",
+			since: $scope.sinceDateLabel,
 			icon: "people-icon",
 			type: "ACTIVATION",
 			chartType: "Line",
@@ -592,9 +595,6 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 	/*                  CHARTS                 */
 
 	///// LABELS
-
-	$scope.schoolYearRef = date.create("1970-09-01")
-	$scope.schoolYearRef.year(date.create().month() < 8 ? date.create().year() - 1 : date.create().year())
 
 	$scope.fillMonthLabels = function(){
 		let labels = []

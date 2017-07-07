@@ -206,8 +206,7 @@ statistics.IndicatorContainer.prototype = {
         //0 : total, 1 : teacher, 2: personnel, 3: relative, 4: student: 5: other
         var chartData = []
 
-        var refDate = date.create("1970-09-01")
-        refDate.year(date.create().month() < 8 ? date.create().year() - 1 : date.create().year())
+        var refDate = date.create( new Date(date.create().year() - 1, date.create().month(), 1, 0, 0, 0, 0) );
         var todayDate = date.create(new Date())
 
         var dayData = []
