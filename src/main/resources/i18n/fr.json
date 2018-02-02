@@ -16,7 +16,7 @@
     "stats.day": "Jour",
     "stats.def.connectionsByUniqueVisitor": "Cet indicateur permet d'évaluer la fréquence d'utilisation de ONE par utilisateur. Par exemple, si l'indicateur est de 8 visites mensuelles / visiteur unique, on peut déduire que chaque utilisateur se connecte en moyenne 2 fois par semaine.",
     "stats.def.contents": "Les contenus font référence à tous les objets que peuvent créer les utilisateurs dans ONE (blog, cahier multimédia, document, message, etc.).",
-    "stats.def.uniqueVisitor": "Il s'agit d'un utilisateur se connectant à ONE  identifié comme unique sur une période donnée.",
+    "stats.def.uniqueVisitor": "Il s'agit d'un utilisateur se connectant à ONE identifié comme unique sur une période donnée.",
     "stats.definitions": "*Définitions",
     "stats.firstDayOfMonth": "depuis le début du mois",
     "stats.friday": "Vendredi",
