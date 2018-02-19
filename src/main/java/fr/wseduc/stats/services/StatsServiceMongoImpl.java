@@ -30,9 +30,9 @@ import java.util.Map.Entry;
 
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 import com.mongodb.QueryBuilder;
 
@@ -108,7 +108,7 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 		filterBuilder.and(STATS_FIELD_DATE).greaterThanEquals(MongoDb.formatDate(cal.getTime()));
 
 		//Sort by date - ascending
-		JsonObject sortObject = new JsonObject().putNumber("date", -1);
+		JsonObject sortObject = new JsonObject().put("date", -1);
 
 		mongo.find(collection, MongoQueryBuilder.build(filterBuilder), sortObject, new JsonObject(), MongoDbResult.validResultsHandler(handler));
 	}

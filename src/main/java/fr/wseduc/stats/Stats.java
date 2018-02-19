@@ -27,8 +27,8 @@ import java.text.ParseException;
 import org.entcore.common.aggregation.MongoConstants.COLLECTIONS;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.mongodb.MongoDbConf;
-import org.vertx.java.core.logging.Logger;
-import org.vertx.java.core.logging.impl.LoggerFactory;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 import fr.wseduc.cron.CronTrigger;
 import fr.wseduc.stats.controllers.StatsController;
@@ -40,21 +40,21 @@ public class Stats extends BaseServer {
 	private static final Logger logger = LoggerFactory.getLogger(Stats.class);
 
 	@Override
-	public void start() {
+	public void start() throws Exception {
 		super.start();
 
 		//CRON
 		//Default at 00:00AM every day
-		final String aggregationCron = container.config().getString("aggregation-cron");
+		final String aggregationCron = config.getString("aggregation-cron");
 		//Day delta, default : processes yesterday events
-		int dayDelta = container.config().getInteger("dayDelta", -1);
+		int dayDelta = config.getInteger("dayDelta", -1);
 
 		if (aggregationCron != null && !aggregationCron.trim().isEmpty()) {
 			try {
 				new CronTrigger(vertx, aggregationCron).schedule(new CronAggregationTask(dayDelta));
 			} catch (ParseException e) {
 				logger.fatal(e.getMessage(), e);
-				vertx.stop();
+				vertx.close();
 				return;
 			}
 		}
