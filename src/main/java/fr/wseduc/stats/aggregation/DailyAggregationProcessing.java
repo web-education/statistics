@@ -35,10 +35,9 @@ import org.entcore.common.aggregation.groups.IndicatorGroup;
 import org.entcore.common.aggregation.indicators.Indicator;
 import org.entcore.common.aggregation.indicators.mongo.IndicatorMongoImpl;
 import org.entcore.common.aggregation.processing.AggregationProcessing;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.VoidHandler;
-import org.vertx.java.core.eventbus.Message;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.eventbus.Message;
+import io.vertx.core.json.JsonObject;
 
 import com.mongodb.QueryBuilder;
 
@@ -58,7 +57,7 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 	 * Cleanup if stats documents already exist.
 	 * @param day : Day to clean up.
 	 */
-	public void cleanUp(Date day, final VoidHandler next){
+	public void cleanUp(Date day, final Handler<Void> next){
 		Calendar calendarDay = Calendar.getInstance();
 		calendarDay.setTime(day);
 		Date lowerDay = AggregationTools.setToMidnight(calendarDay);
@@ -262,8 +261,8 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 	@Override
 	public void process(final Date day, final Handler<JsonObject> callBack){
 		//Clean up stats from the day if they already exist.
-		cleanUp(day, new VoidHandler() {
-			protected void handle() {
+		cleanUp(day, new Handler<Void>() {
+			public void handle(Void v) {
 				//Sets recording date to midnight at "day" parameter time
 				Calendar dayCalendar = Calendar.getInstance();
 				dayCalendar.setTime(day);

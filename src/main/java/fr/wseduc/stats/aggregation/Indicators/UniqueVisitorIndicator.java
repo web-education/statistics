@@ -29,8 +29,8 @@ import static org.entcore.common.aggregation.MongoConstants.*;
 import org.entcore.common.aggregation.filters.mongo.IndicatorFilterMongoImpl;
 import org.entcore.common.aggregation.groups.IndicatorGroup;
 import org.entcore.common.aggregation.indicators.mongo.IndicatorMongoImpl;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Indicator to measure unique visitors.
@@ -51,16 +51,16 @@ public class UniqueVisitorIndicator extends IndicatorMongoImpl{
 	@Override
 	protected void customizeGroupBy(JsonObject groupBy){
 		groupBy
-			.getObject("$group", new JsonObject())
-				.putObject("userIds", new JsonObject()
-					.putString("$addToSet", "$"+TRACE_FIELD_USER));
+			.getJsonObject("$group", new JsonObject())
+				.put("userIds", new JsonObject()
+					.put("$addToSet", "$"+TRACE_FIELD_USER));
 	}
 
 	@Override
 	protected void customizePipeline(JsonArray pipeline){
 		pipeline.add(new JsonObject()
-			.putObject("$project", new JsonObject()
-				.putObject("count", new JsonObject()
-					.putString("$size", "$userIds"))));
+			.put("$project", new JsonObject()
+				.put("count", new JsonObject()
+					.put("$size", "$userIds"))));
 	}
 }

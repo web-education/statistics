@@ -27,10 +27,10 @@ import java.util.Date;
 import java.util.ServiceLoader;
 
 import org.entcore.common.aggregation.processing.AggregationProcessing;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.json.JsonObject;
-import org.vertx.java.core.logging.Logger;
-import org.vertx.java.core.logging.impl.LoggerFactory;
+import io.vertx.core.Handler;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 public class CronAggregationTask implements Handler<Long>{
 

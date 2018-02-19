@@ -46,11 +46,10 @@ import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
 import org.joda.time.DateTime;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.VoidHandler;
-import org.vertx.java.core.http.HttpServerRequest;
-import org.vertx.java.core.json.JsonArray;
-import org.vertx.java.core.json.JsonObject;
+import io.vertx.core.Handler;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * Vert.x backend controller for the application using Mongodb.
@@ -92,7 +91,7 @@ public class StatsController extends MongoDbControllerHelper {
 	@Get("/allowed")
 	@SecuredAction(value="", type = ActionType.AUTHENTICATED)
 	public void listAllowedFunctions(HttpServerRequest request) {
-		renderJson(request, container.config().getArray("overviewAllowedFunctions", new JsonArray()));
+		renderJson(request, config.getJsonArray("overviewAllowedFunctions", new JsonArray()));
 	}
 
 	/**
@@ -120,7 +119,7 @@ public class StatsController extends MongoDbControllerHelper {
 			public void handle(Either<String, JsonArray> r) {
 				if (r.isRight()) {
 					processTemplate(request, "text/export.template.csv",
-							new JsonObject().putArray("list", r.right().getValue()), new Handler<String>() {
+							new JsonObject().put("list", r.right().getValue()), new Handler<String>() {
 						@Override
 						public void handle(final String export) {
 							if (export != null) {
@@ -134,7 +133,7 @@ public class StatsController extends MongoDbControllerHelper {
 						}
 					});
 				} else {
-					renderJson(request, new JsonObject().putString("error", r.left().getValue()), 400);
+					renderJson(request, new JsonObject().put("error", r.left().getValue()), 400);
 				}
 			}
 		};
@@ -195,11 +194,11 @@ public class StatsController extends MongoDbControllerHelper {
 		}
 		countdown.set(implNb.get());
 
-		final VoidHandler processing = new VoidHandler() {
+		final Handler<Void> processing = new Handler<Void>() {
 
-			final VoidHandler that = this;
-			final VoidHandler continuation = new VoidHandler() {
-				protected void handle() {
+			final Handler<Void> that = this;
+			final Handler<Void> continuation = new Handler<Void>() {
+				public void handle(Void v) {
 					if(countdown.decrementAndGet() <= 0) {
 						cal.add(Calendar.DAY_OF_MONTH, 1);
 						if(cal.getTimeInMillis() >= endCal.getTimeInMillis()) {
@@ -212,7 +211,7 @@ public class StatsController extends MongoDbControllerHelper {
 				}
 			};
 
-			protected void handle() {
+			public void handle(Void v) {
 				log.info("[Aggregation][Processing] Date marker set at : {"+cal.getTime()+"}");
 				for(AggregationProcessing processor : implementations) {
 					final Date start = new Date();
