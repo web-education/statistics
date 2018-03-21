@@ -1,5 +1,4 @@
-import { model as baseModel, http } from 'entcore';
-import { _ } from 'entcore/libs/underscore/underscore';
+import { model as baseModel, http, _ } from 'entcore';
 
 
 const model = baseModel as any;

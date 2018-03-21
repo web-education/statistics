@@ -1,7 +1,4 @@
-import { ng, idiom as lang, template, ui } from 'entcore';
-import { moment } from 'entcore/libs/moment/moment';
-import { _ } from 'entcore/libs/underscore/underscore';
-import { $ } from 'entcore/libs/jquery/jquery';
+import { ng, idiom as lang, template, ui, moment, _, $ } from 'entcore';
 
 import { statistics } from './model';
 
