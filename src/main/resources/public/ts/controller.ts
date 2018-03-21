@@ -1,4 +1,4 @@
-import { ng, idiom as lang, template, ui, moment, _, $ } from 'entcore';
+import { ng, idiom as lang, template, ui, moment, _, $, currentLanguage } from 'entcore';
 
 import { statistics } from './model';
 
@@ -27,7 +27,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 	$scope.classes = model.classes
 	$scope.indicatorContainers = model.indicatorContainers
 	$scope.sinceDate = 	new Date(date.create().year() - 1, date.create().month(), 1, 0, 0, 0, 0);
-	$scope.sinceDateLabel = lang.translate("stats.since")  + $scope.sinceDate.toLocaleString([], {month: "long", year: "numeric"});
+	$scope.sinceDateLabel = lang.translate("stats.since")  + $scope.sinceDate.toLocaleString([currentLanguage], {month: "long", year: "numeric"});
 	$scope.schoolYearRef = date.create($scope.sinceDate);
 
 	$scope.allowedProjectFunctions = function(){
