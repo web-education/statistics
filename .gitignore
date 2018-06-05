@@ -20,4 +20,4 @@ rev-manifest.json
 **/ts/**/*.js.map
 **/ts/*.js.map
 **/.DS_Store
-**/view/*.html
+**/view
