@@ -19,6 +19,7 @@ export const statistics = {
         this.name = data.name
         this.groups = data.groups ? data.groups : {}
         this.data = []
+        this.uniqueVisitorOfTheMonth = 0
         this.get()
         this.getProfiles()
         this.getModules()
@@ -72,6 +73,7 @@ statistics.IndicatorContainer.prototype = {
             for(prop in data){
                 stats.data[prop] = data[prop]
             }
+            stats.getChartData("UNIQUE_VISITORS_MONTH",statistics.scope.lastDayOfMonthAggregationFunction,statistics.scope.date)
             if(statistics.scope) statistics.scope.$apply()
         })
     },
@@ -210,8 +212,8 @@ statistics.IndicatorContainer.prototype = {
 
         var dayData = []
 
-        var iTotal = totalData.length - 1;
-        var iProfile = profileData.length - 1;
+        var iTotal = totalData ? totalData.length - 1 : -1;
+        var iProfile = profileData ? profileData.length - 1 : -1;
 
         var dayValue
         var totalDataDate
@@ -275,6 +277,8 @@ statistics.IndicatorContainer.prototype = {
 
             refDate = refDate.add(1, 'd')
         }
+
+        this.uniqueVisitorOfTheMonth = chartData[chartData.length-1][0]
 
         return chartData
     }

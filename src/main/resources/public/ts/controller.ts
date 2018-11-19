@@ -182,9 +182,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 			chartGranularity: "month",
 			chartDatasets: function(){ return $scope.profileDataSets() },
 			getValue: function(container){
-				var default_granularity = this.type + "_MONTH"
-				var lastAggreg = container.getLastAggregation()
-				return (typeof lastAggreg === "object" && !isNaN(lastAggreg[default_granularity])) ? lastAggreg[default_granularity] : 0
+				return container.uniqueVisitorOfTheMonth
 			},
 			getChartData: function(container){
 				var aggregationFunction
@@ -221,10 +219,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 			getValue: function(container){
 				var refDate = new Date()
 				$scope.toMidnight(refDate).setDate(1)
-				var lastAggreg = container.getLastAggregation()
-
 				var connections = container.getAggregatedSum("LOGIN", refDate)
-				var uniqueVisitors = (typeof lastAggreg === "object" && !isNaN(lastAggreg["UNIQUE_VISITORS_MONTH"])) ? lastAggreg["UNIQUE_VISITORS_MONTH"] : 0
+				var uniqueVisitors = container.uniqueVisitorOfTheMonth
 				return uniqueVisitors > 0 ? Math.round((connections / uniqueVisitors) * 100)/100 : 0
 			},
 			getChartData: function(container){
