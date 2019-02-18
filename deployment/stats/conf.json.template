@@ -1,5 +1,5 @@
     {
-        "name": "fr.wseduc~stats~1.3.2",
+        "name": "fr.wseduc~stats~1.3.3",
         "config": {
             "main" : "fr.wseduc.stats.Stats",
             "port" : 8225,
