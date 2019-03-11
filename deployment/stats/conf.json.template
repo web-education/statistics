@@ -7,6 +7,7 @@
             "app-address" : "/stats",
             "app-icon" : "stats-large",
             "app-displayName" : "stats",
+            "app-type" : "END_USER",
             "ssl" : $ssl,
             "integration-mode" : "HTTP",
             "app-registry.port" : 8012,
