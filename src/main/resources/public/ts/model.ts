@@ -20,10 +20,11 @@ export const statistics = {
         this.groups = data.groups ? data.groups : {}
         this.data = []
         this.uniqueVisitorOfTheMonth = 0
-        this.get()
+        this.dataLoaded = false;
+        /*this.get()
         this.getProfiles()
         this.getModules()
-        this.getModulesByProfile()
+        this.getModulesByProfile()*/
     },
     scope: {} as any
 }
@@ -60,7 +61,16 @@ statistics.Structure.prototype = {
 /// Indicators ///
 
 statistics.IndicatorContainer.prototype = {
-	API_PATH 	: "/stats/",
+    API_PATH 	: "/stats/",
+    loadData: function() {
+        if (!this.dataLoaded) {
+            this.dataLoaded = true
+            this.get()
+            this.getProfiles()
+            this.getModules()
+            this.getModulesByProfile()
+        }
+    },
     //AJAX get - retrieves cumulated values
     get: function(){
         var stats = this
@@ -293,47 +303,46 @@ export const build = function(){
 
     this.collection(statistics.IndicatorContainer, {})
 
-    this.collection(statistics.Structure, {
-        sync: function(){
-            var structure_ids = model.me.structures
-            var pushIndicator = function(name, id){
-                model.indicatorContainers.push(new statistics.IndicatorContainer({name: name, groups: {"structures" : id}}))
+    var that = this;
+    var mySchools;
+
+    http().get('/directory/myclasses').done(function(result) {
+        mySchools = result.schools;
+
+        that.collection(statistics.Structure, {
+            sync: function(){
+                var pushIndicator = function(name, id){
+                    model.indicatorContainers.push(new statistics.IndicatorContainer({name: name, groups: {"structures" : id}}))
+                }
+
+                for(var i = 0; i < mySchools.length; i++){
+                    var struct = new statistics.Structure(mySchools[i]['id'])
+                    this.push(struct)
+                    pushIndicator(mySchools[i]['name'], mySchools[i]['id'])
+                }
             }
+        })
 
-            for(var i = 0; i < structure_ids.length; i++){
-                var struct = new statistics.Structure(structure_ids[i])
-                this.push(struct)
-                struct.get(pushIndicator)
+        that.collection(statistics.Classe, {
+            sync: function(){
+                for(var i = 0; i < mySchools.length; i++){
+                    var structure_id = mySchools[i]['id']
+                    var classes = mySchools[i]['classes']
+                    if (classes) {
+                        for(var j = 0; j < classes.length; j++){
+                            var class_id = classes[j]['id']
+                            var class_name = classes[j]['name']
+                            var classe = new statistics.Classe(class_id)
+                            classe.updateData({name: class_name})
+                            this.push(classe)
+                            model.indicatorContainers.push(new statistics.IndicatorContainer({name: class_name, groups: {"structures": structure_id, "classes" : class_id}}))
+                        }
+                    }
+                }
             }
-        }
-    })
+        })
 
-    this.collection(statistics.Classe, {
-        sync: function(){
-            var that = this
-            var class_ids = model.me.classes
-            var structure_ids = model.me.structures
-
-            _.forEach(structure_ids, function(structureId){
-                http().get('/userbook/structure/' + structureId).done(function(result){
-                    let classes = result.classes
-
-                    //Filter to keep only the user classes.
-                    classes = _.filter(classes, function(c){
-                        return model.me.classes.indexOf(c.id) >= 0;
-                    })
-
-                    _.forEach(classes, function(classData){
-                        var classe = new statistics.Classe(classData.id)
-                        classe.updateData(classData)
-                        that.push(classe)
-                        model.indicatorContainers.push(new statistics.IndicatorContainer({name: classData.name, groups: {"structures": structureId, "classes" : classData.id}}))
-                    })
-                })
-            })
-
-        }
-    })
+    });
 
 };
 

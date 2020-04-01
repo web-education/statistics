@@ -43,7 +43,9 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		//If the user is allowed
 		if($scope.allowedProjectFunctions()){
 			//Project container - added manually
-			$scope.indicatorContainers.all.unshift(new statistics.IndicatorContainer({name: lang.translate("stats.project"), groups: {}}))
+			var projectContainer = new statistics.IndicatorContainer({name: lang.translate("stats.project"), groups: {}})
+			projectContainer.loadData()
+			$scope.indicatorContainers.all.unshift(projectContainer)
 		}
 	})
 
@@ -833,7 +835,16 @@ export const statsController = ng.controller('StatsController', ['$scope', '$roo
 		$scope.chart = $scope.chart.Bar ?  $scope.chart.Bar(chartData, chartOptions) : $scope.chart.chart.Bar(chartData, chartOptions)
 	}
 
+	$scope.openListIndicator = function(container) {
+		container.folded = !container.folded;
+		if (!container.folded) {
+			container.loadData()
+		}
+	}
+
 	$scope.openIndicator = function(indicator, container){
+		container.loadData()
+
 		if(!indicator)
 			return
 
