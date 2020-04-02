@@ -308,14 +308,18 @@ export const build = function(){
 
     http().get('/directory/myclasses').done(function(result) {
         mySchools = result.schools;
-
         that.collection(statistics.Structure, {
             sync: function(){
                 var pushIndicator = function(name, id){
                     model.indicatorContainers.push(new statistics.IndicatorContainer({name: name, groups: {"structures" : id}}))
                 }
-
+                var iteratedStructures: string[] = []
                 for(var i = 0; i < mySchools.length; i++){
+                    var structure_id = mySchools[i]['id'];
+                    if (!structure_id || iteratedStructures.indexOf(structure_id) !== -1) {
+                        continue
+                    }
+                    iteratedStructures.push(structure_id)
                     var struct = new statistics.Structure(mySchools[i]['id'])
                     this.push(struct)
                     pushIndicator(mySchools[i]['name'], mySchools[i]['id'])
@@ -331,6 +335,9 @@ export const build = function(){
                     if (classes) {
                         for(var j = 0; j < classes.length; j++){
                             var class_id = classes[j]['id']
+                            if (!class_id) {
+                                continue
+                            }
                             var class_name = classes[j]['name']
                             var classe = new statistics.Classe(class_id)
                             classe.updateData({name: class_name})
