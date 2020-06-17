@@ -24,6 +24,7 @@ package fr.wseduc.stats.services;
 
 import static org.entcore.common.aggregation.MongoConstants.*;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map.Entry;
@@ -31,6 +32,7 @@ import java.util.Map.Entry;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
@@ -55,7 +57,8 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 		this.mongo = MongoDb.getInstance();
 	}
 
-	public void listStats(List<Entry<String, String>> data, Handler<Either<String, JsonArray>> handler){
+	public void listStats(MultiMap d, Handler<Either<String, JsonArray>> handler){
+		final List<Entry<String, String>> data = (d != null) ? d.entries() : new ArrayList<>();
 		QueryBuilder filterBuilder = QueryBuilder.start();
 
 		//Gets rid of the annoying jQuery underscore query parameter

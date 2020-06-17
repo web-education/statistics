@@ -57,7 +57,7 @@ import io.vertx.core.json.JsonObject;
 public class StatsController extends MongoDbControllerHelper {
 
 	//Computation service
-	private final StatsService statsService;
+	private StatsService statsService;
 
 	//Permissions
 	private static final String
@@ -71,7 +71,6 @@ public class StatsController extends MongoDbControllerHelper {
 	 */
 	public StatsController(String collection) {
 		super(collection);
-		statsService = new StatsServiceMongoImpl(collection);
 	}
 
 	/**
@@ -100,10 +99,10 @@ public class StatsController extends MongoDbControllerHelper {
 	 * @param request Client request
 	 */
 	@Get("/list")
-	@SecuredAction(value = list, type = ActionType.RESOURCE)
-	@ResourceFilter(ListStatsResourceProvider.class)
+	@SecuredAction(value = list, type = ActionType.AUTHENTICATED)
+	// @ResourceFilter(ListStatsResourceProvider.class)
 	public void listStats(final HttpServerRequest request) {
-		statsService.listStats(request.params().entries(), arrayResponseHandler(request));
+		statsService.listStats(request.params(), arrayResponseHandler(request));
 	}
 
 	/**
@@ -111,8 +110,8 @@ public class StatsController extends MongoDbControllerHelper {
 	 * @param request Client request
 	 */
 	@Get("/export")
-	@SecuredAction(value = export, type = ActionType.RESOURCE)
-	@ResourceFilter(ExportStatsResourceProvider.class)
+	@SecuredAction(value = export, type = ActionType.AUTHENTICATED)
+	// @ResourceFilter(ExportStatsResourceProvider.class)
 	public void export(final HttpServerRequest request) {
 		final Handler<Either<String, JsonArray>> handler = new Handler<Either<String, JsonArray>>() {
 			@Override
@@ -138,7 +137,11 @@ public class StatsController extends MongoDbControllerHelper {
 			}
 		};
 
-		statsService.listStats(new ArrayList<Map.Entry<String,String>>(), handler);
+		if (statsService instanceof StatsServiceMongoImpl) {
+			statsService.listStats(null, handler);
+		} else {
+			statsService.listStats(request.params(), handler);
+		}
 	}
 
 	@Post("/recalculate/:from/:to")
@@ -231,4 +234,9 @@ public class StatsController extends MongoDbControllerHelper {
 		processing.handle(null);
 
 	}
+
+	public void setStatsService(StatsService statsService) {
+		this.statsService = statsService;
+	}
+
 }

@@ -27,6 +27,11 @@ import java.text.ParseException;
 import org.entcore.common.aggregation.MongoConstants.COLLECTIONS;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.mongodb.MongoDbConf;
+
+import io.reactiverse.pgclient.PgClient;
+import io.reactiverse.pgclient.PgPool;
+import io.reactiverse.pgclient.PgPoolOptions;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -34,6 +39,9 @@ import fr.wseduc.cron.CronTrigger;
 import fr.wseduc.stats.controllers.StatsController;
 import fr.wseduc.stats.cron.CronAggregationTask;
 import fr.wseduc.stats.filters.WorkflowFilter;
+import fr.wseduc.stats.services.PGStatsService;
+import fr.wseduc.stats.services.StatsService;
+import fr.wseduc.stats.services.StatsServiceMongoImpl;
 
 public class Stats extends BaseServer {
 
@@ -43,10 +51,10 @@ public class Stats extends BaseServer {
 	public void start() throws Exception {
 		super.start();
 
-		//CRON
-		//Default at 00:00AM every day
+		// CRON
+		// Default at 00:00AM every day
 		final String aggregationCron = config.getString("aggregation-cron");
-		//Day delta, default : processes yesterday events
+		// Day delta, default : processes yesterday events
 		int dayDelta = config.getInteger("dayDelta", -1);
 
 		if (aggregationCron != null && !aggregationCron.trim().isEmpty()) {
@@ -59,8 +67,25 @@ public class Stats extends BaseServer {
 			}
 		}
 
-		//REST BASICS
-		addController(new StatsController(COLLECTIONS.stats.name()));
+		final StatsService statsService;
+		final JsonObject readPGConfig = config.getJsonObject("read-pg-config");
+		if (readPGConfig != null && !readPGConfig.isEmpty()) {
+			final PgPoolOptions options = new PgPoolOptions().setPort(readPGConfig.getInteger("port", 5432))
+					.setHost(readPGConfig.getString("host")).setDatabase(readPGConfig.getString("database"))
+					.setUser(readPGConfig.getString("user")).setPassword(readPGConfig.getString("password"))
+					.setMaxSize(readPGConfig.getInteger("pool-size", 5));
+			PgPool pgPool = PgClient.pool(vertx, options);
+			statsService = new PGStatsService(config.getJsonObject("api-allowed-values"));
+			((PGStatsService) statsService).setReadPgPool(pgPool);
+		} else {
+			statsService = new StatsServiceMongoImpl(COLLECTIONS.stats.name());
+		}
+
+		final StatsController statsController = new StatsController(COLLECTIONS.stats.name());
+		statsController.setStatsService(statsService);
+
+		// REST BASICS
+		addController(statsController);
 		MongoDbConf.getInstance().setCollection(COLLECTIONS.stats.name());
 		addFilter(new WorkflowFilter(this.vertx.eventBus(), "stats.view", "fr.wseduc.stats.controllers.StatsController|view"));
 	}

@@ -22,10 +22,8 @@
 
 package fr.wseduc.stats.services;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.json.JsonArray;
 
 import fr.wseduc.webutils.Either;
@@ -35,6 +33,6 @@ import fr.wseduc.webutils.Either;
  */
 public interface StatsService {
 
-	public void listStats(List<Entry<String, String>> data, Handler<Either<String, JsonArray>> handler);
+	public void listStats(MultiMap data, Handler<Either<String, JsonArray>> handler);
 	
 }

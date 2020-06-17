@@ -1,0 +1,5 @@
+{
+    "indicators" : ["accounts", "access"],
+    "entities-levels" : ["platform","structure", "class", "tenant"],
+    "frequencies" : ["hour", "day", "week", "month"]
+}
