@@ -248,7 +248,7 @@ public class StatsController extends MongoDbControllerHelper {
         UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
 				final boolean hierarchical = "true".equals(request.getParam("hierarchical"));
-				structureService.getStructuresAndClassesForUser(user.getUserId(), hierarchical, either -> {
+				structureService.getStructuresForUser(user.getUserId(), hierarchical, either -> {
 					if (either.isLeft()) {
 						log.error(either.left().getValue());
 						renderError(request);
@@ -262,4 +262,21 @@ public class StatsController extends MongoDbControllerHelper {
         });
     }
 
+    @Get("/classes")
+	public void getClasses(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				structureService.getClassesForUser(user.getUserId(), either -> {
+					if (either.isLeft()) {
+						log.error(either.left().getValue());
+						renderError(request);
+					} else {
+						renderJson(request, either.right().getValue());
+					}
+				});
+			} else{
+				unauthorized(request);
+			}
+		});
+	}
 }

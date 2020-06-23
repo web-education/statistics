@@ -1,19 +1,18 @@
 <article class="list-view" style="border: none;">
 
     <!-- Upper combo box - Indicator containers (total / structures / classes) -->
-    <select ng-model="currentContainer"
-            ng-init="setCurrentContainer(indicatorContainers.all[0])"
-            ng-options="container.name for container in indicatorContainers.all"
-            ng-change="openIndicator(currentIndicator, currentContainer)"
-            class="indicator-container-combo"></select>
+    <select ng-model="scopeEntity.current"
+            ng-options="entity.name for entity in entities"
+            ng-change="updateEntityCacheDataAndOpenIndicator(currentIndicator)"
+			class="indicator-container-combo"></select>
 
     <!-- Indicator list -->
-    <section class="vertical four cell" ng-if="currentContainer">
+    <section class="vertical four cell" ng-if="scopeEntity.current">
 		<nav class="vertical">
 			<ul>
 				<li ng-repeat="indicator in indicators" class="indicator-list-box">
-                    <a ng-click="openIndicator(indicator, currentContainer)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: currentIndicator === indicator }">
-                        <h1 class="indicator-number">[[indicator.getValue(currentContainer)]]</h1>
+                    <a ng-click="openIndicator(indicator)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: currentIndicator === indicator }">
+                        <h1 class="indicator-number">[[getAggregatedValue(indicator, scopeEntity.current)]]</h1>
     					<div class="indicator-name">[[lang.translate(indicator.name)]]</div>
                         <div class="indicator-since">[[lang.translate(indicator.since)]]</div>
                     </a>
@@ -25,22 +24,21 @@
     <!-- Actual chart -->
     <section class="charts-section eight cell" ng-show="currentIndicator">
         <!-- For line charts - menu to group by duration (day / week / month) -->
-        <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'Line'">
+        <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'line'">
             <div>[[lang.translate('stats.groupBy')]] :</div>
-            <div ng-repeat="granularity in currentIndicator.chartGranularities">
-                <input type="radio" ng-model="currentIndicator.chartGranularity" value="[[granularity]]" ng-change="openIndicator(currentIndicator, currentContainer)">
-                <label>[[lang.translate('stats.'+granularity)]]</label>
+            <div ng-repeat="frequency in currentIndicator.chartFrequencies">
+                <input type="radio" ng-model="currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(currentIndicator)">
+                <label>[[lang.translate('stats.'+frequency)]]</label>
             </div>
         </div>
 
         <!-- Information -->
-        <h1>[[currentContainer.name]]</h1>
-        <h2>[[currentIndicator.chartLabel]]</h2>
+        <h2>[[currentIndicator.chartTitle]]</h2>
 
         <!-- Specific to profile bar charts, group by profile -->
         <div class="chart-profilecriteria-container" ng-if="currentIndicator.name === 'stats.mostUsedTool'">
             <div ng-repeat="profile in currentIndicator.chartProfiles">
-                <input type="radio" ng-model="currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(currentIndicator, currentContainer)">
+                <input type="radio" ng-model="currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(currentIndicator)">
                 <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>
             </div>
         </div>
@@ -48,8 +46,8 @@
         <!-- Chart container -->
         <div style="text-align: center">
             <canvas id="chart" width="600" height="400"></canvas>
-            <h5 class="legend-title">[[lang.translate("stats.legendTitle")]]</h5>
-            <div id="chart-legend-container"></div>
+            <!-- h5 class="legend-title">[[lang.translate("stats.legendTitle")]]</h5>
+            <div id="chart-legend-container"></div-->
         </div>
     </section>
 
