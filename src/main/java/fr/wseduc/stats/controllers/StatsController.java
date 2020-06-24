@@ -36,6 +36,7 @@ import fr.wseduc.stats.filters.ExportStatsResourceProvider;
 import fr.wseduc.stats.filters.ListStatsResourceProvider;
 import fr.wseduc.stats.services.StatsService;
 import fr.wseduc.stats.services.StatsServiceMongoImpl;
+import fr.wseduc.stats.services.StructureService;
 import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
@@ -45,6 +46,7 @@ import org.entcore.common.aggregation.processing.AggregationProcessing;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
+import org.entcore.common.user.UserUtils;
 import org.joda.time.DateTime;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerRequest;
@@ -58,6 +60,7 @@ public class StatsController extends MongoDbControllerHelper {
 
 	//Computation service
 	private StatsService statsService;
+	private final StructureService structureService = new StructureService();
 
 	//Permissions
 	private static final String
@@ -238,5 +241,25 @@ public class StatsController extends MongoDbControllerHelper {
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
 	}
+
+
+    @Get("/substructures")
+    public void getSubStructures(final HttpServerRequest request) {
+        UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				final boolean hierarchical = "true".equals(request.getParam("hierarchical"));
+				structureService.getStructuresAndClassesForUser(user.getUserId(), hierarchical, either -> {
+					if (either.isLeft()) {
+						log.error(either.left().getValue());
+						renderError(request);
+					} else {
+						renderJson(request, either.right().getValue());
+					}
+				});
+			} else{
+				unauthorized(request);
+			}
+        });
+    }
 
 }

@@ -1,4 +1,5 @@
 import { model as baseModel, http, _ } from 'entcore';
+import { statService } from './service';
 
 
 const model = baseModel as any;
@@ -326,31 +327,24 @@ export const build = function(){
                 }
             }
         })
-
-        that.collection(statistics.Classe, {
-            sync: function(){
-                for(var i = 0; i < mySchools.length; i++){
-                    var structure_id = mySchools[i]['id']
-                    var classes = mySchools[i]['classes']
-                    if (classes) {
-                        for(var j = 0; j < classes.length; j++){
-                            var class_id = classes[j]['id']
-                            if (!class_id) {
-                                continue
-                            }
-                            var class_name = classes[j]['name']
-                            var classe = new statistics.Classe(class_id)
-                            classe.updateData({name: class_name})
-                            this.push(classe)
-                            model.indicatorContainers.push(new statistics.IndicatorContainer({name: class_name, groups: {"structures": structure_id, "classes" : class_id}}))
-                        }
-                    }
-                }
-            }
-        })
-
     });
 
+    that.collection(statistics.Classe, {
+        sync: async function(){
+            const that = this
+            const tree = await statService.getStructureTree(false)
+            for(const struct of tree){
+                for(const clazz of struct.classes){
+                    const classe = new statistics.Classe(clazz.id)
+                    classe.updateData(clazz)
+                    that.push(classe)
+                    //Should we check if class is already added with another structure (hierarchic tree)?
+                    model.indicatorContainers.push(new statistics.IndicatorContainer({name: clazz.name, groups: {"structures": struct.id, "classes" : clazz.id}}))
+                }
+            }
+
+        }
+    });
 };
 
 ///////////////////////
