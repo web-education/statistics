@@ -26,13 +26,15 @@ public class PGStatsService implements StatsService {
 
     private PgPool readPgPool;
     private final JsonObject allowedValues;
+    private final String platformId;
 
-	public PGStatsService(JsonObject allowedValues) {
+	public PGStatsService(String platformId, JsonObject allowedValues) {
         if (allowedValues == null || allowedValues.isEmpty()) {
             this.allowedValues = Utils.loadFromResource("api-allowed-values.json");
         } else {
             this.allowedValues = allowedValues;
         }
+        this.platformId = platformId;
     }
 
 	@Override
@@ -42,13 +44,13 @@ public class PGStatsService implements StatsService {
             final LocalDateTime to = (Utils.isNotEmpty(params.get("to"))) ? LocalDateTime.parse(params.get("to")) : LocalDateTime.now();
             final List<String> entityIds = params.getAll("entity");
             final String entityLevel = params.get("entitylevel");
-            final Tuple t = Tuple.of(from, to);
+            final Tuple t = Tuple.of(platformId, from, to);
             String query =
                     "SELECT * FROM stats." + getTableName(params) +
-                    "WHERE (date BETWEEN $1 AND $2) ";
+                    "WHERE platform_id = $1 AND (date BETWEEN $2 AND $3) ";
             if (entityIds != null && !entityIds.isEmpty()) {
                 query += "AND " + entityLevel + "_id IN " +
-                IntStream.rangeClosed(3, entityIds.size() + 2).boxed()
+                IntStream.rangeClosed(4, entityIds.size() + 3).boxed()
                 .map(i -> "$" + i).collect(Collectors.joining(",", "(", ")"));
                 entityIds.stream().forEach(e -> t.addString(e));
             }

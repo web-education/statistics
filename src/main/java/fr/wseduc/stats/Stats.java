@@ -67,6 +67,17 @@ public class Stats extends BaseServer {
 			}
 		}
 
+		final String platformId;
+		final String eventStoreConf = (String) vertx.sharedData().getLocalMap("server").get("event-store");
+		final JsonObject eventStoreConfig;
+		if (eventStoreConf != null) {
+			eventStoreConfig = new JsonObject(eventStoreConf);
+			platformId = eventStoreConfig.getString("platform");
+		} else {
+			platformId = null;
+			eventStoreConfig = null;
+		}
+
 		final StatsService statsService;
 		final JsonObject readPGConfig = config.getJsonObject("read-pg-config");
 		if (readPGConfig != null && !readPGConfig.isEmpty()) {
@@ -75,9 +86,21 @@ public class Stats extends BaseServer {
 					.setUser(readPGConfig.getString("user")).setPassword(readPGConfig.getString("password"))
 					.setMaxSize(readPGConfig.getInteger("pool-size", 5));
 			PgPool pgPool = PgClient.pool(vertx, options);
-			statsService = new PGStatsService(config.getJsonObject("api-allowed-values"));
+			statsService = new PGStatsService(platformId, config.getJsonObject("api-allowed-values"));
 			((PGStatsService) statsService).setReadPgPool(pgPool);
-		} else {
+		} else if (eventStoreConfig != null && eventStoreConfig.getJsonObject("postgresql-slave") != null) {
+			final JsonObject eventStorePGConfig = eventStoreConfig.getJsonObject("postgresql-slave");
+			final PgPoolOptions options = new PgPoolOptions()
+				.setPort(eventStorePGConfig.getInteger("port", 5432))
+				.setHost(eventStorePGConfig.getString("host"))
+				.setDatabase(eventStorePGConfig.getString("database"))
+				.setUser(eventStorePGConfig.getString("user"))
+				.setPassword(eventStorePGConfig.getString("password"))
+				.setMaxSize(eventStorePGConfig.getInteger("pool-size", 5));
+			PgPool pgPool = PgClient.pool(vertx, options);
+			statsService = new PGStatsService(platformId, config.getJsonObject("api-allowed-values"));
+			((PGStatsService) statsService).setReadPgPool(pgPool);
+        } else {
 			statsService = new StatsServiceMongoImpl(COLLECTIONS.stats.name());
 		}
 
