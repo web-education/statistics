@@ -1,5 +1,5 @@
 import { idiom as lang } from 'entcore';
-import { IndicatorType, IndicatorApiType, IndicatorApi } from '../indicator';
+import { IndicatorApiType, IndicatorApi } from '../indicator';
 import { dateService } from '../../services/date.service';
 import { Frequency, chartService, ChartDataGroupedByProfile } from '../../services/chart.service';
 import { LineIndicator } from './line.indicator';
@@ -9,7 +9,6 @@ export class ConnectionIndicator extends LineIndicator {
     name = 'stats.connections';
     since = dateService.getSinceDateLabel();
     icon = 'connection-icon';
-    type: IndicatorType = 'LOGIN';
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'authentications';
     chartTitle = lang.translate('stats.labels.connections');

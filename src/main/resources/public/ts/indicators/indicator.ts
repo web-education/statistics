@@ -1,7 +1,6 @@
 import { ChartType, Frequency, ChartDataGroupedByProfileAndModule, ChartDataGroupedByProfile } from "../services/chart.service";
 import { Entity } from "../services/entities.service";
 
-export type IndicatorType = 'LOGIN' | 'UNIQUE_VISITORS' | 'ACCESS' | 'ACTIVATION';
 export type IndicatorApi = 'accounts' | 'access';
 export type IndicatorApiType = 
     'authentications' | 
@@ -16,7 +15,6 @@ export interface Indicator {
     name?: string;
 	since?: string;
     icon?: string;
-    type?: IndicatorType;
     api?: IndicatorApi;
     apiType?: IndicatorApiType;
     chartType?: ChartType;

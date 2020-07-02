@@ -1,5 +1,5 @@
 import { idiom as lang } from 'entcore';
-import { Indicator, IndicatorType, IndicatorApi, IndicatorApiType } from "../indicator";
+import { IndicatorApi, IndicatorApiType } from "../indicator";
 import { dateService } from '../../services/date.service';
 import { Frequency, ChartDataGroupedByProfileAndModule, chartService } from '../../services/chart.service';
 import { Entity } from '../../services/entities.service';
@@ -9,7 +9,6 @@ export class MostUsedToolIndicator extends BarIndicator {
     name = "stats.mostUsedTool";
     since = dateService.getSinceDateLabel();
     icon = "stats-service-icon";
-    type: IndicatorType = "ACCESS";
     api: IndicatorApi = 'access';
     apiType: IndicatorApiType = 'access';
     chartTitle = lang.translate("stats.labels.mostUsedTool");

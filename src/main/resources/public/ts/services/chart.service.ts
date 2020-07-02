@@ -1,5 +1,5 @@
 import { Indicator } from "../indicators/indicator";
-import { StatsResponse, StatsAccountsResponse } from "./stats-api.service";
+import { StatsResponse } from "./stats-api.service";
 import { Entity } from "../services/entities.service";
 import { statsApiService } from '../services/stats-api.service';
 import { dateService } from "./date.service";

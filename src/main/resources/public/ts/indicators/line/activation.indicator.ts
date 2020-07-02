@@ -1,5 +1,5 @@
 import { idiom as lang } from "entcore";
-import { Indicator, IndicatorType, IndicatorApi, IndicatorApiType } from "../indicator";
+import { Indicator, IndicatorApi, IndicatorApiType } from "../indicator";
 import { ChartType, Frequency, ChartDataGroupedByProfile, chartService } from "../../services/chart.service";
 import { dateService } from "../../services/date.service";
 import { Entity } from "../../services/entities.service";
@@ -8,7 +8,6 @@ export class ActivationIndicator implements Indicator {
     name = "stats.activatedAccounts";
     since = dateService.getSinceDateLabel();
     icon = "people-icon";
-    type: IndicatorType = "ACTIVATION";
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'activations';
     chartType: ChartType = "line";

@@ -1,5 +1,5 @@
 import { idiom as lang } from "entcore";
-import { IndicatorType, IndicatorApiType, IndicatorApi } from "../indicator";
+import { IndicatorApiType, IndicatorApi } from "../indicator";
 import { ChartDataGroupedByProfile, chartService, Frequency } from "../../services/chart.service";
 import { dateService } from "../../services/date.service";
 import { Entity } from "../../services/entities.service";
@@ -12,7 +12,6 @@ export class ConnectionsDailyPeakIndicator extends StackedBarIndicator {
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'authentications';
     icon = "clock-icon";
-    type: IndicatorType = "LOGIN";
     chartTitle = lang.translate("stats.labels.dailyPeak");
     frequency: Frequency = 'hour';
     
@@ -26,58 +25,7 @@ export class ConnectionsDailyPeakIndicator extends StackedBarIndicator {
         return labels
     }
     
-    public getValue(entity: Entity) {
-        // TODO
-        
-        // var hour = 0
-        // var connections = 0
-
-        // for(var i = 0; i < 24; i++){
-        // 	var hourConnections = container.getAggregatedSum(this.type+"_H"+i)
-        // 	if(hourConnections > connections){
-        // 		hour = i
-        // 		connections = hourConnections
-        // 	}
-        // }
-
-        // return hour+"h - "+(hour+1)+"h"
-        return;
-    }
-    
     public async getChartData(entity: Entity): Promise<ChartDataGroupedByProfile> {
-        // TODO
-        
-        // var data = []
-
-        // for(var i = 0; i < 24; i++){
-        // 	var hourData = [0, 0, 0, 0, 0]
-
-        // 	//hourData[0] = container.getAggregatedSum(this.type+"_H"+i)
-
-        // 	var profileData = container.getAggregatedGroupMap(this.type+"_H"+i, 'profil')
-        // 	for(var prop in profileData){
-        // 		var index = 4
-        // 		switch(prop){
-        // 			case 'Teacher':
-        // 				index = 0
-        // 				break
-        // 			case 'Personnel':
-        // 				index = 1
-        // 				break
-        // 			case 'Relative':
-        // 				index = 2
-        // 				break
-        // 			case 'Student':
-        // 				index = 3
-        // 				break
-        // 		}
-        // 		hourData[index] = !isNaN(profileData[prop]) ? profileData[prop] : 0
-        // 	}
-
-        // 	data.push(hourData.slice(0))
-        // }
-        // return data
-        
         let chartData: ChartDataGroupedByProfile = {};
         let data: StatsAccountsResponse[] = await chartService.getDataFromApiOrCache(this, entity) as StatsAccountsResponse[];
         

@@ -1,17 +1,15 @@
 import { idiom as lang } from "entcore";
-import { IndicatorType, IndicatorApi, IndicatorApiType } from "../indicator";
+import { IndicatorApi, IndicatorApiType } from "../indicator";
 import { dateService } from "../../services/date.service";
-import { datasetService } from "../../services/dataset.service";
 import { ChartDataGroupedByProfile, chartService, Frequency } from "../../services/chart.service";
 import { Entity } from "../../services/entities.service";
 import { StackedBarIndicator } from "./stackedbar.indicator";
-import { StatsResponse, StatsAccountsResponse } from "../../services/stats-api.service";
+import { StatsAccountsResponse } from "../../services/stats-api.service";
 
 export class ConnectionsWeeklyPeakIndicator extends StackedBarIndicator {
     name = "stats.weeklyPeak";
     since = dateService.getSinceDateLabel();
     icon = "calendar-button";
-    type: IndicatorType = "LOGIN";
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'authentications';
     chartTitle = lang.translate("stats.labels.weeklyPeak");

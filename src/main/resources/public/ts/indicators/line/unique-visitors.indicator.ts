@@ -1,5 +1,5 @@
 import { idiom as lang } from 'entcore';
-import { IndicatorType, Indicator, IndicatorApi, IndicatorApiType } from '../indicator';
+import { Indicator, IndicatorApi, IndicatorApiType } from '../indicator';
 import { ChartType, Frequency, ChartDataGroupedByProfile, chartService } from '../../services/chart.service';
 import { dateService } from '../../services/date.service';
 import { Entity } from '../../services/entities.service';
@@ -8,7 +8,6 @@ export class UniqueVisitorsIndicator implements Indicator {
     name = 'stats.uniqueVisitors';
     since = 'stats.firstDayOfMonth';
     icon = 'unique-visitors-icon';
-    type: IndicatorType = 'UNIQUE_VISITORS';
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'unique_visitors';
     chartType: ChartType = 'line';
