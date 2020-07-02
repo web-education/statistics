@@ -1,7 +1,7 @@
 import { ng, template, ui, _, $, idiom as lang } from 'entcore';
 
 import { ConnectionIndicator } from './indicators/line/connections.indicator';
-import { Indicator } from './indicators/indicator';
+import { Indicator, IndicatorApi } from './indicators/indicator';
 import { UniqueVisitorsIndicator } from './indicators/line/unique-visitors.indicator';
 import { ConnectionsDividedUniqueVisitorsIndicator } from './indicators/line/connections-unique-visitors.indicator';
 import { MostUsedToolIndicator } from './indicators/bar/most-used-tool.indicator';
@@ -9,7 +9,7 @@ import { ConnectionsDailyPeakIndicator } from './indicators/stackedbar/connectio
 import { ConnectionsWeeklyPeakIndicator } from './indicators/stackedbar/connections-weekly-peak.indicator';
 import { ActivationIndicator } from './indicators/line/activation.indicator';
 import { chartService, Frequency, ChartDataGroupedByProfile } from './services/chart.service';
-import { StatsResponse, StatsAccountsResponse } from './services/stats-api.service';
+import { StatsResponse } from './services/stats-api.service';
 import { dateService } from './services/date.service';
 import { Entity } from './services/entities.service';
 import { statsApiService } from './services/stats-api.service';
@@ -30,6 +30,8 @@ interface StatsControllerScope {
 	lang: typeof lang;
 	allowed: Array<any>;
 	definitions: Array<string>;
+	getExportUrl(indicator: IndicatorApi): string;
+	
 	openIndicator(indicator: Indicator): void;
 	indicatorDetail(indicator: Indicator): void;
 	allowedProjectFunctions(): boolean; 
@@ -294,6 +296,11 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	initData();
 
+	/**** Export API route and query params ****/
+	$scope.getExportUrl = (indicator: IndicatorApi) => {
+		return encodeURI(`/stats/export?indicator=${indicator}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=month&entityLevel=${$scope.scopeEntity.current.level}&entity=${$scope.scopeEntity.current.id}`);
+	};
+	
 	/**** Update Data when switching Entity ****/
 	$scope.updateEntityCacheData = async (): Promise<void> => {
 		if (!$scope.scopeEntity.current.cacheData 

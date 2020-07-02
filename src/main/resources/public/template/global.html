@@ -19,7 +19,12 @@
 		<div ng-include="template.containers.list" class="row"></div>
 	</div>
 
-	<a href="stats/export" translate content="stats.showMore" style="padding: 10px; display: block;" target="_blank"
-	   ng-if="allowedProjectFunctions()"></a>
-
+	<a ng-href="[[getExportUrl('accounts')]]" 
+		translate content="stats.export.accounts" 
+		style="padding-top: 10px; display: block;" 
+		target="_blank"></a>
+	<a ng-href="[[getExportUrl('access')]]" 
+		translate content="stats.export.access" 
+		style="padding: 10px 0; display: block;" 
+		target="_blank"></a>
 </div>

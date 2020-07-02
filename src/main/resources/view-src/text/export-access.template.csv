@@ -1,0 +1,4 @@
+"Date";"Accès aux applis";"Accès uniques";"Accès uniques par minute"
+{{#list}}
+"{{date}}";"{{access}}";"{{unique_access}}";"{{unique_access_minute}}"
+{{/list}}

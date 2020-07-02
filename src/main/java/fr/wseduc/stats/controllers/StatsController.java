@@ -42,6 +42,7 @@ import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
 
+import io.vertx.core.MultiMap;
 import org.entcore.common.aggregation.processing.AggregationProcessing;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
@@ -120,14 +121,17 @@ public class StatsController extends MongoDbControllerHelper {
 			@Override
 			public void handle(Either<String, JsonArray> r) {
 				if (r.isRight()) {
-					processTemplate(request, "text/export.template.csv",
+					MultiMap params = request.params();
+					String csvTemplateName = "text/export-" + params.get("indicator") + ".template.csv";
+
+					processTemplate(request, csvTemplateName,
 							new JsonObject().put("list", r.right().getValue()), new Handler<String>() {
 						@Override
 						public void handle(final String export) {
 							if (export != null) {
 								request.response().putHeader("Content-Type", "application/csv");
 								request.response().putHeader("Content-Disposition",
-										"attachment; filename=export-stats.csv");
+										"attachment; filename=export-stats-" + params.get("indicator") + ".csv");
 								request.response().end(export);
 							} else {
 								renderError(request);
