@@ -16,7 +16,8 @@ export class MostUsedToolIndicator extends BarIndicator {
     chartProfiles = ["total", "Teacher", "Personnel", "Relative", "Student"];
     frequency: Frequency = 'month';
     
-    public getChartLabels(chartData: ChartDataGroupedByProfileAndModule): Array<string> {
+    public async getChartLabels(entity: Entity): Promise<Array<string>> {
+        let chartData: ChartDataGroupedByProfileAndModule = await chartService.getDataGroupedByProfileAndModule(this, entity);
         let labels = [];
 		Object.keys(chartData).forEach(profileKey => {
 			Object.keys(chartData[profileKey]).forEach(moduleKey => {

@@ -17,7 +17,7 @@ export class ConnectionsWeeklyPeakIndicator extends StackedBarIndicator {
     chartFrequencies: Array<Frequency> = null;
     chartProfile: string = null;
     
-    public getChartLabels(): Array<string> {
+    public async getChartLabels(): Promise<Array<string>> {
         var labels = [];
         labels.push(lang.translate("stats.monday"));
         labels.push(lang.translate("stats.tuesday"));
@@ -26,7 +26,7 @@ export class ConnectionsWeeklyPeakIndicator extends StackedBarIndicator {
         labels.push(lang.translate("stats.friday"));
         labels.push(lang.translate("stats.saturday"));
         labels.push(lang.translate("stats.sunday"));
-        return labels;
+        return Promise.resolve(labels);
     }
     
     public async getChartData(entity: Entity): Promise<ChartDataGroupedByProfile> {

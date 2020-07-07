@@ -1,4 +1,4 @@
-import { ChartType, Frequency, ChartDataGroupedByProfileAndModule, ChartDataGroupedByProfile } from "../services/chart.service";
+import { ChartType, Frequency, ChartData } from "../services/chart.service";
 import { Entity } from "../services/entities.service";
 
 export type IndicatorApi = 'accounts' | 'access';
@@ -23,6 +23,6 @@ export abstract class Indicator {
     chartFrequencies: Array<Frequency>;
     chartProfile: string;
     
-    abstract getChartLabels(chartData?: ChartDataGroupedByProfileAndModule): Array<string>;
-    abstract getChartData(entity: Entity): Promise<ChartDataGroupedByProfile | ChartDataGroupedByProfileAndModule>;
+    abstract getChartLabels(entity: Entity): Promise<Array<string>>;
+    abstract getChartData(entity: Entity): Promise<ChartData>;
 }

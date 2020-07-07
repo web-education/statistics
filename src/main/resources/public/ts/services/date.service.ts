@@ -1,4 +1,5 @@
 import { moment, idiom as lang, currentLanguage } from "entcore";
+import { StatsResponse } from "./stats-api.service";
 
 const date = {
     create: (date?) => (moment ? moment(date) : date),
@@ -8,45 +9,52 @@ const date = {
 
 export class DateService {
 
-    public getMonthLabels() {
-		let labels = [];
-		var refDate = date.create(this.getSchoolYearRef());
-		var todayDate = date.create(new Date());
+    public getMonthLabels(data: Array<StatsResponse>) {
+		const labels: Array<string> = [];
+		
+		data.forEach(d => {
+			const date = new Date(d.date);
+			const dateToLocalString: string = date.toLocaleString('default', { month: '2-digit', year: '2-digit' });
+			if (!labels.includes(dateToLocalString)) {
+				labels.push(dateToLocalString);
+			}
+		});
+		
+		return labels;
+	}
 
-		while(refDate.isBefore(todayDate)){
-			labels.push(refDate.format("MMMM"));
-			refDate = refDate.add(1, 'M');
-		}
+	public getWeekLabels(data: Array<StatsResponse>) {	
+		const labels: Array<string> = [];
+		
+		data.forEach(d => {
+			const date = new Date(d.date);
+			const firstDayOfTheWeek = date.getDate() - date.getDay();
+			const weekLabel = lang.translate("stats.weekOf") 
+				+ firstDayOfTheWeek 
+				+ '/' 
+				+ date.toLocaleString('default', { month: '2-digit' })
+			if (!labels.includes(weekLabel)) {
+				labels.push(weekLabel);
+			}
+		});
 
 		return labels;
 	}
 
-	public getWeekLabels() {
-		let labels = [];
-		var refDate = date.create(this.getSchoolYearRef());
-		var todayDate = date.create(new Date());
-
-		while(refDate.isBefore(todayDate)){
-			labels.push(lang.translate("stats.weekOf")+" "+refDate.isoWeekday(1).format("DD/MM"));
-			refDate = refDate.add(1, 'w');
-		}
-
+	public getDayLabels(data: Array<StatsResponse>) {
+		const labels: Array<string> = [];
+		
+		data.forEach(d => {
+			const date = new Date(d.date);
+			const dateToLocalString: string = date.toLocaleString('default', { day: '2-digit', month: '2-digit', year: 'numeric' });
+			if (!labels.includes(dateToLocalString)) {
+				labels.push(dateToLocalString);
+			}
+		});
+		
 		return labels;
 	}
-
-	public getDayLabels() {
-		let labels = [];
-		var refDate = date.create(this.getSchoolYearRef());
-		var todayDate = date.create(new Date());
-
-		while(refDate.isBefore(todayDate)){
-			labels.push(refDate.format("L"));
-			refDate = refDate.add(1, 'd');
-		}
-
-		return labels;
-	}
-    
+	
     public getSinceDate(): Date {
         return new Date(date.create().year() - 1, date.create().month(), 1, 0, 0, 0, 0);
     }

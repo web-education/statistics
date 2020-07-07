@@ -283,7 +283,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		const indexOfMaxValue = sumAll.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0);
 		
 		// save value to Entity cache data
-		connectionsDailyPeakIndicator.totalValue = indexOfMaxValue;
+		connectionsDailyPeakIndicator.totalValue = indexOfMaxValue + 'h';
 	}
 	
 	let initData = async () => {

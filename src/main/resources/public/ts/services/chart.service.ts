@@ -11,7 +11,11 @@ declare const Chart: any;
 export type Frequency = 'hour' | 'day' | 'week' | 'month';
 export type ChartType = 'line' | 'bar' | 'stackedbar';
 
-export type ChartDataGroupedByProfile = {
+export interface ChartData {
+	
+}
+
+export interface ChartDataGroupedByProfile extends ChartData {
 	Student?: Array<number>;
 	Teacher?: Array<number>;
 	Personnel?: Array<number>;
@@ -20,7 +24,7 @@ export type ChartDataGroupedByProfile = {
 	Total?: Array<number>;
 }
 
-export type ChartDataGroupedByModule = {
+export interface ChartDataGroupedByModule extends ChartData {
 	Conversation?: Array<number>;
 	Blog?: Array<number>;
 	Wiki?: Array<number>;
@@ -28,7 +32,7 @@ export type ChartDataGroupedByModule = {
 	// TODO add modules
 }
 
-export type ChartDataGroupedByProfileAndModule = {
+export interface ChartDataGroupedByProfileAndModule extends ChartData {
 	Student?: ChartDataGroupedByModule;
 	Teacher?: ChartDataGroupedByModule;
 	Personnel?: ChartDataGroupedByModule;
@@ -40,7 +44,7 @@ export type ChartDataGroupedByProfileAndModule = {
 export class ChartService {
 	
 	/**
-	 * Builds and return a Line Chart for Chart.js
+	 * Builds and return a Line Chart for Chart.js from indicator data/labels and entity
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 
 	 * @param entity 
@@ -66,10 +70,12 @@ export class ChartService {
 			delete dataset.key;
 		});
 		
+		const chartLabels = await indicator.getChartLabels(entity);
+		
 		return new Chart(ctx, {
 			type: indicator.chartType,
 			data: {
-				'labels': indicator.getChartLabels(),
+				'labels': chartLabels,
 				'datasets': datasets
 			},
 			options: {
@@ -88,7 +94,7 @@ export class ChartService {
 	}
 	
 	/**
-	 * Builds and return a Bar Chart for Chart.js
+	 * Builds and return a Bar Chart for Chart.js from indicator data/labels and entity
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 
 	 * @param entity 
@@ -120,10 +126,12 @@ export class ChartService {
 		}
 		datasets[0].data = sumData;
 		
+		const chartLabels = await indicator.getChartLabels(entity);
+		
 		return new Chart(ctx, {
 			type: indicator.chartType,
 			data: {
-				'labels': indicator.getChartLabels(chartData),
+				'labels': chartLabels,
 				datasets: datasets,
 			},
 			options: {
@@ -141,13 +149,13 @@ export class ChartService {
 	}
 	
 	/**
-	 * Builds and return a StackedBar Chart for Chart.js
+	 * Builds and return a StackedBar Chart for Chart.js from indicator data/labels and entity
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 
 	 * @param entity 
 	 */
     public async getStackedBarChart(ctx: any, indicator: Indicator, entity: Entity): Promise<typeof Chart> {
-		let labels: Array<string> = indicator.getChartLabels();
+		let labels: Array<string> = await indicator.getChartLabels(entity);
 		let datasets: Array<ProfileDataset> = datasetService.getProfileDataset().slice(1);
 		let chartData: ChartDataGroupedByProfile = await indicator.getChartData(entity) as ChartDataGroupedByProfile;
 		
@@ -186,9 +194,9 @@ export class ChartService {
 	}
 	
 	public async getDataFromApiOrCache(indicator: Indicator, entity: Entity): Promise<Array<StatsResponse>> {
-		if (indicator.apiType === 'mixed') {
-			return [];
-		}
+		// if (indicator.apiType === 'mixed') {
+		// 	return [];
+		// }
 		
 		// get data from entity cache data if present
 		let cacheIndicator = entity.cacheData.indicators.find(i => i.name === indicator.name && i.frequency === indicator.frequency);

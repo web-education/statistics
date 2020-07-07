@@ -17,14 +17,14 @@ export class ConnectionsDailyPeakIndicator extends StackedBarIndicator {
     chartFrequencies: Array<Frequency> = null;
     chartProfile: string = null;
     
-    public getChartLabels(): Array<string> {
-        var labels = []
-        for(var i = 0; i < 24; i++){
-            var hour1 = ("0"+i).slice(-2)
-            var hour2 = ("0"+(i+1)).slice(-2)
+    public async getChartLabels(entity: Entity): Promise<Array<string>> {
+        let labels: Array<string> = [];
+        for(let i = 0; i < 24; i++){
+            let hour1 = ("0"+i).slice(-2)
+            let hour2 = ("0"+(i+1)).slice(-2)
             labels.push(hour1+'h-'+hour2+'h')
         }
-        return labels
+        return Promise.resolve(labels);
     }
     
     public async getChartData(entity: Entity): Promise<ChartDataGroupedByProfile> {

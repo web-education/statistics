@@ -1,7 +1,6 @@
 import { idiom as lang } from 'entcore';
-import { Indicator, IndicatorApi, IndicatorApiType } from "../indicator"
-import { ChartType, Frequency, ChartDataGroupedByProfile, chartService } from '../../services/chart.service';
-import { dateService } from '../../services/date.service';
+import { IndicatorApi, IndicatorApiType } from "../indicator"
+import { Frequency, ChartDataGroupedByProfile, chartService } from '../../services/chart.service';
 import { Entity } from '../../services/entities.service';
 import { ConnectionIndicator } from './connections.indicator';
 import { UniqueVisitorsIndicator } from './unique-visitors.indicator';
@@ -16,22 +15,6 @@ export class ConnectionsDividedUniqueVisitorsIndicator extends LineIndicator {
     chartTitle = lang.translate("stats.labels.connectionsByUniqueVisitors");
     chartFrequencies: Array<Frequency> = ["day", "week", "month"];
     frequency: Frequency = "month";
-    
-    public getChartLabels(): Array<string> {
-        var labels: Array<string> = [];
-		switch(this.frequency){
-			case "month":
-				labels = dateService.getMonthLabels();
-				break;
-			case "week":
-				labels = dateService.getWeekLabels();
-				break;
-			case "day":
-				labels = dateService.getDayLabels();
-				break;
-        }
-        return labels;
-    }
     
     public async getChartData(entity: Entity): Promise<ChartDataGroupedByProfile> {
         let chartData: ChartDataGroupedByProfile = {};
