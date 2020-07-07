@@ -1,6 +1,9 @@
 import { Indicator } from "../indicator";
-import { ChartType } from "../../services/chart.service";
+import { ChartType, ChartDataGroupedByProfileAndModule, ChartDataGroupedByProfile } from "../../services/chart.service";
+import { Entity } from "../../services/entities.service";
 
-export class BarIndicator implements Indicator {
+export abstract class BarIndicator extends Indicator {
     chartType: ChartType = "bar";
+    public abstract getChartLabels(chartData?: ChartDataGroupedByProfileAndModule): Array<string>;
+    public abstract getChartData(entity: Entity): Promise<ChartDataGroupedByProfile | ChartDataGroupedByProfileAndModule>;
 }

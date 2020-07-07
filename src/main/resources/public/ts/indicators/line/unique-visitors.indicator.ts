@@ -3,14 +3,14 @@ import { Indicator, IndicatorApi, IndicatorApiType } from '../indicator';
 import { ChartType, Frequency, ChartDataGroupedByProfile, chartService } from '../../services/chart.service';
 import { dateService } from '../../services/date.service';
 import { Entity } from '../../services/entities.service';
+import { LineIndicator } from './line.indicator';
 
-export class UniqueVisitorsIndicator implements Indicator {
+export class UniqueVisitorsIndicator extends LineIndicator {
     name = 'stats.uniqueVisitors';
     since = 'stats.firstDayOfMonth';
     icon = 'unique-visitors-icon';
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'unique_visitors';
-    chartType: ChartType = 'line';
     chartTitle = lang.translate('stats.labels.uniqueVisitors');
     chartFrequencies: Array<Frequency> = ['day', 'week', 'month'];
     frequency: Frequency = 'month';

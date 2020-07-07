@@ -14,6 +14,8 @@ export class ConnectionsWeeklyPeakIndicator extends StackedBarIndicator {
     apiType: IndicatorApiType = 'authentications';
     chartTitle = lang.translate("stats.labels.weeklyPeak");
     frequency: Frequency = 'day';
+    chartFrequencies: Array<Frequency> = null;
+    chartProfile: string = null;
     
     public getChartLabels(): Array<string> {
         var labels = [];

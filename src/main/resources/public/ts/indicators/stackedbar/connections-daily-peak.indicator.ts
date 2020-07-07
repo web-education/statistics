@@ -14,6 +14,8 @@ export class ConnectionsDailyPeakIndicator extends StackedBarIndicator {
     icon = "clock-icon";
     chartTitle = lang.translate("stats.labels.dailyPeak");
     frequency: Frequency = 'hour';
+    chartFrequencies: Array<Frequency> = null;
+    chartProfile: string = null;
     
     public getChartLabels(): Array<string> {
         var labels = []

@@ -3,14 +3,14 @@ import { Indicator, IndicatorApi, IndicatorApiType } from "../indicator";
 import { ChartType, Frequency, ChartDataGroupedByProfile, chartService } from "../../services/chart.service";
 import { dateService } from "../../services/date.service";
 import { Entity } from "../../services/entities.service";
+import { LineIndicator } from "./line.indicator";
 
-export class ActivationIndicator implements Indicator {
+export class ActivationIndicator extends LineIndicator {
     name = "stats.activatedAccounts";
     since = dateService.getSinceDateLabel();
     icon = "people-icon";
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'activations';
-    chartType: ChartType = "line";
     chartTitle = lang.translate("stats.labels.activatedAccounts");
     chartFrequencies: Array<Frequency> = ["day", "week", "month"];
     frequency: Frequency = "month";

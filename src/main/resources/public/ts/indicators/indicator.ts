@@ -11,18 +11,18 @@ export type IndicatorApiType =
     // but is a calculation of 2 indicators data (for example: ConnectionsDividedByUniqueVisitors)
     'mixed';
 
-export interface Indicator {
-    name?: string;
-	since?: string;
-    icon?: string;
-    api?: IndicatorApi;
-    apiType?: IndicatorApiType;
-    chartType?: ChartType;
-    chartTitle?: string;
-    chartFrequencies?: Array<Frequency>;
-    frequency?: Frequency;
-    chartProfile?: string;
+export abstract class Indicator {
+    name: string;
+    api: IndicatorApi;
+    apiType: IndicatorApiType;
+    frequency: Frequency;
+	since: string;
+    icon: string;
+    chartType: ChartType;
+    chartTitle: string;
+    chartFrequencies: Array<Frequency>;
+    chartProfile: string;
     
-    getChartLabels?(chartData?: ChartDataGroupedByProfileAndModule): Array<string>;
-    getChartData?(entity: Entity): Promise<ChartDataGroupedByProfile | ChartDataGroupedByProfileAndModule>;
+    abstract getChartLabels(chartData?: ChartDataGroupedByProfileAndModule): Array<string>;
+    abstract getChartData(entity: Entity): Promise<ChartDataGroupedByProfile | ChartDataGroupedByProfileAndModule>;
 }
