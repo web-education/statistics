@@ -18,6 +18,7 @@ export class ConnectionsDividedUniqueVisitorsIndicator extends LineIndicator {
     
     public async getChartData(entity: Entity): Promise<ChartDataGroupedByProfile> {
         let chartData: ChartDataGroupedByProfile = {};
+        
         const authenticationIndicator = new ConnectionIndicator();
         authenticationIndicator.frequency = this.frequency;
         let authenticationsData: ChartDataGroupedByProfile = await chartService.getDataGroupedByProfile(authenticationIndicator, entity);
@@ -25,14 +26,22 @@ export class ConnectionsDividedUniqueVisitorsIndicator extends LineIndicator {
         const uniqueVisitorsIndicator = new UniqueVisitorsIndicator();
         uniqueVisitorsIndicator.frequency = this.frequency;
         let uniqueVisitorsData: ChartDataGroupedByProfile = await chartService.getDataGroupedByProfile(uniqueVisitorsIndicator, entity);
+        
         Object.keys(authenticationsData).forEach(key => {
             let divisionArray = authenticationsData[key].map((authenticationsValue, i) => {
+                if (!authenticationsValue || isNaN(authenticationsValue)) {
+                    return 0;
+                }
+                
                 let uniqueVisitorsValue = uniqueVisitorsData[key][i];
-                if (uniqueVisitorsValue === 0) return 0;
+                if (!uniqueVisitorsValue || isNaN(uniqueVisitorsValue) || uniqueVisitorsValue === 0) {
+                    return 0;
+                }
                 return Math.round((authenticationsValue / uniqueVisitorsValue) * 100) / 100;
             });
             chartData[key] = divisionArray;
         });
+        
         return chartData;
     }
 }
