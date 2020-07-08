@@ -1,11 +1,5 @@
-import { moment, idiom as lang, currentLanguage } from "entcore";
+import { idiom as lang, currentLanguage } from "entcore";
 import { StatsResponse } from "./stats-api.service";
-
-const date = {
-    create: (date?) => (moment ? moment(date) : date),
-    format: (date?, format?) => moment(date).format(format),
-    calendar: (date?) => moment(date).calendar()
-};
 
 export class DateService {
 
@@ -56,7 +50,8 @@ export class DateService {
 	}
 	
     public getSinceDate(): Date {
-        return new Date(date.create().year() - 1, date.create().month(), 1, 0, 0, 0, 0);
+		const today = new Date();
+        return new Date(today.getFullYear() - 1, today.getMonth(), 1, 0, 0, 0, 0);
     }
 	
 	public getSinceDateISOStringWithoutMs(): string {
@@ -66,18 +61,6 @@ export class DateService {
     public getSinceDateLabel(): string {
 	    return lang.translate("stats.since") + this.getSinceDate().toLocaleString([currentLanguage], {month: "long", year: "numeric"});
     }
-    
-    public getSchoolYearRef() {
-        return date.create(this.getSinceDate());
-    }
-    
-    public toMidnight(inDate: Date){
-		inDate.setHours(0);
-	    inDate.setMinutes(0);
-		inDate.setSeconds(0);
-		inDate.setMilliseconds(0);
-		return inDate;
-	}
 	
 	public moreThanOneHourAgo(date: Date): boolean {
 		if (!date) {
