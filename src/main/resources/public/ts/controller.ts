@@ -307,8 +307,14 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			}
 		});
 		
+		let moduleTotal = sumArray.find(x => x.total === max);
+		let app = '';
+		if (moduleTotal) {
+			app = lang.translate(moduleTotal.module.toLowerCase());
+		}
 		// save value to Entity cache data
-		mostUsedToolIndicator.totalValue =  sumArray.find(x => x.total === max).module;
+		mostUsedToolIndicator.totalValue = app;
+		
 	}
 	
 	let initData = async () => {
