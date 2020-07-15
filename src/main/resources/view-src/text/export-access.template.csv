@@ -1,4 +1,4 @@
-"Date";"Accès aux applis";"Accès uniques";"Accès uniques par minute"
+"Date";"Profil";"Nombre d'accès";"Application"
 {{#list}}
-"{{date}}";"{{access}}";"{{unique_access}}";"{{unique_access_minute}}"
+"{{date}}";"{{profile}}";"{{access}}";"{{module}}"
 {{/list}}

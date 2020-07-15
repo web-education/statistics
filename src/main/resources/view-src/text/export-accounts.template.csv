@@ -1,4 +1,4 @@
-"Date";"Utilisateurs activés";"Activations de compte";"Connexions";"Utilisateurs importés";"Sessions";"Visiteurs"
+"Date";"Profil";"Connexions";"Visiteurs uniques";"Comptes chargés";"Comptes activés"
 {{#list}}
-"{{date}}";"{{activated}}";"{{activations}}";"{{authentications}}";"{{loaded}}";"{{sessions}}";"{{unique_visitors}}"
+"{{date}}";"{{profile}}";"{{authentications}}";"{{unique_visitors}}";"{{loaded}}";"{{activated}}"
 {{/list}}
