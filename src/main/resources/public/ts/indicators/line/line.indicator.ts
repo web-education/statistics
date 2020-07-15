@@ -27,7 +27,17 @@ export abstract class LineIndicator extends Indicator {
     }
     
     public async getChartData(entity: Entity): Promise<ChartDataGroupedByProfile> {
-        let chartData = await chartService.getDataGroupedByProfile(this, entity);
-        return chartData;
+        let chartDataByProfileAndDate = await chartService.getDataGroupedByProfile(this, entity);
+        
+        Object.keys(chartDataByProfileAndDate).forEach(profileData => {
+            chartDataByProfileAndDate[profileData] = chartDataByProfileAndDate[profileData].map(data => {
+                if (data === null) {
+                    return 0;
+                }
+                return data;
+            });
+        });
+        
+        return chartDataByProfileAndDate;
     }
 }
