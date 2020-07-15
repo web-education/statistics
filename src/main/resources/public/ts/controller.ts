@@ -142,7 +142,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			}
 			
 			let total: number = 0;
-			if (indicator.apiType !== 'mixed') {
+			if (indicator.apiType !== 'mixed' && indicator.name !== 'stats.mostUsedTool') {
 				data.forEach(d => total += d[indicator.apiType]);
 			}
 			
@@ -286,8 +286,34 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		connectionsDailyPeakIndicator.totalValue = indexOfMaxValue + 'h';
 	}
 	
+	let initMostUsedToolTotalValue = async (entity: Entity) => {
+		const mostUsedToolIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.mostUsedTool');
+		
+		const dataGroupedByModuleAndProfile = statsApiService.groupByKeys(mostUsedToolIndicator.data, 'module', 'profile', 'access');
+		
+		let sumArray: Array<{module: string, total: number}> = [];
+		Object.keys(dataGroupedByModuleAndProfile).forEach(module => {
+			let sum = 0;
+			Object.keys(dataGroupedByModuleAndProfile[module]).forEach(profile => {
+				sum += dataGroupedByModuleAndProfile[module][profile].reduce((acc, x) => acc + x);
+			});
+			sumArray.push({module: module, total: sum});
+		});
+		
+		let max = 0;
+		sumArray.forEach(x => {
+			if (x.total > max) {
+				max = x.total;
+			}
+		});
+		
+		// save value to Entity cache data
+		mostUsedToolIndicator.totalValue =  sumArray.find(x => x.total === max).module;
+	}
+	
 	let initData = async () => {
 		await initEntityMonthCacheData($scope.scopeEntity.current);
+		await initMostUsedToolTotalValue($scope.scopeEntity.current);
 		await initConnectionsDividedUniqueVisitorsTotalValue($scope.scopeEntity.current);
 		await initConnectionsWeeklyPeakTotalValue($scope.scopeEntity.current);
 		await initConnectionsDailyPeakTotalValue($scope.scopeEntity.current);
