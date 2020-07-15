@@ -21,8 +21,9 @@ export class MostUsedToolIndicator extends BarIndicator {
         let labels = [];
 		Object.keys(chartData).forEach(profileKey => {
 			Object.keys(chartData[profileKey]).forEach(moduleKey => {
-				if (!labels.includes(moduleKey)) {
-					labels.push(moduleKey);
+                const moduleTranslated = lang.translate(moduleKey.toLowerCase());
+				if (!labels.includes(moduleTranslated)) {
+					labels.push(moduleTranslated);
 				}
 			})
         });
