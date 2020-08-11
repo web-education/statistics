@@ -361,7 +361,7 @@ export class ChartService {
 			options: {
 				responsive: true,
 				legend: {
-					display: true,
+					display: false,
 					position: 'bottom',
 					align: 'center',
 					labels: {

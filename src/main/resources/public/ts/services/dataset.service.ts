@@ -6,7 +6,7 @@ export type ProfileDataset = {
     key: DatasetKey;
     label: string;
 	borderColor: string;
-	backgroundColor?: string;
+	backgroundColor: string;
     borderWidth: number;
     fill: boolean;
     data: Array<number>;
@@ -14,10 +14,9 @@ export type ProfileDataset = {
 
 export type SingleBarDataset = {
     label: string;
-    fillColor: string;
-    strokeColor: string;
-    highlightFill: string;
-    highlightStroke: string;
+    backgroundColor: string;
+	borderColor?: string;
+	borderWidth?: number;
     data: Array<number>;
 }
 
@@ -79,11 +78,8 @@ export class DatasetService {
     public getSingleBarDataset(profile): Array<SingleBarDataset> {
 		return [{
             label: lang.translate('stats.' + profile.toLowerCase()),
-            fillColor: "rgba(47,140,201,0.5)",
-            strokeColor: "rgba(47,140,201,0.8)",
-            highlightFill: "rgba(47,140,201,0.75)",
-            highlightStroke: "rgba(47,140,201,1)",
-            data: []
+            backgroundColor: "rgb(56, 137, 193)",
+			data: []
         }];
 	}
 }
