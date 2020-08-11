@@ -154,7 +154,8 @@ export class ChartService {
 				scales: {
 					yAxes: [{
 						ticks: {
-							beginAtZero: true
+							beginAtZero: true,
+							precision: 0
 						}
 					}]
 				}
@@ -293,7 +294,8 @@ export class ChartService {
 				scales: {
 					yAxes: [{
 						ticks: {
-							beginAtZero: true
+							beginAtZero: true,
+							precision: 0
 						}
 					}]
 				}
@@ -369,7 +371,8 @@ export class ChartService {
 				scales: {
 					yAxes: [{
 						ticks: {
-							beginAtZero: true
+							beginAtZero: true,
+							precision: 0
 						}
 					}]
 				}
@@ -433,7 +436,8 @@ export class ChartService {
 					yAxes: [{
 						stacked: true,
 						ticks: {
-							beginAtZero: true
+							beginAtZero: true,
+							precision: 0
 						}
 					}]
 				},
