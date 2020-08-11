@@ -137,6 +137,10 @@ export class ChartService {
 				'datasets': datasets
 			},
 			options: {
+				tooltips: {
+					mode: 'index',
+					position: 'nearest'
+				},
 				lineTension: 0.1,
 				legend: {
 					display: true,
@@ -265,6 +269,10 @@ export class ChartService {
 				'datasets': datasets
 			},
 			options: {
+				tooltips: {
+					mode: 'index',
+					position: 'nearest'
+				},
 				lineTension: 0.1,
 				legend: {
 					display: true,
@@ -404,6 +412,10 @@ export class ChartService {
 					yAxes: [{
 						stacked: true
 					}]
+				},
+				tooltips: {
+					mode: 'index',
+					position: 'nearest'
 				},
 				lineTension: 0.1,
 				legend: {
