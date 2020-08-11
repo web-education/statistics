@@ -5,7 +5,8 @@ export type DatasetKey = 'Total' | 'Student' | 'Relative' | 'Teacher' | 'Person
 export type ProfileDataset = {
     key: DatasetKey;
     label: string;
-    borderColor: string;
+	borderColor: string;
+	backgroundColor?: string;
     borderWidth: number;
     fill: boolean;
     data: Array<number>;
@@ -34,6 +35,7 @@ export class DatasetService {
 				key: 'Teacher',
 				label: lang.translate("stats.teacher"),
 				borderColor: '#6fbe2e',
+				backgroundColor: '#6fbe2e',
 				borderWidth: 2,
 				fill: false,
 				data: []
@@ -41,6 +43,7 @@ export class DatasetService {
 				key: 'Personnel',
 				label: lang.translate("stats.personnel"),
 				borderColor: '#a348c0',
+				backgroundColor: '#a348c0',
 				borderWidth: 2,
 				fill: false,
 				data: []
@@ -48,6 +51,7 @@ export class DatasetService {
 				key: 'Relative',
 				label: lang.translate("stats.relative"),
 				borderColor: '#46afe6',
+				backgroundColor: '#46afe6',
 				borderWidth: 2,
 				fill: false,
 				data: []
@@ -55,6 +59,7 @@ export class DatasetService {
 				key: 'Student',
 				label: lang.translate("stats.student"),
 				borderColor: '#ff8d2e',
+				backgroundColor: '#ff8d2e',
 				borderWidth: 2,
 				fill: false,
 				data: []
@@ -62,6 +67,7 @@ export class DatasetService {
 				key: 'Guest',
 				label: lang.translate("stats.others"),
 				borderColor: '#ff3a55',
+				backgroundColor: '#ff3a55',
 				borderWidth: 2,
 				fill: false,
 				data: []
