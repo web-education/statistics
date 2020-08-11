@@ -28,6 +28,7 @@ export class DatasetService {
 				key: 'Total',
 				label: lang.translate("stats.total"),
 				borderColor: '#333',
+				backgroundColor: '#333',
 				borderWidth: 2,
 				fill: false,
 				data: []
