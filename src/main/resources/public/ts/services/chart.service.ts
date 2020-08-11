@@ -150,7 +150,14 @@ export class ChartService {
 						padding: 30
 					}
 				},
-				responsive: true
+				responsive: true,
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				}
 			}
 		});
 	}
@@ -282,7 +289,14 @@ export class ChartService {
 						padding: 30
 					}
 				},
-				responsive: true
+				responsive: true,
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
+				}
 			}
 		});
 	}
@@ -351,6 +365,13 @@ export class ChartService {
 					labels: {
 						padding: 30
 					}
+				},
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true
+						}
+					}]
 				}
 			}
 		});
@@ -410,7 +431,10 @@ export class ChartService {
 						stacked: true
 					}],
 					yAxes: [{
-						stacked: true
+						stacked: true,
+						ticks: {
+							beginAtZero: true
+						}
 					}]
 				},
 				tooltips: {
