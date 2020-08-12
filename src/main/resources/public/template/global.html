@@ -7,7 +7,7 @@
 			<div class="display-buttons" ng-if="template.contains('list', 'table-list') || template.contains('list', 'icons-list')">
 				<i class="show-list"
 				   ng-class="{ selected: template.contains('list', 'table-list') }"
-				   ng-click="openView('list', 'table-list')"></i>
+				   ng-click="indicatorDetail(indicators[0])"></i>
 				<i class="show-icons"
 				   ng-class="{ selected: template.contains('list', 'icons-list') }"
 				   ng-click="openView('list', 'icons-list')"></i>
