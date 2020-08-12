@@ -343,7 +343,7 @@ export class ChartService {
 		}
 		datasets[0].data = sumData;
 		
-		let chartLabels;
+		let chartLabels: Array<string>;
 		switch (indicator.name) {
 			case 'stats.mostUsedTool':
 				chartLabels = await this.getMostUsedToolChartLabels(entity);
@@ -352,10 +352,27 @@ export class ChartService {
 				break;
 		}
 		
+		// sorting		
+		let labelAndDataArray: Array<{label: string, data: number}> = chartLabels.map((x, i) => {
+			return {
+				label: x,
+				data: datasets[0].data[i] || 0,
+			}
+		});
+		
+		let sortedLabelAndDataArray = labelAndDataArray.sort((a, b) => b.data - a.data);
+		let sortedLabels: Array<string> = [];
+		let sortedData: Array<number> = [];
+		sortedLabelAndDataArray.forEach(x => {
+			sortedLabels.push(x.label);
+			sortedData.push(x.data);
+		});
+		datasets[0].data = sortedData;
+		
 		return new Chart(ctx, {
 			type: indicator.chartType,
 			data: {
-				'labels': chartLabels,
+				'labels': sortedLabels,
 				datasets: datasets,
 			},
 			options: {
