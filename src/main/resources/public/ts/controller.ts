@@ -3,7 +3,7 @@ import { ng, template, ui, _, $, idiom as lang } from 'entcore';
 import { Indicator, IndicatorApi } from './indicators/indicator';
 import { chartService } from './services/chart.service';
 import { dateService } from './services/date.service';
-import { Entity } from './services/entities.service';
+import { Entity, StructuresResponse } from './services/entities.service';
 import { entitiesService } from './services/entities.service';
 import { cacheService } from './services/cache.service';
 import { indicatorService } from './services/indicator.service';
@@ -15,6 +15,7 @@ declare const Chart: any;
 
 interface StatsControllerScope {
 	$root: any;
+	structuresTree: Array<StructuresResponse>;
 	entities: Array<Entity>;
 	scopeEntity: {current: Entity};
 	currentIndicator: Indicator;
@@ -26,15 +27,14 @@ interface StatsControllerScope {
 	allowed: Array<any>;
 	definitions: Array<string>;
 	getExportUrl(indicator: IndicatorApi): string;
-	
 	openIndicator(indicator: Indicator): void;
 	indicatorDetail(indicator: Indicator): void;
 	allowedProjectFunctions(): boolean; 
 	openView(container: any, view: any);
 	$apply: any;
 	getAggregatedValue(indicator: Indicator, entity: Entity): number | string;
-	updateEntityCacheData(): Promise<void>;
-	updateEntityCacheDataAndOpenIndicator(indicator: Indicator): void;
+	selectEntity(id: string): Promise<void>;
+	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>
 }
 
 /**
@@ -60,13 +60,25 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('list', 'icons-list');
 	
 	// get user structures and classes
-	let structures: Array<Entity> = await entitiesService.getStructures(false);
-	structures.map(s => s.level = 'structure');
-	let classes: Array<Entity> = await entitiesService.getClasses();
-	classes.map(c => c.level = 'class');
-	
-	// entities array of structures and classes
-	$scope.entities = [...structures, ...classes];
+	let structures: Array<StructuresResponse> = await entitiesService.getStructures();
+	$scope.structuresTree = entitiesService.asTree(structures);
+	$scope.entities = [];
+	structures.forEach(s => {
+		$scope.entities.push({
+			id: s.id,
+			name: s.name,
+			level: 'structure'
+		});
+		if (s.classes && s.classes.length > 0) {
+			s.classes.forEach(c => {
+				$scope.entities.push({
+					id: c.id,
+					name: c.name,
+					level: 'class'
+				});
+			});
+		}
+	});
 	
 	// current inside a scopeEntity for select ng-change to work properly
 	$scope.scopeEntity = {
@@ -113,19 +125,6 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	$scope.getExportUrl = (indicator: IndicatorApi) => {
 		return encodeURI(`/stats/export?indicator=${indicator}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=month&entityLevel=${$scope.scopeEntity.current.level}&entity=${$scope.scopeEntity.current.id}`);
 	};
-	
-	/**** Update Data when switching Entity ****/
-	$scope.updateEntityCacheData = async (): Promise<void> => {
-		if (!$scope.scopeEntity.current.cacheData 
-			|| cacheService.needsRefresh($scope.scopeEntity.current.cacheData.lastUpdate)) {
-			await initData();
-		}
-	}
-	
-	$scope.updateEntityCacheDataAndOpenIndicator = async (indicator: Indicator) => {
-		await $scope.updateEntityCacheData(); 
-		$scope.openIndicator(indicator);
-	}
 	
 	$scope.getAggregatedValue = function(indicator: Indicator, entity: Entity) {
 		if (entity.cacheData) {
@@ -202,5 +201,19 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 		$scope.currentIndicator = null;
 		template.open(container, view);
+	}
+	
+	/**** Update Data when switching Entity ****/
+	$scope.selectEntity = async function(id: string): Promise<void> {
+		$scope.scopeEntity.current = $scope.entities.find(e => e.id === id);
+		if (!$scope.scopeEntity.current.cacheData 
+			|| cacheService.needsRefresh($scope.scopeEntity.current.cacheData.lastUpdate)) {
+			await initData();
+		}
+	}
+	
+	$scope.selectEntityAndOpenIndicator = async function(id: string, indicator: Indicator): Promise<void> {
+		await $scope.selectEntity(id); 
+		$scope.openIndicator(indicator);
 	}
 }]);

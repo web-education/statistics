@@ -1,10 +1,43 @@
-<article>
+<style>
+	/* Remove default bullets */
+	ul {
+		list-style-type: none;
+	}
 
-	<!-- Upper combo box - Indicator containers (total / structures / classes) -->
-    <select ng-model="scopeEntity.current"
-			ng-options="entity.name for entity in entities"
-			ng-change="updateEntityCacheData()"
-			class="indicator-container-combo"></select>
+	/* Style the caret/arrow */
+	.caret {
+		cursor: pointer;
+		user-select: none; /* Prevent text selection */
+	}
+
+	/* Create the caret/arrow with a unicode, and style it */
+	.caret::before {
+		content: "\25B6";
+		color: black;
+		display: inline-block;
+		margin-right: 6px;
+	}
+
+	/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+	.caret-down::before {
+		transform: rotate(90deg);
+	}
+
+	/* Hide the nested list */
+	.nested {
+		display: none;
+	}
+
+	/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+	.active {
+		display: block;
+	}
+</style>
+
+<article>    
+	<div ng-if="scopeEntity.current">[[scopeEntity.current.name]]</div>
+			
+	<structure-tree items="structuresTree" select="selectEntity(id)"></structure-tree>	
 			
 	<div class="indicator-icons-container">
 		<div ng-repeat="indicator in indicators" class="indicator-icon-box" ng-click="indicatorDetail(indicator)">
