@@ -2,13 +2,12 @@
 	<div class="humane humane-original-info" ng-class="{zero: display.loading === false}">
 		<i class="loading"></i>
 		<span><i18n>stats.loading</i18n></span>
-	</div>	
-
-	<!-- Upper combo box - Indicator containers (total / structures / classes) -->
-    <select ng-model="scopeEntity.current"
-			ng-options="entity.name for entity in entities"
-			ng-change="updateEntityCacheData()"
-			class="indicator-container-combo"></select>
+	</div>
+	  
+	<div class="structure-tree" ng-if="scopeEntity.current">
+		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+		<structure-tree items="structuresTree" select="selectEntity(id)"></structure-tree>
+	</div>
 			
 	<div class="indicator-icons-container">
 		<div ng-repeat="indicator in indicators" class="indicator-icon-box" ng-click="indicatorDetail(indicator)">

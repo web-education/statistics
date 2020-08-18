@@ -266,6 +266,24 @@ public class StatsController extends MongoDbControllerHelper {
         });
     }
 
+    @Get("/structures")
+	public void getStructuresHierarchyAndClasses(final HttpServerRequest request) {
+		UserUtils.getUserInfos(eb, request, user -> {
+			if (user != null) {
+				structureService.getStructuresHierarchyAndClasses(user.getUserId(), either -> {
+					if (either.isLeft()) {
+						log.error(either.left().getValue());
+						renderError(request);
+					} else {
+						renderJson(request, either.right().getValue());
+					}
+				});
+			} else{
+				unauthorized(request);
+			}
+		});
+	}
+
     @Get("/classes")
 	public void getClasses(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {

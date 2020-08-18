@@ -1,7 +1,15 @@
-import http from 'axios';
+import http, { AxiosResponse } from 'axios';
 import { IndicatorApiType } from '../indicators/indicator';
 import { StatsResponse } from './stats-api.service';
 import { Frequency } from './chart.service';
+
+export type StructuresResponse = {
+    id: string;
+    name: string;
+    parents: Array<{id: string, name: string}>;
+    classes: Array<{id: string, name: string}>;
+    children: Array<{id: string, name: string}>;
+}
 
 export type EntityLevel = "platform" | "structure" | "class" | "tenant";
 
@@ -18,26 +26,39 @@ export type Entity = {
             totalValue?: number | string
         }>,
         lastUpdate: Date
-    }
+    };
 }
 
 export class EntitiesService {
+    structures: Array<StructuresResponse> = null;
     
-    structureTree: Array<Entity> = null;
-    classes: Array<Entity> = null;
-    
-    async getStructures(hierarchical: boolean = false): Promise<Array<Entity>> {
-        if (this.structureTree) return this.structureTree;
-        const data = await http.get(`/stats/substructures?hierarchical=${hierarchical}`);
-        this.structureTree = data.data as Array<Entity>;
-        return this.structureTree;
+    async getStructures(): Promise<Array<StructuresResponse>> {        
+        if (this.structures) {
+            return this.structures;
+        }
+        const data: AxiosResponse = await http.get(`/stats/structures`);
+        this.structures = data.data;
+        return this.structures;
     }
     
-    async getClasses(): Promise<Array<Entity>> {
-        if (this.classes) return this.classes;
-        const data = await http.get(`/stats/classes`);
-        this.classes = data.data as Array<Entity>;
-        return this.classes; 
+    public asTree(data: Array<StructuresResponse>): Array<StructuresResponse> {
+        const childrenMap = new Map<string, Array<StructuresResponse>>();
+        data.forEach(structureResponse => {
+            structureResponse.parents && structureResponse.parents.forEach(parent => {
+                if (childrenMap.has(parent.id)) {
+                    childrenMap.get(parent.id).push(structureResponse);
+                } else {
+                    childrenMap.set(parent.id, [structureResponse]);
+                }
+            });
+        });
+        
+        data.forEach(structureResponse => {
+            if (childrenMap.has(structureResponse.id)) {
+                structureResponse.children = childrenMap.get(structureResponse.id);
+            }
+        });
+        return data.filter(structure => !structure.parents || structure.parents.length === 0);
     }
 }
 

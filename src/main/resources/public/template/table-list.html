@@ -1,14 +1,13 @@
 <article class="list-view" style="border: none;">
     <div class="humane humane-original-info" ng-class="{zero: display.loading === false}">
-		<i class="loading"></i>
-		<span><i18n>stats.loading</i18n></span>
+        <i class="loading"></i>
+        <span><i18n>stats.loading</i18n></span>
+    </div>
+
+	<div class="structure-tree" ng-if="scopeEntity.current">
+		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+		<structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
 	</div>
-    
-    <!-- Upper combo box - Indicator containers (total / structures / classes) -->
-    <select ng-model="scopeEntity.current"
-            ng-options="entity.name for entity in entities"
-            ng-change="updateEntityCacheDataAndOpenIndicator(currentIndicator)"
-			class="indicator-container-combo"></select>
 
     <!-- Indicator list -->
     <section class="vertical four cell twelve-mobile" ng-if="scopeEntity.current">
