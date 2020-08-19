@@ -7,7 +7,7 @@
 			class="indicator-container-combo"></select>
 
     <!-- Indicator list -->
-    <section class="vertical four cell" ng-if="scopeEntity.current">
+    <section class="vertical four cell twelve-mobile" ng-if="scopeEntity.current">
 		<nav class="vertical">
 			<ul>
 				<li ng-repeat="indicator in indicators" class="indicator-list-box">
@@ -22,7 +22,7 @@
 	</section>
 
     <!-- Actual chart -->
-    <section class="charts-section eight cell" ng-show="currentIndicator">
+    <section class="charts-section eight cell twelve-mobile" ng-show="currentIndicator">
         <!-- For line charts - menu to group by duration (day / week / month) -->
         <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'line'">
             <div>[[lang.translate('stats.groupBy')]] :</div>
