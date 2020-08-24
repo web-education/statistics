@@ -15,6 +15,7 @@ declare const Chart: any;
 
 interface StatsControllerScope {
 	$root: any;
+	display: {loading: boolean}
 	entities: Array<Entity>;
 	scopeEntity: {current: Entity};
 	currentIndicator: Indicator;
@@ -59,6 +60,10 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('main', 'global');
 	template.open('list', 'icons-list');
 	
+	$scope.display = {
+		loading: true
+	}
+	
 	// get user structures and classes
 	let structures: Array<Entity> = await entitiesService.getStructures(false);
 	structures.map(s => s.level = 'structure');
@@ -68,7 +73,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	// entities array of structures and classes
 	$scope.entities = [...structures, ...classes];
 	
-	// current inside a scopeEntity for select ng-change to work properly
+	// current entity inside a scopeEntity for select ng-change to work properly
 	$scope.scopeEntity = {
 		current: $scope.entities[0]
 	};
@@ -104,6 +109,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		await indicatorService.initConnectionsDailyPeakTotalValue($scope.scopeEntity.current);
 		indicatorService.initMostUsedToolTotalValue($scope.scopeEntity.current);
 		indicatorService.initConnectionsUniqueVisitorsTotalValue($scope.scopeEntity.current);
+		$scope.display.loading = false;
 		safeScopeApply();
 	}
 	
@@ -118,6 +124,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	$scope.updateEntityCacheData = async (): Promise<void> => {
 		if (!$scope.scopeEntity.current.cacheData 
 			|| cacheService.needsRefresh($scope.scopeEntity.current.cacheData.lastUpdate)) {
+			$scope.display.loading = true;
 			await initData();
 		}
 	}
