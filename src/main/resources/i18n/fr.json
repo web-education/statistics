@@ -32,6 +32,7 @@
     "stats.lastMonth": "depuis le mois dernier",
     "stats.since": "depuis",
     "stats.legendTitle": "Légende",
+    "stats.loading":"Données en cours de chargement, veuillez patienter...",
     "stats.monday": "Lundi",
     "stats.month": "Mois",
     "stats.mostUsedTool": "Appli la plus utilisée",
