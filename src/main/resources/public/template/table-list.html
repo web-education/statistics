@@ -3,6 +3,10 @@
 	ul {
 		list-style-type: none;
 	}
+    
+    .flatten {
+		padding-left: 0px;
+	} 
 
 	/* Style the caret/arrow */
 	.caret {
@@ -36,8 +40,11 @@
 
 <article class="list-view" style="border: none;">
     <div ng-if="scopeEntity.current">[[scopeEntity.current.name]]</div>
-    
-    <structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
+    <input type="text" name="searchText" ng-model="searchText">
+    <ode-structure-tree items="structuresTree" 
+                        filter="searchText" 
+                        select="selectEntityAndOpenIndicator(id, currentIndicator)">
+    </ode-structure-tree>
             
     <!-- Indicator list -->
     <section class="vertical four cell" ng-if="scopeEntity.current">

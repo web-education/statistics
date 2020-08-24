@@ -15,6 +15,7 @@ declare const Chart: any;
 
 interface StatsControllerScope {
 	$root: any;
+	searchText: string;
 	structuresTree: Array<StructuresResponse>;
 	entities: Array<Entity>;
 	scopeEntity: {current: Entity};
@@ -34,7 +35,8 @@ interface StatsControllerScope {
 	$apply: any;
 	getAggregatedValue(indicator: Indicator, entity: Entity): number | string;
 	selectEntity(id: string): Promise<void>;
-	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>
+	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
+	getFlattenProperties(): Array<string>;
 }
 
 /**
@@ -49,6 +51,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	/*               INIT & VIEWS              */
 	$scope.template = template;
 	$scope.lang = lang;
+	$scope.searchText = '';
 	
 	$scope.definitions = [
 		'uniqueVisitor',
@@ -62,6 +65,10 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	// get user structures and classes
 	let structures: Array<StructuresResponse> = await entitiesService.getStructures();
 	$scope.structuresTree = entitiesService.asTree(structures);
+	console.log($scope.structuresTree);
+	
+	// build entities array from structures and classes
+	// entities will contain stats data
 	$scope.entities = [];
 	structures.forEach(s => {
 		$scope.entities.push({
@@ -215,5 +222,12 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	$scope.selectEntityAndOpenIndicator = async function(id: string, indicator: Indicator): Promise<void> {
 		await $scope.selectEntity(id); 
 		$scope.openIndicator(indicator);
+	};
+	
+	$scope.getFlattenProperties = function() {
+		// if ($scope.searchText && $scope.searchText.length > 0) {
+			return ['children'];
+		// }
+		// return [];
 	}
 }]);
