@@ -35,9 +35,10 @@
 </style>
 
 <article>    
-	<div ng-if="scopeEntity.current">[[scopeEntity.current.name]]</div>
-			
-	<structure-tree items="structuresTree" select="selectEntity(id)"></structure-tree>	
+	<div class="structure-tree" ng-if="scopeEntity.current">
+		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+		<structure-tree items="structuresTree" select="selectEntity(id)"></structure-tree>
+	</div>
 			
 	<div class="indicator-icons-container">
 		<div ng-repeat="indicator in indicators" class="indicator-icon-box" ng-click="indicatorDetail(indicator)">

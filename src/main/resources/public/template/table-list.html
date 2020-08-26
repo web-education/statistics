@@ -35,9 +35,11 @@
 </style>
 
 <article class="list-view" style="border: none;">
-    <div ng-if="scopeEntity.current">[[scopeEntity.current.name]]</div>
     
-    <structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
+	<div class="structure-tree" ng-if="scopeEntity.current">
+		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+		<structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
+	</div>
             
     <!-- Indicator list -->
     <section class="vertical four cell" ng-if="scopeEntity.current">
