@@ -15,7 +15,7 @@ declare const Chart: any;
 
 interface StatsControllerScope {
 	$root: any;
-	display: {loading: boolean}
+	display: {loading: boolean, showStrucureTree: boolean}
 	structuresTree: Array<StructuresResponse>;
 	entities: Array<Entity>;
 	scopeEntity: {current: Entity};
@@ -61,7 +61,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('list', 'icons-list');
 	
 	$scope.display = {
-		loading: true
+		loading: true,
+		showStrucureTree: false
 	}
 	
 	// get user structures and classes
