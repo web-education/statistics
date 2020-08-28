@@ -2,27 +2,19 @@ import { idiom as lang } from "entcore";
 
 export type DatasetKey = 'Total' | 'Student' | 'Relative' | 'Teacher' | 'Personnel' | 'Guest';
 
-export type ProfileDataset = {
-    key: DatasetKey;
+export type Dataset = {
+    key?: DatasetKey;
     label: string;
-	borderColor: string;
-	backgroundColor: string;
-    borderWidth: number;
-    fill: boolean;
-    data: Array<number>;
-}
-
-export type SingleBarDataset = {
-    label: string;
-    backgroundColor: string;
 	borderColor?: string;
-	borderWidth?: number;
+	backgroundColor: string;
+    borderWidth?: number;
+    fill?: boolean | string | number;
     data: Array<number>;
 }
 
 export class DatasetService {
     
-    public getProfileDataset(): Array<ProfileDataset> {
+    public getAllProfilesDataset(): Array<Dataset> {
 		return [{
 				key: 'Total',
 				label: lang.translate("stats.total"),
@@ -75,7 +67,7 @@ export class DatasetService {
 		]
     }
     
-    public getSingleBarDataset(profile): Array<SingleBarDataset> {
+    public getDatasetByProfile(profile): Array<Dataset> {
 		return [{
             label: lang.translate('stats.' + profile.toLowerCase()),
             backgroundColor: "rgb(56, 137, 193)",

@@ -1,3 +1,8 @@
+<style>
+    .adjust-width-actvated-accounts {
+        width: 78%;
+    }
+</style>
 <article class="list-view" style="border: none;">
     <div class="humane humane-original-info" ng-class="{zero: display.loading === false}">
         <i class="loading"></i>
@@ -38,8 +43,9 @@
         <!-- Information -->
         <h2>[[lang.translate(currentIndicator.chartTitle)]]</h2>
 
-        <!-- Specific to profile bar charts, group by profile -->
-        <div class="chart-profilecriteria-container" ng-if="currentIndicator.name === 'stats.mostUsedTool'">
+        <!-- Group by profile -->
+        <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': currentIndicator.name === 'stats.activatedAccounts'}" 
+            ng-if="currentIndicator.name === 'stats.mostUsedTool' || currentIndicator.name === 'stats.activatedAccounts'">
             <div ng-repeat="profile in currentIndicator.chartProfiles">
                 <input type="radio" ng-model="currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(currentIndicator)">
                 <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>

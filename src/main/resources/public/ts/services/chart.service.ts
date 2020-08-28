@@ -2,11 +2,11 @@ import { idiom as lang } from "entcore";
 import { StatsResponse, StatsAccountsResponse } from "./stats-api.service";
 import { Entity } from "../services/entities.service";
 import { statsApiService } from '../services/stats-api.service';
-import { datasetService, SingleBarDataset, ProfileDataset } from "./dataset.service";
+import { datasetService, Dataset } from "./dataset.service";
 import { cacheService } from "./cache.service";
 import { Indicator } from "../indicators/indicator";
 import { mostUsedToolIndicator } from "../indicators/bar.indicators";
-import { connectionsIndicator, uniqueVisitorsIndicator } from "../indicators/line.indicators";
+import { connectionsIndicator, uniqueVisitorsIndicator, activationIndicator } from "../indicators/line.indicators";
 import { connectionsDailyPeakIndicator, connectionsWeeklyPeakIndicator } from "../indicators/stackedbar.indicators";
 import { dateService } from "./date.service";
 
@@ -66,7 +66,7 @@ export class ChartService {
 		let chartDateLabels: Array<string> = [];
 		let chartDateArray: Array<Date> = [];
 		let chartData: ChartDataGroupedByProfileWithDate = {};
-		let datasets: Array<ProfileDataset> = [];
+		let datasets: Array<Dataset> = [];
 		
 		// get data from cache if exists otherwise from API
 		let data: Array<StatsResponse> = await cacheService.getDataFromCacheOrApi(indicator, entity);
@@ -121,7 +121,7 @@ export class ChartService {
 			}
 			
 			// fill the chart datasets data array with data values
-			datasets = datasetService.getProfileDataset();
+			datasets = datasetService.getAllProfilesDataset();
 			datasets.forEach(dataset => {
 				if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
 					dataset.data = chartData[dataset.key].map(x => x.value);
@@ -172,7 +172,7 @@ export class ChartService {
     public async getConnectionsUniqueVisitorsLineChart(ctx: any, indicator: Indicator, entity: Entity): Promise<typeof Chart> {
 		let chartDateLabels: Array<string> = [];
 		let chartDateArray: Array<Date> = [];
-		let datasets: Array<ProfileDataset> = [];
+		let datasets: Array<Dataset> = [];
 		
 		// get connections data from cache if exists otherwise from API
 		connectionsIndicator.frequency = indicator.frequency;
@@ -261,7 +261,7 @@ export class ChartService {
 			}
 			
 			// fill the chart datasets data array with data values
-			datasets = datasetService.getProfileDataset();
+			datasets = datasetService.getAllProfilesDataset();
 			datasets.forEach(dataset => {
 				if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
 					dataset.data = chartData[dataset.key].map(x => x.value);
@@ -304,6 +304,146 @@ export class ChartService {
 	}
 	
 	/**
+	 * Builds and return a Line Chart for Chart.js from indicator data/labels and entity
+	 * @param ctx canvas context of chart.js dom element
+	 * @param indicator 
+	 * @param entity 
+	 */
+    public async getActivationsAndLoadedLineChart(ctx: any, indicator: Indicator, entity: Entity): Promise<typeof Chart> {
+		let chartDateLabels: Array<string> = [];
+		let chartDateArray: Array<Date> = [];
+		let datasets: Array<Dataset> = [];
+		
+		// get accounts data to get activated and loaded data
+		let accountsData: Array<StatsResponse> = await statsApiService.getStats(
+			'accounts',
+			dateService.getSinceDateISOStringWithoutMs(),
+			'month',
+			entity.level,
+			[entity.id]
+		);
+		
+		if (accountsData && accountsData.length > 0) {
+			// sort response data by date
+			accountsData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+			// generate chart labels from dates in response data
+			chartDateArray = dateService.getDates(
+				dateService.getMinDateFromData(accountsData)
+				, dateService.getMaxDateFromData(accountsData)
+				, indicator.frequency);
+			switch (indicator.frequency) {
+				case 'month':
+					chartDateLabels = dateService.getMonthLabels(chartDateArray);
+					break;
+				case 'week':
+					chartDateLabels = dateService.getWeekLabels(chartDateArray);
+					break;
+				case 'day':
+					chartDateLabels = dateService.getDayLabels(chartDateArray);
+					break;
+				default:
+					break;
+			}
+			
+			// group data by Profile with date, exemple:
+			// Personnel: [{date: '01/01/2020', value: 30}, ...]
+			let activatedChartData: ChartDataGroupedByProfileWithDate = statsApiService.groupByProfileWithDate(accountsData, 'activated');
+			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
+			chartDateArray.forEach((date, index) => {
+				Object.values(activatedChartData).forEach((profileData: Array<{date: Date, value: number}>) => {
+					if (!profileData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
+						profileData.splice(index, 0, {date: date, value: 0});
+					}
+					profileData.forEach((data, index) => {
+						if (data.value === null) {
+							profileData.splice(index, 1, {date: data.date, value: 0});
+						}
+					});
+				});
+			});
+			
+			// group data by Profile with date, exemple:
+			// Personnel: [{date: '01/01/2020', value: 30}, ...]
+			let loadedChartData: ChartDataGroupedByProfileWithDate = statsApiService.groupByProfileWithDate(accountsData, 'loaded');
+			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
+			chartDateArray.forEach((date, index) => {
+				Object.values(loadedChartData).forEach((profileData: Array<{date: Date, value: number}>) => {
+					if (!profileData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
+						profileData.splice(index, 0, {date: date, value: 0});
+					}
+					profileData.forEach((data, index) => {
+						if (data.value === null) {
+							profileData.splice(index, 1, {date: data.date, value: 0});
+						}
+					});
+				});
+			});
+			
+			// add Total dataset
+			if (Object.keys(activatedChartData).length > 0 && activatedChartData.constructor === Object) {
+				activatedChartData['total'] = Object.values(activatedChartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
+					return array1.map((item, index) => {
+						return {date: item.date, value: item.value + array2[index].value};
+					});
+				});
+			}
+			if (Object.keys(loadedChartData).length > 0 && loadedChartData.constructor === Object) {
+				loadedChartData['total'] = Object.values(loadedChartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
+					return array1.map((item, index) => {
+						return {date: item.date, value: item.value + array2[index].value};
+					});
+				});
+			}
+			
+			datasets.push({
+				label: lang.translate('stats.activatedAccounts.legend'),
+				backgroundColor: 'rgb(255, 141, 46)',
+				fill: 'origin',
+				data: activatedChartData[indicator.chartProfile].map(x => x.value)
+			});
+			
+			datasets.push({
+				label: lang.translate('stats.loaded.legend'),
+				backgroundColor: '#ccc',
+				fill: 'origin',
+				data: loadedChartData[indicator.chartProfile].map(x => x.value)
+			});
+		}
+		
+		return new Chart(ctx, {
+			type: indicator.chartType,
+			data: {
+				'labels': chartDateLabels,
+				'datasets': datasets
+			},
+			options: {
+				tooltips: {
+					mode: 'index',
+					position: 'nearest'
+				},
+				lineTension: 0.1,
+				legend: {
+					display: true,
+					position: 'bottom',
+					align: 'center',
+					labels: {
+						padding: 30
+					}
+				},
+				responsive: true,
+				scales: {
+					yAxes: [{
+						ticks: {
+							beginAtZero: true,
+							precision: 0
+						}
+					}]
+				}
+			}
+		});
+	}
+	
+	/**
 	 * Builds and return a Bar Chart for Chart.js from indicator data/labels and entity
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 
@@ -311,7 +451,7 @@ export class ChartService {
 	 */
 	public async getBarChart(ctx: any, indicator: Indicator, entity: Entity): Promise<typeof Chart> {
 		// get dataset for selected profile
-		let datasets: Array<SingleBarDataset> = datasetService.getSingleBarDataset(indicator.chartProfile);
+		let datasets: Array<Dataset> = datasetService.getDatasetByProfile(indicator.chartProfile);
 		// get chart data from API or cache
 		let chartData: ChartDataGroupedByProfileAndModule;
 		switch (indicator.name) {
@@ -416,7 +556,7 @@ export class ChartService {
 				break;
 		}
 		
-		let datasets: Array<ProfileDataset> = datasetService.getProfileDataset().slice(1);
+		let datasets: Array<Dataset> = datasetService.getAllProfilesDataset().slice(1);
 		
 		let chartData: ChartDataGroupedByProfile;
 		switch (indicator.name) {

@@ -46,5 +46,7 @@ export let activationIndicator: Indicator = {
     apiType: 'activations',
     chartTitle: "stats.labels.activatedAccounts",
     chartFrequencies: ['day', 'week', 'month'],
+    chartProfile: 'total',
+    chartProfiles: ['total', 'Teacher', 'Personnel', 'Relative', 'Student'],
     frequency: 'month'
 };

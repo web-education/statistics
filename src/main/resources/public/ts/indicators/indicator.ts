@@ -4,6 +4,8 @@ export type IndicatorApi = 'accounts' | 'access';
 export type IndicatorApiType = 
     'authentications' | 
     'activations' | 
+    'activated' |
+    'loaded' |
     'access' | 
     'unique_visitors' | 
     // mixed type stands for indicator type which data can't be retrieved directly from API 
@@ -15,10 +17,10 @@ export type Indicator = {
     api: IndicatorApi;
     apiType: IndicatorApiType;
     frequency: Frequency;
-	since: string;
-    icon: string;
-    chartType: ChartType;
-    chartTitle: string;
+	since?: string;
+    icon?: string;
+    chartType?: ChartType;
+    chartTitle?: string;
     chartFrequencies?: Array<Frequency>;
     chartProfile?: string;
     chartProfiles?: Array<string>;

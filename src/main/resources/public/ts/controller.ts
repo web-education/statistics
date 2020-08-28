@@ -161,6 +161,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			case 'line':
 				if (indicator.name === 'stats.connectionsByUniqueVisitors') {
 					$scope.chart = await chartService.getConnectionsUniqueVisitorsLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+				} else if (indicator.name === 'stats.activatedAccounts') {
+					$scope.chart = await chartService.getActivationsAndLoadedLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				} else {
 					$scope.chart = await chartService.getLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				}
