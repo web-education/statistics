@@ -6,7 +6,7 @@ import { datasetService, Dataset } from "./dataset.service";
 import { cacheService } from "./cache.service";
 import { Indicator } from "../indicators/indicator";
 import { mostUsedToolIndicator } from "../indicators/bar.indicators";
-import { connectionsIndicator, uniqueVisitorsIndicator, activationIndicator } from "../indicators/line.indicators";
+import { connectionsIndicator, uniqueVisitorsIndicator } from "../indicators/line.indicators";
 import { connectionsDailyPeakIndicator, connectionsWeeklyPeakIndicator } from "../indicators/stackedbar.indicators";
 import { dateService } from "./date.service";
 
@@ -54,8 +54,31 @@ export interface ChartDataGroupedByProfileAndModule extends ChartData {
 	Total?: ChartDataGroupedByModule;
 }
 
+const TOOLTIPS_CONFIG = {
+	mode: 'index',
+	position: 'nearest'
+};
+
+const LEGEND_CONFIG = {
+	display: true,
+	position: 'bottom',
+	align: 'center',
+	labels: {
+		padding: 10,
+		boxWidth: 20
+	}
+};
+
+const SCALES_CONFIG = {
+	yAxes: [{
+		ticks: {
+			beginAtZero: true,
+			precision: 0
+		}
+	}]
+}
+
 export class ChartService {
-	
 	/**
 	 * Builds and return a Line Chart for Chart.js from indicator data/labels and entity
 	 * @param ctx canvas context of chart.js dom element
@@ -137,28 +160,9 @@ export class ChartService {
 				'datasets': datasets
 			},
 			options: {
-				tooltips: {
-					mode: 'index',
-					position: 'nearest'
-				},
-				lineTension: 0.1,
-				legend: {
-					display: true,
-					position: 'bottom',
-					align: 'center',
-					labels: {
-						padding: 30
-					}
-				},
-				responsive: true,
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true,
-							precision: 0
-						}
-					}]
-				}
+				tooltips: TOOLTIPS_CONFIG,
+				legend: LEGEND_CONFIG,
+				scales: SCALES_CONFIG
 			}
 		});
 	}
@@ -277,28 +281,9 @@ export class ChartService {
 				'datasets': datasets
 			},
 			options: {
-				tooltips: {
-					mode: 'index',
-					position: 'nearest'
-				},
-				lineTension: 0.1,
-				legend: {
-					display: true,
-					position: 'bottom',
-					align: 'center',
-					labels: {
-						padding: 30
-					}
-				},
-				responsive: true,
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true,
-							precision: 0
-						}
-					}]
-				}
+				tooltips: TOOLTIPS_CONFIG,
+				legend: LEGEND_CONFIG,
+				scales: SCALES_CONFIG
 			}
 		});
 	}
@@ -417,28 +402,9 @@ export class ChartService {
 				'datasets': datasets
 			},
 			options: {
-				tooltips: {
-					mode: 'index',
-					position: 'nearest'
-				},
-				lineTension: 0.1,
-				legend: {
-					display: true,
-					position: 'bottom',
-					align: 'center',
-					labels: {
-						padding: 30
-					}
-				},
-				responsive: true,
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true,
-							precision: 0
-						}
-					}]
-				}
+				tooltips: TOOLTIPS_CONFIG,
+				legend: LEGEND_CONFIG,
+				scales: SCALES_CONFIG
 			}
 		});
 	}
@@ -516,23 +482,9 @@ export class ChartService {
 				datasets: datasets,
 			},
 			options: {
-				responsive: true,
-				legend: {
-					display: false,
-					position: 'bottom',
-					align: 'center',
-					labels: {
-						padding: 30
-					}
-				},
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero: true,
-							precision: 0
-						}
-					}]
-				}
+				tooltips: TOOLTIPS_CONFIG,
+				legend: LEGEND_CONFIG,
+				scales: SCALES_CONFIG
 			}
 		});
 	}
@@ -598,16 +550,11 @@ export class ChartService {
 						}
 					}]
 				},
-				tooltips: {
-					mode: 'index',
-					position: 'nearest'
-				},
-				lineTension: 0.1,
+				tooltips: TOOLTIPS_CONFIG,
 				legend: {
 					display: true,
 					position: 'bottom'
-				},
-				responsive: true
+				}
 			}
 		}));
 	}
