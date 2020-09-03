@@ -259,7 +259,7 @@ export class ChartService {
 			if (Object.keys(chartData).length > 0 && chartData.constructor === Object) {
 				chartData['Total'] = Object.values(chartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
 					return array1.map((item, index) => {
-						return {date: item.date, value: item.value + array2[index].value};
+						return {date: item.date, value: (item.value + array2[index].value) / 2};
 					});
 				});
 			}
