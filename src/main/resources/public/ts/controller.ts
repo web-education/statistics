@@ -61,7 +61,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('list', 'icons-list');
 	
 	$scope.display = {
-		loading: true,
+		loading: false,
 		showStrucureTree: false
 	}
 	
@@ -117,12 +117,19 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	/**** INIT Data ****/
 	let initData = async () => {
+		$scope.display.loading = true;
+		
 		await cacheService.initEntityMonthCacheData($scope.indicators, $scope.scopeEntity.current);
 		await indicatorService.initConnectionsWeeklyPeakTotalValue($scope.scopeEntity.current);
 		await indicatorService.initConnectionsDailyPeakTotalValue($scope.scopeEntity.current);
 		indicatorService.initMostUsedToolTotalValue($scope.scopeEntity.current);
 		indicatorService.initConnectionsUniqueVisitorsTotalValue($scope.scopeEntity.current);
-		$scope.display.loading = false;
+		
+		setTimeout(() => {
+			$scope.display.loading = false;
+			safeScopeApply();
+		}, 1000);
+		
 		safeScopeApply();
 	}
 	
