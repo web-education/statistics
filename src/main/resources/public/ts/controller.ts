@@ -119,7 +119,10 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	let initData = async () => {
 		$scope.display.loading = true;
 		
+		// init accounts and access data per month for current entity (also init total values)
 		await cacheService.initEntityMonthCacheData($scope.indicators, $scope.scopeEntity.current);
+		
+		// init total values for graphs that need specific calculation
 		await indicatorService.initConnectionsWeeklyPeakTotalValue($scope.scopeEntity.current);
 		await indicatorService.initConnectionsDailyPeakTotalValue($scope.scopeEntity.current);
 		indicatorService.initMostUsedToolTotalValue($scope.scopeEntity.current);

@@ -168,7 +168,7 @@ export class ChartService {
 	}
 	
 	/**
-	 * Builds and return a Line Chart for Chart.js from indicator data/labels and entity
+	 * Specific Line chart because of Connections per UniqueVisitors calculation
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 
 	 * @param entity 
@@ -289,7 +289,7 @@ export class ChartService {
 	}
 	
 	/**
-	 * Builds and return a Line Chart for Chart.js from indicator data/labels and entity
+	 * Specific Line chart because of Activations and loaded accounts.
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 
 	 * @param entity 
@@ -380,18 +380,32 @@ export class ChartService {
 				});
 			}
 			
+			let activatedCumulatedData = [];
+			if (activatedChartData[indicator.chartProfile]) {
+				activatedChartData[indicator.chartProfile].reduce((acc, x) => {
+					activatedCumulatedData.push(acc + x.value); 
+					return acc + x.value;
+				}, 0)
+			}
 			datasets.push({
 				label: lang.translate('stats.activatedAccounts.legend'),
 				backgroundColor: 'rgb(255, 141, 46)',
 				fill: 'origin',
-				data: activatedChartData[indicator.chartProfile].map(x => x.value)
+				data: activatedCumulatedData
 			});
 			
+			let loadedCumulatedData = [];
+			if (loadedChartData[indicator.chartProfile]) {
+				loadedChartData[indicator.chartProfile].reduce((acc, x) => {
+					loadedCumulatedData.push(acc + x.value); 
+					return acc + x.value;
+				}, 0)
+			}
 			datasets.push({
 				label: lang.translate('stats.loaded.legend'),
 				backgroundColor: '#ccc',
 				fill: 'origin',
-				data: loadedChartData[indicator.chartProfile].map(x => x.value)
+				data: loadedCumulatedData
 			});
 		}
 		
