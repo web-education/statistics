@@ -43,7 +43,7 @@ export let activationIndicator: Indicator = {
     since: dateService.getSinceDateLabel(),
     icon: 'people-icon',
     api: 'accounts',
-    apiType: 'activations',
+    apiType: 'activated',
     chartTitle: "stats.labels.activatedAccounts",
     chartFrequencies: ['day', 'week', 'month'],
     chartProfile: 'total',
