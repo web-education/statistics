@@ -35,7 +35,9 @@ interface StatsControllerScope {
 	$apply: any;
 	getAggregatedValue(indicator: Indicator, entity: Entity): number | string;
 	selectEntity(id: string): Promise<void>;
-	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>
+	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
+	isCurrentIndicatorAccountDataExportable();
+	isCurrentIndicatorAccessDataExportable();
 }
 
 /**
@@ -234,5 +236,16 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	$scope.selectEntityAndOpenIndicator = async function(id: string, indicator: Indicator): Promise<void> {
 		await $scope.selectEntity(id); 
 		$scope.openIndicator(indicator);
+	}
+	
+	$scope.isCurrentIndicatorAccountDataExportable = function(): boolean {
+		return $scope.currentIndicator.name === 'stats.connections'
+			|| $scope.currentIndicator.name === 'stats.uniqueVisitors'
+			|| $scope.currentIndicator.name === 'stats.connectionsByUniqueVisitors'
+			|| $scope.currentIndicator.name === 'stats.activatedAccounts';
+	}
+	
+	$scope.isCurrentIndicatorAccessDataExportable = function(): boolean {
+		return $scope.currentIndicator.name === 'stats.mostUsedTool';
 	}
 }]);

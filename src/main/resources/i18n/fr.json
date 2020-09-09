@@ -45,6 +45,7 @@
     "stats.relative": "Parents",
     "stats.saturday": "Samedi",
     "stats.showMore": "Plus de statistiques",
+    "stats.export": "Exporter les statistiques",
     "stats.export.accounts": "Exporter les statistiques de fréquentation",
     "stats.export.access": "Exporter les statistiques d'accès aux applications",
     "stats.student": "Élèves",
