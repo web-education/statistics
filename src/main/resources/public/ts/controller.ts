@@ -63,7 +63,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('list', 'icons-list');
 	
 	$scope.display = {
-		loading: false,
+		loading: true,
 		showStrucureTree: false
 	}
 	
@@ -133,7 +133,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		setTimeout(() => {
 			$scope.display.loading = false;
 			safeScopeApply();
-		}, 1000);
+		}, 500);
 		
 		safeScopeApply();
 	}
