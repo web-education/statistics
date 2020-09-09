@@ -391,6 +391,7 @@ export class ChartService {
 				label: lang.translate('stats.activatedAccounts.legend'),
 				backgroundColor: 'rgb(255, 141, 46)',
 				fill: 'origin',
+				lineTension: 0,
 				data: activatedCumulatedData
 			});
 			
@@ -405,6 +406,7 @@ export class ChartService {
 				label: lang.translate('stats.loaded.legend'),
 				backgroundColor: '#ccc',
 				fill: 'origin',
+				lineTension: 0,
 				data: loadedCumulatedData
 			});
 		}
