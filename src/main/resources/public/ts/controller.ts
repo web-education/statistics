@@ -15,7 +15,7 @@ declare const Chart: any;
 
 interface StatsControllerScope {
 	$root: any;
-	display: {loading: boolean, showStrucureTree: boolean}
+	display: {loading: boolean}
 	structuresTree: Array<StructuresResponse>;
 	entities: Array<Entity>;
 	scopeEntity: {current: Entity};
@@ -36,8 +36,9 @@ interface StatsControllerScope {
 	getAggregatedValue(indicator: Indicator, entity: Entity): number | string;
 	selectEntity(id: string): Promise<void>;
 	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
-	isCurrentIndicatorAccountDataExportable();
-	isCurrentIndicatorAccessDataExportable();
+	isCurrentIndicatorAccountDataExportable(): boolean;
+	isCurrentIndicatorAccessDataExportable(): boolean;
+	closeStructureTree(): void;
 }
 
 /**
@@ -63,8 +64,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('list', 'icons-list');
 	
 	$scope.display = {
-		loading: true,
-		showStrucureTree: false
+		loading: true
 	}
 	
 	// get user structures and classes

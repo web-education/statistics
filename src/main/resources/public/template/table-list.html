@@ -10,8 +10,8 @@
     </div>
 
 	<div class="structure-tree" ng-if="scopeEntity.current">
-		<strong ng-click="display.showStrucureTree = !display.showStrucureTree" class="structure-tree__current">[[scopeEntity.current.name]]</strong>
-		<structure-tree ng-if="display.showStrucureTree" items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
+		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+		<structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
 	</div>
 
     <!-- Indicator list -->
