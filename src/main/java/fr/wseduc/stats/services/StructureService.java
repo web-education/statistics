@@ -42,8 +42,8 @@ public class StructureService {
 
     public void getStructuresHierarchyAndClasses(String userId, Handler<Either<String, JsonArray>> handler) {
         final String query =
-                "MATCH (u:User {id: {userId}})-[:IN]->(pg:Group)-[:DEPENDS]->(s:Structure)" +
-                " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g:Group)<-[:IN]-(u)" +
+                "MATCH (u:User {id: {userId}})-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(s:Structure)" +
+                " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g:ProfileGroup)<-[:IN]-(u)" +
                 " WITH u, s, COLLECT(distinct {id: ps.id, name: ps.name}) as parents" +
                 " OPTIONAL MATCH (u)-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
                 " WITH u, s, parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
