@@ -1,5 +1,6 @@
 package fr.wseduc.stats.services;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,10 +45,17 @@ public class PGStatsService implements StatsService {
             final LocalDateTime to = (Utils.isNotEmpty(params.get("to"))) ? LocalDateTime.parse(params.get("to")) : LocalDateTime.now();
             final List<String> entityIds = params.getAll("entity");
             final String entityLevel = params.get("entitylevel");
+            if (!allowedValues.getJsonArray("entities-levels").contains(entityLevel)) {
+                handler.handle(new Either.Left<>("invalid.entity.level"));
+                return;
+            }
+            final String selectUai = ("structure".equals(entityLevel)) ? "e.uai as uai, " : "";
             final Tuple t = Tuple.of(platformId, from, to);
             String query =
-                    "SELECT * FROM stats." + getTableName(params) +
-                    "WHERE platform_id = $1 AND (date BETWEEN $2 AND $3) ";
+                    "SELECT e.name as entity_name, " + selectUai + " s.* " +
+                    "FROM stats." + getTableName(params) + "s " +
+                    "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
+                    "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) ";
             if (entityIds != null && !entityIds.isEmpty()) {
                 query += "AND " + entityLevel + "_id IN " +
                 IntStream.rangeClosed(4, entityIds.size() + 3).boxed()
