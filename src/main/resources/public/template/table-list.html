@@ -9,10 +9,12 @@
         <span><i18n>stats.loading</i18n></span>
     </div>
 
-	<div class="structure-tree" ng-if="scopeEntity.current">
-		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
-		<structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
-	</div>
+    <div>
+        <div class="structure-tree" ng-if="scopeEntity.current">
+            <strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+            <structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
+        </div>
+    </div>
 
     <!-- Indicator list -->
     <section class="vertical four cell twelve-mobile" ng-if="scopeEntity.current">
