@@ -1,4 +1,4 @@
-"Date";"Profil";"Nombre d'accès";"Application"
+"Etablissement";"UAI";"Date";"Profil";"Nombre d'accès";"Application"
 {{#list}}
-"{{date}}";"{{profile}}";"{{access}}";"{{module}}"
+"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile}}";"{{access}}";"{{module}}"
 {{/list}}
