@@ -1,11 +1,10 @@
 import { idiom as lang } from "entcore";
-import { dateService } from "../services/date.service";
 import { Indicator } from "./indicator";
 
 export let connectionsDailyPeakIndicator: Indicator = {
     name: 'stats.dailyPeak',
     chartType: 'stackedbar',
-    since: dateService.getSinceDateLabel(),
+    since: "",
     api: 'accounts',
     apiType: 'authentications',
     icon: 'clock-icon',
@@ -16,7 +15,7 @@ export let connectionsDailyPeakIndicator: Indicator = {
 export let connectionsWeeklyPeakIndicator: Indicator = {
     name: 'stats.weeklyPeak',
     chartType: 'stackedbar',
-    since: dateService.getSinceDateLabel(),
+    since: "",
     icon: 'calendar-button',
     api: 'accounts',
     apiType: 'authentications',

@@ -1,10 +1,9 @@
-import { dateService } from "../services/date.service";
 import { Indicator } from "./indicator";
 
 export let connectionsIndicator: Indicator = {
     name: 'stats.connections',
     chartType: 'line',
-    since: dateService.getSinceDateLabel(),
+    since: "",
     icon: 'connection-icon',
     api: 'accounts',
     apiType: 'authentications',
@@ -40,7 +39,7 @@ export let connectionsUniqueVisitorsIndicator: Indicator = {
 export let activationIndicator: Indicator = {
     name: 'stats.activatedAccounts',
     chartType: 'line',
-    since: dateService.getSinceDateLabel(),
+    since: "",
     icon: 'people-icon',
     api: 'accounts',
     apiType: 'activated',

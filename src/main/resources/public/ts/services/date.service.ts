@@ -99,10 +99,6 @@ export class DateService {
 		return this.getSinceDate().toISOString().split('.')[0];
 	}
 	
-    public getSinceDateLabel(): string {
-	    return this.getSinceDate().toLocaleString('default', {month: "long", year: "numeric"});
-    }
-	
 	public moreThanOneHourAgo(date: Date): boolean {
 		if (!date) {
 			return true;

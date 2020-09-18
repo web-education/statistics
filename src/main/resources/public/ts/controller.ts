@@ -1,4 +1,4 @@
-import { ng, template, ui, _, $, idiom as lang } from 'entcore';
+import { ng, template, ui, _, $, idiom as lang, currentLanguage } from 'entcore';
 
 import { Indicator, IndicatorApi } from './indicators/indicator';
 import { chartService } from './services/chart.service';
@@ -39,6 +39,7 @@ interface StatsControllerScope {
 	isCurrentIndicatorAccountDataExportable(): boolean;
 	isCurrentIndicatorAccessDataExportable(): boolean;
 	closeStructureTree(): void;
+	getSinceDateLabel(indicator: Indicator): string;
 }
 
 /**
@@ -106,7 +107,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		} catch (e) { }
 	};
 	
-	/**** LIST OF INDICATORS ****/
+	/**** LIST OF INDICATORS ****/	
 	$scope.indicators = [
 		connectionsIndicator,
 		uniqueVisitorsIndicator,
@@ -247,5 +248,13 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	$scope.isCurrentIndicatorAccessDataExportable = function(): boolean {
 		return $scope.currentIndicator.name === 'stats.mostUsedTool';
+	}
+	
+	// moved from dateService to controller cause of currentLanguage not ready in dateService when initializing indicators...
+	$scope.getSinceDateLabel = function(indicator: Indicator): string {
+		if (!indicator.since) {
+			return dateService.getSinceDate().toLocaleString([currentLanguage], {month: "long", year: "numeric"});
+		}
+		return indicator.since;
 	}
 }]);

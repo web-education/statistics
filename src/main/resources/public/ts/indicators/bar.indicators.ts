@@ -1,10 +1,9 @@
-import { dateService } from "../services/date.service";
 import { Indicator } from "./indicator";
 
 export let mostUsedToolIndicator: Indicator = {
     name: 'stats.mostUsedTool',
     chartType: 'bar',
-    since: dateService.getSinceDateLabel(),
+    since: "",
     icon: 'stats-service-icon',
     api: 'access',
     apiType: 'access',
