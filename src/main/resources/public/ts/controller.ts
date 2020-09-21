@@ -240,6 +240,9 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 	
 	$scope.isCurrentIndicatorAccountDataExportable = function(): boolean {
+		if (!$scope.currentIndicator) {
+			return false;
+		}
 		return $scope.currentIndicator.name === 'stats.connections'
 			|| $scope.currentIndicator.name === 'stats.uniqueVisitors'
 			|| $scope.currentIndicator.name === 'stats.connectionsByUniqueVisitors'
@@ -247,6 +250,9 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 	
 	$scope.isCurrentIndicatorAccessDataExportable = function(): boolean {
+		if (!$scope.currentIndicator) {
+			return false;
+		}
 		return $scope.currentIndicator.name === 'stats.mostUsedTool';
 	}
 	
