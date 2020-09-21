@@ -19,9 +19,8 @@ export class IndicatorService {
 		}
 		
 		if (uniqueVisitorsTotalValue > 0) {
-			const connectionsDividedUniqueVisitorsTotalValue = Math.round((authenticationsTotalValue / uniqueVisitorsTotalValue) * 100) / 100;
 			const connectionsDividedUniqueVisitorsCacheIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.connectionsByUniqueVisitors');
-			connectionsDividedUniqueVisitorsCacheIndicator.totalValue = connectionsDividedUniqueVisitorsTotalValue;
+			connectionsDividedUniqueVisitorsCacheIndicator.totalValue = Math.round(authenticationsTotalValue / uniqueVisitorsTotalValue);
 		}
     }
     

@@ -1,6 +1,6 @@
 import { idiom as lang } from "entcore";
 
-export type DatasetKey = 'Total' | 'Student' | 'Relative' | 'Teacher' | 'Personnel' | 'Guest';
+export type DatasetKey = 'Total' | 'Average' | 'Student' | 'Relative' | 'Teacher' | 'Personnel' | 'Guest';
 
 export type Dataset = {
     key?: DatasetKey;
@@ -19,17 +19,8 @@ const BORDER_WIDTH_CONFIG:number = 2;
 
 export class DatasetService {
 
-    public getAllProfilesDataset(): Array<Dataset> {
+	public getAllProfilesDataset(): Array<Dataset> {
 		return [{
-				key: 'Total',
-				label: lang.translate("stats.total"),
-				borderColor: '#aaa',
-				backgroundColor: '#aaa',
-				borderWidth: BORDER_WIDTH_CONFIG,
-				fill: FILL_CONFIG,
-				lineTension: LINE_TENSION_CONFIG,
-				data: []
-			}, {
 				key: 'Teacher',
 				label: lang.translate("stats.teacher"),
 				borderColor: '#6fbe2e',
@@ -76,6 +67,36 @@ export class DatasetService {
 				data: []
 			}
 		]
+    }
+	
+	public getAllProfilesWithTotalDataset(): Array<Dataset> {
+		const res = this.getAllProfilesDataset();
+		res.unshift({
+			key: 'Total',
+			label: lang.translate("stats.total"),
+			borderColor: '#aaa',
+			backgroundColor: '#aaa',
+			borderWidth: BORDER_WIDTH_CONFIG,
+			fill: FILL_CONFIG,
+			lineTension: LINE_TENSION_CONFIG,
+			data: []
+		});
+		return res;
+	}
+	
+	public getAllProfilesWithAverageDataset(): Array<Dataset> {
+		const res = this.getAllProfilesDataset();
+		res.unshift({
+			key: 'Average',
+			label: lang.translate("stats.average"),
+			borderColor: '#aaa',
+			backgroundColor: '#aaa',
+			borderWidth: BORDER_WIDTH_CONFIG,
+			fill: FILL_CONFIG,
+			lineTension: LINE_TENSION_CONFIG,
+			data: []
+		});
+		return res;
     }
     
     public getDatasetByProfile(profile): Array<Dataset> {

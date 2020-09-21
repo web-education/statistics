@@ -144,7 +144,7 @@ export class ChartService {
 			}
 			
 			// fill the chart datasets data array with data values
-			datasets = datasetService.getAllProfilesDataset();
+			datasets = datasetService.getAllProfilesWithTotalDataset();
 			datasets.forEach(dataset => {
 				if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
 					dataset.data = chartData[dataset.key].map(x => x.value);
@@ -250,14 +250,14 @@ export class ChartService {
 					if (!uniqueVisitorsDateAndValue.value || isNaN(uniqueVisitorsDateAndValue.value)) {
 						return {date: uniqueVisitorsDateAndValue.date, value: 0};
 					}
-					return {date: connectionsDateAndValue.date, value: Math.round((connectionsDateAndValue.value / uniqueVisitorsDateAndValue.value) * 100) / 100};
+					return {date: connectionsDateAndValue.date, value: Math.round(connectionsDateAndValue.value / uniqueVisitorsDateAndValue.value)};
 				});
 				chartData[key] = divisionArray;
 			});
 			
 			// add Total dataset
 			if (Object.keys(chartData).length > 0 && chartData.constructor === Object) {
-				chartData['Total'] = Object.values(chartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
+				chartData['Average'] = Object.values(chartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
 					return array1.map((item, index) => {
 						return {date: item.date, value: (item.value + array2[index].value) / 2};
 					});
@@ -265,7 +265,7 @@ export class ChartService {
 			}
 			
 			// fill the chart datasets data array with data values
-			datasets = datasetService.getAllProfilesDataset();
+			datasets = datasetService.getAllProfilesWithAverageDataset();
 			datasets.forEach(dataset => {
 				if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
 					dataset.data = chartData[dataset.key].map(x => x.value);
@@ -524,7 +524,7 @@ export class ChartService {
 				break;
 		}
 		
-		let datasets: Array<Dataset> = datasetService.getAllProfilesDataset().slice(1);
+		let datasets: Array<Dataset> = datasetService.getAllProfilesDataset();
 		
 		let chartData: ChartDataGroupedByProfile;
 		switch (indicator.name) {
