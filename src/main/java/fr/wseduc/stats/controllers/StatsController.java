@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -147,7 +148,18 @@ public class StatsController extends MongoDbControllerHelper {
 		if (statsService instanceof StatsServiceMongoImpl) {
 			statsService.listStats(null, handler);
 		} else {
-			statsService.listStats(request.params(), handler);
+			if ("true".equals(request.params().get("substructures")) && "structure".equals(request.params().get("entitylevel"))) {
+				structureService.getSubStructures(request.params().get("entity"), either -> {
+					if (either.isRight()) {
+						request.params().set("entity", (List<String>) either.right().getValue().getJsonArray("ids").getList());
+						statsService.listStats(request.params(), handler);
+					} else {
+						renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
+					}
+				});
+			} else {
+				statsService.listStats(request.params(), handler);
+			}
 		}
 	}
 

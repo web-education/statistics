@@ -62,6 +62,9 @@ public class PGStatsService implements StatsService {
                 .map(i -> "$" + i).collect(Collectors.joining(",", "(", ")"));
                 entityIds.stream().forEach(e -> t.addString(e));
             }
+            if ("structure".equals(entityLevel) && entityIds.size() > 1) {
+                query += " ORDER BY date DESC, entity_name ASC ";
+            }
             readPgPool.preparedQuery(query, t, ar -> {
                 if (ar.succeeded()) {
                     final PgRowSet rows = ar.result();

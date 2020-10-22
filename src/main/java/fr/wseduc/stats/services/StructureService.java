@@ -53,4 +53,13 @@ public class StructureService {
         final JsonObject params = new JsonObject().put("userId", userId);
         neo4j.execute(query, params, Neo4jResult.validResultHandler(handler));
     }
+
+    public void getSubStructures(String structureId, Handler<Either<String, JsonObject>> handler) {
+        final String query =
+                "MATCH (:Structure {id: {structureId}})<-[:HAS_ATTACHMENT*0..]-(s:Structure) " +
+                "RETURN COLLECT(DISTINCT s.id) as ids ";
+        final JsonObject params = new JsonObject().put("structureId", structureId);
+        neo4j.execute(query, params, Neo4jResult.validUniqueResultHandler(handler));
+    }
+
 }
