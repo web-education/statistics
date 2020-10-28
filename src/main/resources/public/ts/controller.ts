@@ -129,6 +129,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		await indicatorService.initConnectionsWeeklyPeakTotalValue($scope.scopeEntity.current);
 		await indicatorService.initConnectionsDailyPeakTotalValue($scope.scopeEntity.current);
 		indicatorService.initMostUsedToolTotalValue($scope.scopeEntity.current);
+		indicatorService.initUniqueVisitorsTotalValue($scope.scopeEntity.current);
 		indicatorService.initConnectionsUniqueVisitorsTotalValue($scope.scopeEntity.current);
 		
 		setTimeout(() => {

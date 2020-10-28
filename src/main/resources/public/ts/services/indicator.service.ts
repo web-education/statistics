@@ -1,22 +1,42 @@
 import { idiom as lang } from "entcore";
 import { Entity } from "./entities.service";
-import { statsApiService, StatsResponse } from "./stats-api.service";
+import { StatsAccountsResponse, statsApiService, StatsResponse } from "./stats-api.service";
 import { ChartDataGroupedByProfile } from "./chart.service";
 import { dateService } from "./date.service";
 
 export class IndicatorService {
-    
-    public initConnectionsUniqueVisitorsTotalValue(entity: Entity) {
-		let authenticationsTotalValue = 0;
-		const authenticationsCacheIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.connections');
-		if (authenticationsCacheIndicator) {
-			authenticationsTotalValue = authenticationsCacheIndicator.totalValue as number;
-		}
+	
+	public initUniqueVisitorsTotalValue(entity: Entity) {
 		let uniqueVisitorsTotalValue = 0;
 		const uniqueVisitorsCacheIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.uniqueVisitors');
-		if (uniqueVisitorsCacheIndicator) {
-			uniqueVisitorsTotalValue = uniqueVisitorsCacheIndicator.totalValue as number;
-		}
+		
+		uniqueVisitorsCacheIndicator.data.forEach((d: StatsAccountsResponse) => {
+			if (dateService.isSameMonth(new Date(), new Date(d.date))) {
+				uniqueVisitorsTotalValue += d.unique_visitors;
+			}
+		});
+		
+		uniqueVisitorsCacheIndicator.totalValue = uniqueVisitorsTotalValue;
+	}
+	
+    public initConnectionsUniqueVisitorsTotalValue(entity: Entity) {
+		let currentDate = new Date();
+		
+		let authenticationsTotalValue = 0;
+		const authenticationsCacheIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.connections');
+		authenticationsCacheIndicator.data.forEach((d: StatsAccountsResponse) => {
+			if (dateService.isSameMonth(currentDate, new Date(d.date))) {
+				authenticationsTotalValue += d.authentications;
+			}
+		});
+		
+		let uniqueVisitorsTotalValue = 0;
+		const uniqueVisitorsCacheIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.uniqueVisitors');
+		uniqueVisitorsCacheIndicator.data.forEach((d: StatsAccountsResponse) => {
+			if (dateService.isSameMonth(currentDate, new Date(d.date))) {
+				uniqueVisitorsTotalValue += d.unique_visitors;
+			}
+		});
 		
 		if (uniqueVisitorsTotalValue > 0) {
 			const connectionsDividedUniqueVisitorsCacheIndicator = entity.cacheData.indicators.find(indicator => indicator.name === 'stats.connectionsByUniqueVisitors');

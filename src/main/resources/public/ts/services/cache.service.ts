@@ -28,9 +28,10 @@ export class CacheService {
 			indicators: [],
 			lastUpdate: null
 		};
-		// for each indicator, calculate total value and fill entity cache with data
+		
 		indicators.forEach(indicator => {
 			let data: Array<StatsResponse> = [];
+			
 			if (indicator.api === 'accounts') {
 				data = accountsData;
 			} else if (indicator.api === 'access') {
@@ -38,7 +39,7 @@ export class CacheService {
 			}
 			
 			let total: number = 0;
-			if (indicator.apiType !== 'mixed' && indicator.name !== 'stats.mostUsedTool') {
+			if (indicator.name === 'stats.connections' || indicator.name === 'stats.activatedAccounts') {
 				data.forEach(d => total += d[indicator.apiType]);
 			}
 			
