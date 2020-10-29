@@ -499,7 +499,9 @@ export class ChartService {
 			},
 			options: {
 				tooltips: TOOLTIPS_CONFIG,
-				legend: LEGEND_CONFIG,
+				legend: {
+					display: false
+				},
 				scales: SCALES_CONFIG
 			}
 		});
