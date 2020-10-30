@@ -24,7 +24,7 @@
                     <a ng-click="openIndicator(indicator)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: currentIndicator === indicator }">
                         <h1 class="indicator-number">[[getAggregatedValue(indicator, scopeEntity.current)]]</h1>
     					<div class="indicator-name">[[lang.translate(indicator.name)]]</div>
-                        <div class="indicator-since"><i18n>stats.since</i18n> [[lang.translate(getSinceDateLabel(indicator))]]</div>
+                        <div class="indicator-since"><i18n>stats.since</i18n> [[lang.translate(getSinceDateLabel(indicator, scopeEntity.current))]]</div>
                     </a>
 				</li>
 			</ul>

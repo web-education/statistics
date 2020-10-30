@@ -39,7 +39,7 @@ interface StatsControllerScope {
 	isCurrentIndicatorAccountDataExportable(): boolean;
 	isCurrentIndicatorAccessDataExportable(): boolean;
 	closeStructureTree(): void;
-	getSinceDateLabel(indicator: Indicator): string;
+	getSinceDateLabel(indicator: Indicator, entity: Entity): string;
 }
 
 /**
@@ -258,9 +258,17 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 	
 	// moved from dateService to controller cause of currentLanguage not ready in dateService when initializing indicators...
-	$scope.getSinceDateLabel = function(indicator: Indicator): string {
-		if (!indicator.since) {
-			return dateService.getSinceDate().toLocaleString([currentLanguage], {month: "long", year: "numeric"});
+	$scope.getSinceDateLabel = function(indicator: Indicator, entity: Entity): string {
+		if (!indicator.since && entity.cacheData && entity.cacheData.indicators) {
+			const indicatorCache = entity.cacheData.indicators.find(i => i.name === indicator.name);
+			
+			if (indicatorCache.data && indicatorCache.data.length > 0) {
+				let minDate = indicatorCache.data.reduce((a, b) => a.date < b.date ? a : b);
+				console.log(minDate.date);
+				return new Date(minDate.date).toLocaleString([currentLanguage], {month: "long", year: "numeric"});
+			} else {
+				return dateService.getSinceDate().toLocaleString([currentLanguage], {month: "long", year: "numeric"});
+			}
 		}
 		return indicator.since;
 	}
