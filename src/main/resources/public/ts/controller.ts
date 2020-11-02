@@ -264,7 +264,6 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			
 			if (indicatorCache.data && indicatorCache.data.length > 0) {
 				let minDate = indicatorCache.data.reduce((a, b) => a.date < b.date ? a : b);
-				console.log(minDate.date);
 				return new Date(minDate.date).toLocaleString([currentLanguage], {month: "long", year: "numeric"});
 			} else {
 				return dateService.getSinceDate().toLocaleString([currentLanguage], {month: "long", year: "numeric"});
