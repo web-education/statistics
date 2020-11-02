@@ -29,8 +29,6 @@
     "stats.labels.mostUsedTool": "Applis les plus utilisées",
     "stats.labels.uniqueVisitors": "Evolution du nombre de visiteurs uniques",
     "stats.labels.weeklyPeak": "Nombre de visites par jour de la semaine",
-    "stats.last30days": "les 30 derniers jours",
-    "stats.lastMonth": "depuis le mois dernier",
     "stats.loaded.legend": "Comptes chargés",
     "stats.since": "depuis",
     "stats.legendTitle": "Légende",
