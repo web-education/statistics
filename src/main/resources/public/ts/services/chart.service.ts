@@ -134,14 +134,20 @@ export class ChartService {
 				});
 			});
 			
-			// add Total dataset
-			if (Object.keys(chartData).length > 0 && chartData.constructor === Object) {
-				chartData['Total'] = Object.values(chartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
-					return array1.map((item, index) => {
-						return {date: item.date, value: item.value + array2[index].value};
-					});
+			// total dataset			
+			chartData['Total'] = [];
+			chartDateArray.forEach((chartDate, index) => {
+				let total = 0;
+				Object.keys(chartData).forEach(profile => {
+					if (profile !== 'Total') {
+						const items = chartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
+						if (items) {
+							total += items.reduce((acc, x) => acc.value + x.value, {value: 0});
+						}
+					}
 				});
-			}
+				chartData['Total'][index] = {date: chartDate, value: total};
+			});
 			
 			// fill the chart datasets data array with data values
 			datasets = datasetService.getAllProfilesWithTotalDataset();
@@ -250,19 +256,27 @@ export class ChartService {
 					if (!uniqueVisitorsDateAndValue.value || isNaN(uniqueVisitorsDateAndValue.value)) {
 						return {date: uniqueVisitorsDateAndValue.date, value: 0};
 					}
-					return {date: connectionsDateAndValue.date, value: Math.round(connectionsDateAndValue.value / uniqueVisitorsDateAndValue.value)};
+					return {date: connectionsDateAndValue.date, value: Math.round((connectionsDateAndValue.value / uniqueVisitorsDateAndValue.value) * 100) / 100};
 				});
 				chartData[key] = divisionArray;
 			});
 			
-			// add Total dataset
-			if (Object.keys(chartData).length > 0 && chartData.constructor === Object) {
-				chartData['Average'] = Object.values(chartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
-					return array1.map((item, index) => {
-						return {date: item.date, value: (item.value + array2[index].value) / 2};
-					});
+			// average dataset
+			let nbProfileMax = Math.max(Object.keys(connectionsChartData).length, Object.keys(uniqueVisitorsChartData).length);
+			chartData['Average'] = [];
+			chartDateArray.forEach((chartDate, index) => {
+				let total = 0;
+				Object.keys(chartData).forEach(profile => {
+					if (profile !== 'Average') {					
+						const items = chartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
+						if (items) {
+							total += items.reduce((acc, x) => acc.value + x.value, {value: 0});;
+						}
+					}
 				});
-			}
+				let average = total / nbProfileMax;
+				chartData['Average'][index] = {date: chartDate, value: Math.round(average * 100) / 100};
+			});
 			
 			// fill the chart datasets data array with data values
 			datasets = datasetService.getAllProfilesWithAverageDataset();
@@ -364,21 +378,27 @@ export class ChartService {
 				});
 			});
 			
-			// add Total dataset
-			if (Object.keys(activatedChartData).length > 0 && activatedChartData.constructor === Object) {
-				activatedChartData['total'] = Object.values(activatedChartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
-					return array1.map((item, index) => {
-						return {date: item.date, value: item.value + array2[index].value};
-					});
+			// total dataset			
+			activatedChartData['total'] = [];
+			loadedChartData['total'] = [];
+			chartDateArray.forEach((chartDate, index) => {
+				let totalActivated = 0;
+				let totalLoaded = 0;
+				Object.keys(activatedChartData).forEach(profile => {
+					if (profile !== 'total') {						
+						const activatedItems = activatedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
+						if (activatedItems) {
+							totalActivated += activatedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
+						}
+						const loadedItems = loadedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
+						if (loadedItems) {
+							totalLoaded += loadedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
+						}
+					}
 				});
-			}
-			if (Object.keys(loadedChartData).length > 0 && loadedChartData.constructor === Object) {
-				loadedChartData['total'] = Object.values(loadedChartData).reduce((array1: Array<{date: Date, value: number}>, array2: Array<{date: Date, value: number}>) => {
-					return array1.map((item, index) => {
-						return {date: item.date, value: item.value + array2[index].value};
-					});
-				});
-			}
+				activatedChartData['total'][index] = {date: chartDate, value: totalActivated};
+				loadedChartData['total'][index] = {date: chartDate, value: totalLoaded};
+			});
 			
 			let activatedCumulatedData = [];
 			if (activatedChartData[indicator.chartProfile]) {

@@ -54,7 +54,7 @@ export class DateService {
 			case 'week':
 				const date1WeekNumber = this.getWeekNumber(date1);
 				const date2WeekNumber = this.getWeekNumber(date2);
-				return date1WeekNumber === date2WeekNumber;
+				return date1WeekNumber === date2WeekNumber && date1.getFullYear() === date2.getFullYear();
 			case 'day':
 				return this.isSameMonth(date1, date2) && date1.getDate() === date2.getDate();
 			default:
