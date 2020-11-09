@@ -1,7 +1,7 @@
 <style>
-    .adjust-width-actvated-accounts {
-        width: 78%;
-    }
+    .charts-section input[type=radio]+label {
+		padding-left: 0;
+	}
 </style>
 <article class="list-view" style="border: none;">
     <div class="humane humane-original-info" ng-class="{zero: display.loading === false}">
@@ -45,20 +45,19 @@
         <!-- Information -->
         <h2>[[lang.translate(currentIndicator.chartTitle)]]</h2>
 
-        <!-- Group by profile -->
+        <!-- Chart container -->
+        <div style="text-align: center">
+            <canvas id="chart" width="600" height="400"></canvas>
+            <!-- h5 class="legend-title">[[lang.translate("stats.legendTitle")]]</h5>
+            <div id="chart-legend-container"></div-->
+		</div>
+		<!-- Group by profile -->
         <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': currentIndicator.name === 'stats.activatedAccounts'}" 
             ng-if="currentIndicator.name === 'stats.mostUsedTool' || currentIndicator.name === 'stats.activatedAccounts'">
             <div ng-repeat="profile in currentIndicator.chartProfiles">
                 <input type="radio" ng-model="currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(currentIndicator)">
                 <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>
             </div>
-        </div>
-
-        <!-- Chart container -->
-        <div style="text-align: center">
-            <canvas id="chart" width="600" height="400"></canvas>
-            <!-- h5 class="legend-title">[[lang.translate("stats.legendTitle")]]</h5>
-            <div id="chart-legend-container"></div-->
         </div>
     </section>
 
