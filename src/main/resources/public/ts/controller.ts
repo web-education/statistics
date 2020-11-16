@@ -144,7 +144,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 
 	/**** Export API route and query params ****/
 	$scope.getExportUrl = (indicator: IndicatorApi) => {
-		return encodeURI(`/stats/export?indicator=${indicator}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.scopeEntity.current.level}&entity=${$scope.scopeEntity.current.id}&accumulate=true`);
+		return encodeURI(`/stats/export?indicator=${indicator}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.scopeEntity.current.level}&entity=${$scope.scopeEntity.current.id}&accumulate=false`);
 	};
 	
 	$scope.getAggregatedValue = function(indicator: Indicator, entity: Entity) {
