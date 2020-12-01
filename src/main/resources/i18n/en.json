@@ -52,5 +52,9 @@
     "stats.week": "Week",
     "stats.weekOf": "Week ",
     "stats.weeklyPeak": "Weekly connections peak",
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "admin": "Admin",
+    "annuaire": "Directory",
+    "myaccount": "My Account",
+    "stats": "Statistics"
 }

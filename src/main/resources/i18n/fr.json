@@ -60,5 +60,9 @@
     "stats.week": "Semaine",
     "stats.weekOf": "Semaine du ",
     "stats.weeklyPeak": "Pic de connexions hebdomadaire",
-    "workspace": "Espace documentaire"
+    "workspace": "Espace documentaire",
+    "admin": "Admin",
+    "annuaire": "Annuaire",
+    "myaccount": "Mon compte",
+    "stats": "Statistiques"
 }
