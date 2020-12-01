@@ -56,5 +56,6 @@
     "admin": "Admin",
     "annuaire": "Directory",
     "myaccount": "My Account",
-    "stats": "Statistics"
+    "stats": "Statistics",
+    "classparam": "Class settings"
 }

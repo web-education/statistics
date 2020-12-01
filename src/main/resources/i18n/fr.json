@@ -64,5 +64,6 @@
     "admin": "Admin",
     "annuaire": "Annuaire",
     "myaccount": "Mon compte",
-    "stats": "Statistiques"
+    "stats": "Statistiques",
+    "classparam": "Paramétrage de la classe"
 }
