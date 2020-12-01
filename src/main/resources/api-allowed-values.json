@@ -1,5 +1,6 @@
 {
     "indicators" : ["accounts", "access"],
     "entities-levels" : ["platform","structure", "class", "tenant"],
-    "frequencies" : ["hour", "day", "week", "month"]
+    "frequencies" : ["hour", "day", "week", "month"],
+    "modules" : ["ShareBigFiles","ClassParam","Calendar","Pages","Scrapbook","CollaborativeWall","Poll","Actualites","Annuaire","Homeworks","Conversation","MyAccount","SchoolBook","Rbs","Website","Exercizer","Archive","Support","Community","TimelineGenerator","Workspace","Mindmap","Blog","Forum","Zimbra","Admin","Mediacentre","Wiki","WebConference","CollaborativeEditor","Presences","Rack"]
 }
