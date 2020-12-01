@@ -25,6 +25,9 @@ package fr.wseduc.stats;
 import java.text.ParseException;
 
 import org.entcore.common.aggregation.MongoConstants.COLLECTIONS;
+import org.entcore.common.events.EventHelper;
+import org.entcore.common.events.EventStore;
+import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.mongodb.MongoDbConf;
 
@@ -106,6 +109,9 @@ public class Stats extends BaseServer {
 
 		final StatsController statsController = new StatsController(COLLECTIONS.stats.name());
 		statsController.setStatsService(statsService);
+		final EventStore eventStore = EventStoreFactory.getFactory().getEventStore(Stats.class.getSimpleName());
+		final EventHelper eventHelper =  new EventHelper(eventStore);
+		statsController.setEventHelper(eventHelper);
 
 		// REST BASICS
 		addController(statsController);

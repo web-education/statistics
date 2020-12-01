@@ -45,6 +45,7 @@ import fr.wseduc.webutils.Either;
 
 import io.vertx.core.MultiMap;
 import org.entcore.common.aggregation.processing.AggregationProcessing;
+import org.entcore.common.events.EventHelper;
 import org.entcore.common.http.filter.ResourceFilter;
 import org.entcore.common.http.filter.SuperAdminFilter;
 import org.entcore.common.mongodb.MongoDbControllerHelper;
@@ -63,6 +64,7 @@ public class StatsController extends MongoDbControllerHelper {
 	//Computation service
 	private StatsService statsService;
 	private final StructureService structureService = new StructureService();
+	private EventHelper eventHelper;
 
 	//Permissions
 	private static final String
@@ -86,6 +88,7 @@ public class StatsController extends MongoDbControllerHelper {
 	@SecuredAction(value = view)
 	public void view(HttpServerRequest request) {
 		renderView(request);
+		eventHelper.onAccess(request);
 	}
 
 	/**
@@ -313,4 +316,9 @@ public class StatsController extends MongoDbControllerHelper {
 			}
 		});
 	}
+
+	public void setEventHelper(EventHelper eventHelper) {
+		this.eventHelper = eventHelper;
+	}
+
 }
