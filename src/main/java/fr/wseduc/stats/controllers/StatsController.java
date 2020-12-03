@@ -262,7 +262,8 @@ public class StatsController extends MongoDbControllerHelper {
 	}
 
 
-    @Get("/substructures")
+	@Get("/substructures")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
     public void getSubStructures(final HttpServerRequest request) {
         UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
@@ -281,7 +282,8 @@ public class StatsController extends MongoDbControllerHelper {
         });
     }
 
-    @Get("/structures")
+	@Get("/structures")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void getStructuresHierarchyAndClasses(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {
@@ -299,7 +301,8 @@ public class StatsController extends MongoDbControllerHelper {
 		});
 	}
 
-    @Get("/classes")
+	@Get("/classes")
+	@SecuredAction(value = "", type = ActionType.AUTHENTICATED)
 	public void getClasses(final HttpServerRequest request) {
 		UserUtils.getUserInfos(eb, request, user -> {
 			if (user != null) {

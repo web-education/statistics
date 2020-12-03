@@ -27,7 +27,8 @@ public class StructureService {
                 " WHERE u.id = {userId} " +
                 " OPTIONAL MATCH (s)-[r:HAS_ATTACHMENT]->(ps:Structure)" +
                 " WITH s, COLLECT({id: ps.id, name: ps.name}) as parents" +
-                " return distinct s.id as id, s.name as name, parents as parents ";
+                " return distinct s.id as id, s.name as name, parents as parents " +
+                " ORDER BY name ";
         final JsonObject params = new JsonObject().put("userId", userId);
         neo4j.execute(query, params, Neo4jResult.validResultHandler(handler));
     }
@@ -35,7 +36,8 @@ public class StructureService {
     public void getClassesForUser(String userId, Handler<Either<String, JsonArray>> handler) {
         final String query = "match (u:User)-[IN]->(pg:ProfileGroup)-[DEPENDS]->(c:Class)-[:BELONGS]->(s:Structure) "
                 + " where u.id = {userId} "
-                + " return distinct c.id as id, c.name as name ";
+                + " return distinct c.id as id, c.name as name " +
+                " ORDER BY name ";
         final JsonObject params = new JsonObject().put("userId", userId);
         neo4j.execute(query, params, Neo4jResult.validResultHandler(handler));
     }
@@ -48,7 +50,8 @@ public class StructureService {
                 " OPTIONAL MATCH (u)-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
                 " WITH u, s, parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
                 " RETURN DISTINCT s.id as id, s.name as name, CASE WHEN any(p in parents where p <> {id: null, name: null}) THEN parents END as parents," +
-                " CASE WHEN any(c in classes where c <> {id: null, name: null}) THEN classes END as classes";
+                " CASE WHEN any(c in classes where c <> {id: null, name: null}) THEN classes END as classes " +
+                " ORDER BY name ";
 
         final JsonObject params = new JsonObject().put("userId", userId);
         neo4j.execute(query, params, Neo4jResult.validResultHandler(handler));
