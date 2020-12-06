@@ -57,5 +57,7 @@
     "annuaire": "Directory",
     "myaccount": "My Account",
     "stats": "Statistics",
-    "classparam": "Class settings"
+    "classparam": "Class settings",
+    "zimbra" : "Messaging",
+    "presences" : "Attendance"
 }
