@@ -63,7 +63,7 @@ public class PGStatsService implements StatsService {
                 entityIds.stream().forEach(e -> t.addString(e));
             }
             if ("access".equals(params.get("indicator"))) {
-                query += " AND module IN " + allowedValues.getJsonArray("modules").stream()
+                query += " AND access > 0 AND module IN " + allowedValues.getJsonArray("modules").stream()
                         .map(x -> x.toString()).collect(Collectors.joining("','", "('", "')"));
             }
             if ("structure".equals(entityLevel) && entityIds.size() > 1) {
