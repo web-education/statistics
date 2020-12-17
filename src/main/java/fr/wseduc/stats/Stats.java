@@ -83,7 +83,8 @@ public class Stats extends BaseServer {
 
 		final StatsService statsService;
 		final JsonObject readPGConfig = config.getJsonObject("read-pg-config");
-		if (readPGConfig != null && !readPGConfig.isEmpty()) {
+		final boolean oldStats = config.getBoolean("mongo-stats-service", false);
+		if (readPGConfig != null && !readPGConfig.isEmpty() && !oldStats) {
 			final PgPoolOptions options = new PgPoolOptions().setPort(readPGConfig.getInteger("port", 5432))
 					.setHost(readPGConfig.getString("host")).setDatabase(readPGConfig.getString("database"))
 					.setUser(readPGConfig.getString("user")).setPassword(readPGConfig.getString("password"))
@@ -91,7 +92,7 @@ public class Stats extends BaseServer {
 			PgPool pgPool = PgClient.pool(vertx, options);
 			statsService = new PGStatsService(platformId, config.getJsonObject("api-allowed-values"));
 			((PGStatsService) statsService).setReadPgPool(pgPool);
-		} else if (eventStoreConfig != null && eventStoreConfig.getJsonObject("postgresql-slave") != null) {
+		} else if (eventStoreConfig != null && eventStoreConfig.getJsonObject("postgresql-slave") != null && !oldStats) {
 			final JsonObject eventStorePGConfig = eventStoreConfig.getJsonObject("postgresql-slave");
 			final PgPoolOptions options = new PgPoolOptions()
 				.setPort(eventStorePGConfig.getInteger("port", 5432))
