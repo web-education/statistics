@@ -35,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import fr.wseduc.stats.filters.ExportStatsResourceProvider;
 import fr.wseduc.stats.filters.ListStatsResourceProvider;
+import fr.wseduc.stats.filters.StatsResourceProvider;
 import fr.wseduc.stats.services.StatsService;
 import fr.wseduc.stats.services.StatsServiceMongoImpl;
 import fr.wseduc.stats.services.StructureService;
@@ -107,8 +108,8 @@ public class StatsController extends MongoDbControllerHelper {
 	 * @param request Client request
 	 */
 	@Get("/list")
-	@SecuredAction(value = list, type = ActionType.AUTHENTICATED)
-	// @ResourceFilter(ListStatsResourceProvider.class)
+	@SecuredAction(value = "", type = ActionType.RESOURCE)
+	@ResourceFilter(StatsResourceProvider.class)
 	public void listStats(final HttpServerRequest request) {
 		statsService.listStats(request.params(), arrayResponseHandler(request));
 	}
@@ -118,8 +119,8 @@ public class StatsController extends MongoDbControllerHelper {
 	 * @param request Client request
 	 */
 	@Get("/export")
-	@SecuredAction(value = export, type = ActionType.AUTHENTICATED)
-	// @ResourceFilter(ExportStatsResourceProvider.class)
+	@SecuredAction(value = "", type = ActionType.RESOURCE)
+	@ResourceFilter(StatsResourceProvider.class)
 	public void export(final HttpServerRequest request) {
 		final Handler<Either<String, JsonArray>> handler = new Handler<Either<String, JsonArray>>() {
 			@Override
