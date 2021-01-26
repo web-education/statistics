@@ -46,7 +46,8 @@ public class StructureService {
         final String query =
                 "MATCH (u:User {id: {userId}})-[:IN]->(pg)-[:DEPENDS]->(s:Structure)" +
                 " WHERE (pg:ProfileGroup OR pg:FunctionGroup) " +
-                " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g:ProfileGroup)<-[:IN]-(u)" +
+                " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g)<-[:IN]-(u)" +
+                " WHERE (g:ProfileGroup OR g:FunctionGroup) " +
                 " WITH u, s, COLLECT(distinct {id: ps.id, name: ps.name}) as parents" +
                 " OPTIONAL MATCH (u)-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
                 " WITH u, s, parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
