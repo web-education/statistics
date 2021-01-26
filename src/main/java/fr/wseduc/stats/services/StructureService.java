@@ -51,9 +51,10 @@ public class StructureService {
                 " WITH u, s, COLLECT(distinct {id: ps.id, name: ps.name}) as parents" +
                 " OPTIONAL MATCH (u)-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
                 " WITH u, s, parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
-                " RETURN DISTINCT s.id as id, s.name as name, CASE WHEN any(p in parents where p <> {id: null, name: null}) THEN parents END as parents," +
+                " WITH DISTINCT s, CASE WHEN any(p in parents where p <> {id: null, name: null}) THEN parents END as parents," +
                 " CASE WHEN any(c in classes where c <> {id: null, name: null}) THEN classes END as classes " +
-                " ORDER BY name ";
+                " RETURN DISTINCT s.id as id, s.name as name, parents, classes, length(coalesce(parents,[])) > 0 as notroot " +
+                " ORDER BY notroot, name ";
 
         final JsonObject params = new JsonObject().put("userId", userId);
         neo4j.execute(query, params, Neo4jResult.validResultHandler(handler));
