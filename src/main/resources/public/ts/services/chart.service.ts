@@ -399,35 +399,29 @@ export class ChartService {
 				activatedChartData['total'][index] = {date: chartDate, value: totalActivated};
 				loadedChartData['total'][index] = {date: chartDate, value: totalLoaded};
 			});
-			
-			let activatedCumulatedData = [];
+
+			let activationDatasetValues = [];
 			if (activatedChartData[indicator.chartProfile]) {
-				activatedChartData[indicator.chartProfile].reduce((acc, x) => {
-					activatedCumulatedData.push(acc + x.value); 
-					return acc + x.value;
-				}, 0)
+				activationDatasetValues = activatedChartData[indicator.chartProfile].map(x => x.value);
 			}
 			datasets.push({
 				label: lang.translate('stats.activatedAccounts.legend'),
 				backgroundColor: 'rgb(255, 141, 46)',
 				fill: 'origin',
 				lineTension: 0,
-				data: activatedCumulatedData
+				data: activationDatasetValues
 			});
 			
-			let loadedCumulatedData = [];
+			let loadedDatasetValues = [];
 			if (loadedChartData[indicator.chartProfile]) {
-				loadedChartData[indicator.chartProfile].reduce((acc, x) => {
-					loadedCumulatedData.push(acc + x.value); 
-					return acc + x.value;
-				}, 0)
+				loadedDatasetValues = loadedChartData[indicator.chartProfile].map(x => x.value);
 			}
 			datasets.push({
 				label: lang.translate('stats.loaded.legend'),
 				backgroundColor: '#ccc',
 				fill: 'origin',
 				lineTension: 0,
-				data: loadedCumulatedData
+				data: loadedDatasetValues
 			});
 		}
 		
