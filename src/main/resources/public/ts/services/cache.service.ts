@@ -39,8 +39,18 @@ export class CacheService {
 			}
 			
 			let total: number = 0;
-			if (indicator.name === 'stats.connections' || indicator.name === 'stats.activatedAccounts') {
+			if (indicator.name === 'stats.connections') {
 				data.forEach(d => total += d[indicator.apiType]);
+			} else if (indicator.name === 'stats.activatedAccounts') {
+				// activated metric is cumulated so we need to get last value for each profile
+				['Student', 'Relative', 'Teacher', 'Personnel', 'Guest'].forEach(profile => {
+					const dataFilteredByProfile = data.filter(d => d.profile === profile);
+					if (dataFilteredByProfile && dataFilteredByProfile.length > 0) {
+						dataFilteredByProfile
+							.filter(d => new Date(d.date).getTime() === dateService.getMaxDateFromData(dataFilteredByProfile).getTime())
+							.forEach(x => total += x['activated']);
+					}
+				});
 			}
 			
 			let cacheIndicator = {
