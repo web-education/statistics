@@ -10,6 +10,7 @@ export type Dataset = {
     borderWidth?: number;
 	fill?: boolean | string | number;
 	lineTension?: number,
+	spanGaps?: boolean,
     data: Array<number>;
 }
 

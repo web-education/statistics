@@ -347,36 +347,10 @@ export class ChartService {
 			// group data by Profile with date, exemple:
 			// Personnel: [{date: '01/01/2020', value: 30}, ...]
 			let activatedChartData: ChartDataGroupedByProfileWithDate = statsApiService.groupByProfileWithDate(accountsData, 'activated');
-			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
-			chartDateArray.forEach((date, index) => {
-				Object.values(activatedChartData).forEach((profileData: Array<{date: Date, value: number}>) => {
-					if (!profileData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
-						profileData.splice(index, 0, {date: date, value: 0});
-					}
-					profileData.forEach((data, index) => {
-						if (data.value === null) {
-							profileData.splice(index, 1, {date: data.date, value: 0});
-						}
-					});
-				});
-			});
 			
 			// group data by Profile with date, exemple:
 			// Personnel: [{date: '01/01/2020', value: 30}, ...]
 			let loadedChartData: ChartDataGroupedByProfileWithDate = statsApiService.groupByProfileWithDate(accountsData, 'loaded');
-			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
-			chartDateArray.forEach((date, index) => {
-				Object.values(loadedChartData).forEach((profileData: Array<{date: Date, value: number}>) => {
-					if (!profileData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
-						profileData.splice(index, 0, {date: date, value: 0});
-					}
-					profileData.forEach((data, index) => {
-						if (data.value === null) {
-							profileData.splice(index, 1, {date: data.date, value: 0});
-						}
-					});
-				});
-			});
 			
 			// total dataset			
 			activatedChartData['total'] = [];
@@ -409,6 +383,7 @@ export class ChartService {
 				backgroundColor: 'rgb(255, 141, 46)',
 				fill: 'origin',
 				lineTension: 0,
+				spanGaps: true,
 				data: activationDatasetValues
 			});
 			
@@ -421,6 +396,7 @@ export class ChartService {
 				backgroundColor: '#ccc',
 				fill: 'origin',
 				lineTension: 0,
+				spanGaps: true,
 				data: loadedDatasetValues
 			});
 		}
