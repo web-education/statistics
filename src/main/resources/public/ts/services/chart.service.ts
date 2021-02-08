@@ -317,7 +317,7 @@ export class ChartService {
 		let accountsData: Array<StatsResponse> = await statsApiService.getStats(
 			'accounts',
 			dateService.getSinceDateISOStringWithoutMs(),
-			'month',
+			indicator.frequency,
 			entity.level,
 			[entity.id]
 		);
