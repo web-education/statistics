@@ -361,11 +361,11 @@ export class ChartService {
 				Object.keys(activatedChartData).forEach(profile => {
 					if (profile !== 'total') {						
 						const activatedItems = activatedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
-						if (activatedItems) {
+						if (activatedItems && activatedItems.length > 0) {
 							totalActivated += activatedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
 						}
 						const loadedItems = loadedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
-						if (loadedItems) {
+						if (loadedItems && activatedItems.length > 0) {
 							totalLoaded += loadedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
 						}
 					}
