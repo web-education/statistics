@@ -347,10 +347,26 @@ export class ChartService {
 			// group data by Profile with date, exemple:
 			// Personnel: [{date: '01/01/2020', value: 30}, ...]
 			let activatedChartData: ChartDataGroupedByProfileWithDate = statsApiService.groupByProfileWithDate(accountsData, 'activated');
+			// for every dates in chart, fill the chartData with null value if no data for that date
+			chartDateArray.forEach((date, index) => {
+				Object.values(activatedChartData).forEach((profileData: Array<{date: Date, value: number}>) => {
+					if (!profileData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
+						profileData.splice(index, 0, {date: date, value: null});
+					}
+				});
+			});
 			
 			// group data by Profile with date, exemple:
 			// Personnel: [{date: '01/01/2020', value: 30}, ...]
 			let loadedChartData: ChartDataGroupedByProfileWithDate = statsApiService.groupByProfileWithDate(accountsData, 'loaded');
+			// for every dates in chart, fill the chartData with null value if no data for that date
+			chartDateArray.forEach((date, index) => {
+				Object.values(loadedChartData).forEach((profileData: Array<{date: Date, value: number}>) => {
+					if (!profileData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
+						profileData.splice(index, 0, {date: date, value: null});
+					}
+				});
+			});
 			
 			// total dataset			
 			activatedChartData['total'] = [];
@@ -359,14 +375,39 @@ export class ChartService {
 				let totalActivated = 0;
 				let totalLoaded = 0;
 				Object.keys(activatedChartData).forEach(profile => {
-					if (profile !== 'total') {						
+					if (profile !== 'total') {	
+						// total activated calculation				
 						const activatedItems = activatedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
 						if (activatedItems && activatedItems.length > 0) {
-							totalActivated += activatedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
+							let allNull: boolean = true;
+							activatedItems.forEach(a => {
+								if (a.value !== null) {
+									allNull = false;
+								}
+							});
+							
+							if (allNull) {
+								totalActivated = null;
+							} else {
+								totalActivated += activatedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
+							}
 						}
+						
+						// total loaded calculation
 						const loadedItems = loadedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
 						if (loadedItems && activatedItems.length > 0) {
-							totalLoaded += loadedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
+							let allNull: boolean = true;
+							loadedItems.forEach(l => {
+								if (l.value !== null) {
+									allNull = false;
+								}
+							});
+							
+							if (allNull) {
+								totalLoaded = null;
+							} else {
+								totalLoaded += loadedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
+							}
 						}
 					}
 				});
