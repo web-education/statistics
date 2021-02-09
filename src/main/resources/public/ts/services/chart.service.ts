@@ -368,49 +368,79 @@ export class ChartService {
 				});
 			});
 			
-			// total dataset			
+			// Total dataset calculation:
 			activatedChartData['total'] = [];
 			loadedChartData['total'] = [];
+			
 			chartDateArray.forEach((chartDate, index) => {
-				let totalActivated = 0;
-				let totalLoaded = 0;
-				Object.keys(activatedChartData).forEach(profile => {
-					if (profile !== 'total') {	
-						// total activated calculation				
-						const activatedItems = activatedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
-						if (activatedItems && activatedItems.length > 0) {
-							let allNull: boolean = true;
-							activatedItems.forEach(a => {
-								if (a.value !== null) {
-									allNull = false;
+				// Handling null values:
+				// if all data are null for a date range then total is null,
+				// and we let the chartjs spanGaps option to handle gap display in line chart
+				let activatedAllNullValues: boolean = true;
+				let loadedAllNullValues: boolean = true;
+				
+				Object
+					.keys(activatedChartData)
+					.filter((profile: string) => profile !== 'total')
+					.forEach((profile: string) => {
+						activatedChartData[profile]
+							.filter((data: {date: Date, value: number}) => 
+								dateService.isInSameRange(data.date, chartDate, indicator.frequency))
+							.forEach((data: {date: Date, value: number}) => {
+								if (data.value !== null) {
+									activatedAllNullValues = false;
 								}
 							});
-							
-							if (allNull) {
-								totalActivated = null;
-							} else {
+					});
+				
+				Object
+					.keys(loadedChartData)
+					.filter((profile: string) => profile !== 'total')
+					.forEach((profile: string) => {
+						loadedChartData[profile]
+							.filter((data: {date: Date, value: number}) => 
+								dateService.isInSameRange(data.date, chartDate, indicator.frequency))
+							.forEach((data: {date: Date, value: number}) => {
+								if (data.value !== null) {
+									loadedAllNullValues = false;
+								}
+							})
+					});
+				
+				// total activated calculation
+				let totalActivated = 0;
+				if (activatedAllNullValues) {
+					totalActivated = null;
+				} else {
+					Object
+						.keys(activatedChartData)
+						.filter((profile: string) => profile !== 'total')
+						.forEach((profile: string) => {
+							const activatedItems = activatedChartData[profile].filter((data: {date: Date, value: number}) => 
+								dateService.isInSameRange(data.date, chartDate, indicator.frequency));
+							if (activatedItems && activatedItems.length > 0) {
 								totalActivated += activatedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
 							}
-						}
-						
-						// total loaded calculation
-						const loadedItems = loadedChartData[profile].filter(d => dateService.isInSameRange(d.date, chartDate, indicator.frequency));
-						if (loadedItems && activatedItems.length > 0) {
-							let allNull: boolean = true;
-							loadedItems.forEach(l => {
-								if (l.value !== null) {
-									allNull = false;
-								}
-							});
-							
-							if (allNull) {
-								totalLoaded = null;
-							} else {
+						});
+				}
+				
+				// total loaded calculation
+				let totalLoaded = 0;
+				if (loadedAllNullValues) {
+					totalLoaded = null;
+				} else {
+					Object
+						.keys(loadedChartData)
+						.filter((profile: string) => profile !== 'total')
+						.forEach((profile: string) => {	
+							const loadedItems = loadedChartData[profile].filter((data: {date: Date, value: number}) => 
+								dateService.isInSameRange(data.date, chartDate, indicator.frequency));
+							if (loadedItems && loadedItems.length > 0) {
 								totalLoaded += loadedItems.reduce((acc, x) => acc.value + x.value, {value: 0});
 							}
-						}
-					}
-				});
+					});
+				}
+				
 				activatedChartData['total'][index] = {date: chartDate, value: totalActivated};
 				loadedChartData['total'][index] = {date: chartDate, value: totalLoaded};
 			});
