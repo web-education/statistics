@@ -21,3 +21,8 @@ rev-manifest.json
 **/ts/*.js.map
 **/.DS_Store
 **/view
+gradlew
+gradlew.bat
+package-lock.json
+.idea
+gradle/wrapper
