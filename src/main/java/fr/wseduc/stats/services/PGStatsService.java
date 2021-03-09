@@ -65,6 +65,10 @@ public class PGStatsService implements StatsService {
             if ("access".equals(params.get("indicator"))) {
                 query += " AND access > 0 AND module IN " + allowedValues.getJsonArray("modules").stream()
                         .map(x -> x.toString()).collect(Collectors.joining("','", "('", "')"));
+                if ("CONNECTOR".equals(params.get("type")) || "ACCESS".equals(params.get("type"))) {
+                    t.addString(params.get("type"));
+                    query += " AND type = $" + t.size();
+                }
             }
             if ("structure".equals(entityLevel) && entityIds.size() > 1) {
                 query += " ORDER BY date DESC, entity_name ASC ";
