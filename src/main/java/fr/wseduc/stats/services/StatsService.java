@@ -34,5 +34,7 @@ import fr.wseduc.webutils.Either;
 public interface StatsService {
 
 	public void listStats(MultiMap data, Handler<Either<String, JsonArray>> handler);
+
+	public void listStatsExport(MultiMap data, Handler<Either<String, JsonArray>> handler);
 	
 }
