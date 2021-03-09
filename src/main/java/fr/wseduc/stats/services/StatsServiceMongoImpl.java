@@ -116,4 +116,9 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 		mongo.find(collection, MongoQueryBuilder.build(filterBuilder), sortObject, new JsonObject(), MongoDbResult.validResultsHandler(handler));
 	}
 
+	@Override
+	public void listStatsExport(MultiMap data, Handler<Either<String, JsonArray>> handler) {
+		listStats(data, handler);
+	}
+
 }

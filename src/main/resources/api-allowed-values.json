@@ -7,5 +7,19 @@
         "Admin","Mediacentre","Wiki","WebConference","CollaborativeEditor","Presences","Stats","Rack",
         "artips","LaboMEP","madmagz","Educagri","Edulib","KNE-CNS","Universalis","Pearltrees","projet-voltaire","EduMaxicours","Moodle","numericours","Pearltrees",
         "Pronote","ProEPS","HiSQOOL","library","numeritab","CIDJ","MSEL","GRR","Educ-Arte"
-    ]
+    ],
+    "devices-mapping" : {
+        "select-devices" : ["desktop", "mobile_app", "tablet"],
+        "sum-devices" : {
+            "smartphone" : ["smartphone", "phablet"],
+            "other" : ["camera", "car browser", "console", "portable media player", "smart display", "tv", "unknown", "wearable", "feature phone"]
+        }
+    },
+    "devices-mapping-export" : {
+        "select-devices" : ["desktop", "mobile_app", "tablet", "camera", "car browser", "console", "portable media player", "smart display", "tv", "unknown", "wearable", "feature phone"],
+        "sum-devices" : {
+            "smartphone" : ["smartphone", "phablet"]
+        }
+    }
+
 }
