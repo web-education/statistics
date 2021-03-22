@@ -1,6 +1,7 @@
 import { idiom as lang } from "entcore";
 
-export type DatasetKey = 'Total' | 'Average' | 'Student' | 'Relative' | 'Teacher' | 'Personnel' | 'Guest';
+export type DatasetKey = 'Total' | 'Average' | 'Student' | 'Relative' | 'Teacher' | 'Personnel' | 'Guest' | 'desktop' |
+	'mobile_app' | 'tablet' | 'smartphone' | 'other';
 
 export type Dataset = {
     key?: DatasetKey;
@@ -107,6 +108,56 @@ export class DatasetService {
 			data: []
         }];
 	}
+	
+	public getDevicesDataset(): Array<Dataset> {
+		return [{
+				key: 'desktop',
+				label: lang.translate("stats.device.desktop"),
+				borderColor: '#6fbe2e',
+				backgroundColor: '#6fbe2e',
+				borderWidth: BORDER_WIDTH_CONFIG,
+				fill: FILL_CONFIG,
+				lineTension: LINE_TENSION_CONFIG,
+				data: []
+			}, {
+				key: 'mobile_app',
+				label: lang.translate("stats.device.mobile_app"),
+				borderColor: '#a348c0',
+				backgroundColor: '#a348c0',
+				borderWidth: BORDER_WIDTH_CONFIG,
+				fill: FILL_CONFIG,
+				lineTension: LINE_TENSION_CONFIG,
+				data: []
+			}, {
+				key: 'tablet',
+				label: lang.translate("stats.device.tablet"),
+				borderColor: '#46afe6',
+				backgroundColor: '#46afe6',
+				borderWidth: BORDER_WIDTH_CONFIG,
+				fill: FILL_CONFIG,
+				lineTension: LINE_TENSION_CONFIG,
+				data: []
+			}, {
+				key: 'smartphone',
+				label: lang.translate("stats.device.smartphone"),
+				borderColor: '#ff8d2e',
+				backgroundColor: '#ff8d2e',
+				borderWidth: BORDER_WIDTH_CONFIG,
+				fill: FILL_CONFIG,
+				lineTension: LINE_TENSION_CONFIG,
+				data: []
+			}, {
+				key: 'other',
+				label: lang.translate("stats.device.other"),
+				borderColor: '#ff3a55',
+				backgroundColor: '#ff3a55',
+				borderWidth: BORDER_WIDTH_CONFIG,
+				fill: FILL_CONFIG,
+				lineTension: LINE_TENSION_CONFIG,
+				data: []
+			}
+		]
+    }
 }
 
 export const datasetService = new DatasetService();

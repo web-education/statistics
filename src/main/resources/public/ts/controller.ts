@@ -7,7 +7,7 @@ import { Entity, StructuresResponse } from './services/entities.service';
 import { entitiesService } from './services/entities.service';
 import { cacheService } from './services/cache.service';
 import { indicatorService } from './services/indicator.service';
-import { connectionsIndicator, uniqueVisitorsIndicator, connectionsUniqueVisitorsIndicator, activationIndicator } from './indicators/line.indicators';
+import { connectionsIndicator, uniqueVisitorsIndicator, connectionsUniqueVisitorsIndicator, activationIndicator, devicesIndicator } from './indicators/line.indicators';
 import { mostUsedAppsIndicator, mostUsedConnectorIndicator } from './indicators/bar.indicators';
 import { connectionsDailyPeakIndicator, connectionsWeeklyPeakIndicator } from './indicators/stackedbar.indicators';
 import { userService } from './services/user.service';
@@ -124,6 +124,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 	$scope.indicators = [
 		...$scope.indicators,
+		devicesIndicator,
 		connectionsDailyPeakIndicator,
 		connectionsWeeklyPeakIndicator,
 		activationIndicator
@@ -186,6 +187,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 					$scope.chart = await chartService.getConnectionsUniqueVisitorsLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				} else if (indicator.name === 'stats.activatedAccounts') {
 					$scope.chart = await chartService.getActivationsAndLoadedLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+				} else if (indicator.name === 'stats.devices') {
+					$scope.chart = await chartService.getDevicesLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				} else {
 					$scope.chart = await chartService.getLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				}
@@ -249,7 +252,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			   $scope.currentIndicator.name === 'stats.connectionsByUniqueVisitors' || 
 			   $scope.currentIndicator.name === 'stats.activatedAccounts' || 
 			   $scope.currentIndicator.name === 'stats.mostUsedApp' || 
-			   $scope.currentIndicator.name === 'stats.mostUsedConnector';
+			   $scope.currentIndicator.name === 'stats.mostUsedConnector' ||
+			   $scope.currentIndicator.name === 'stats.devices';
 	}
 	
 	// get export API call
@@ -261,6 +265,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 		return $scope.currentIndicator.name === 'stats.mostUsedApp' || 
 			   $scope.currentIndicator.name === 'stats.mostUsedConnector' ||
+			   $scope.currentIndicator.name === 'stats.devices' ||
 			   $scope.currentIndicator.name === 'stats.activatedAccounts';
 	}
 	
