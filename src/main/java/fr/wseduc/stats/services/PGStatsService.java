@@ -124,7 +124,7 @@ public class PGStatsService implements StatsService {
             final JsonArray sumDevice = sumDevices.getJsonArray(d);
             query += "UNION ALL " +
                 "SELECT e.name as entity_name, " + selectUai + " s.date as date, s." + entityLevel + "_id as " +
-                entityLevel + "_id, s.profile as profile, \"" + d + "\" as device_type, " +
+                entityLevel + "_id, s.profile as profile, '" + d + "' as device_type, " +
                 "SUM(s.authentications) as authentications, SUM(s.authentications_wta) as authentications_wta " +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
