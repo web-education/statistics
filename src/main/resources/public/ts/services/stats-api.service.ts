@@ -19,6 +19,7 @@ export interface StatsAccountsResponse extends StatsResponse {
     unique_visitors: number;
     activations: number;
     sessions: number;
+    device_type: string;
 };
 
 export interface StatsAccessResponse extends StatsResponse {
@@ -33,13 +34,18 @@ export class StatsApiService {
     
     /**
      * API Call for Accounts stats with query string
+     * @param api indicator api (accounts, access)
      * @param from from date
      * @param frequency day or week or month
      * @param entitylevel structure or class
      * @param entities ids of structure or class
+     * @param device boolean get device data or not
      */
-    async getStats(api: IndicatorApi, from: string, frequency: Frequency, entitylevel: EntityLevel, entities?: Array<string>): Promise<Array<StatsResponse>> {
-        let queryString = `?indicator=${api}&from=${from}&frequency=${frequency}&entityLevel=${entitylevel}`
+    async getStats(api: IndicatorApi, from: string, frequency: Frequency, entitylevel: EntityLevel, entities?: Array<string>, device?: boolean): Promise<Array<StatsResponse>> {
+        let queryString = `?indicator=${api}&from=${from}&frequency=${frequency}&entityLevel=${entitylevel}`;
+        if (device) {
+            queryString += `&device=${device}`;
+        }
             
         let entitiesString = '';
         if (entities) {
@@ -110,11 +116,15 @@ export class StatsApiService {
         }, {});
     }
     
-    public groupByProfileWithDate(data, attributeName: IndicatorApiType) {
+    public groupByKeyWithDate(data: Array<StatsResponse>, key: string, attributeName: IndicatorApiType) {
         return data.reduce((acc, x) => {
-            (acc[x['profile']] = acc[x['profile']] || []).push({date: new Date(x.date), value: x[attributeName]});
+            (acc[x[key]] = acc[x[key]] || []).push({date: new Date(x.date), value: x[attributeName]});
             return acc;
         }, {});
+    }
+
+    public groupByProfileWithDate(data, attributeName: IndicatorApiType) {
+        return this.groupByKeyWithDate(data, 'profile', attributeName);
     }
 };
 

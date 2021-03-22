@@ -49,3 +49,17 @@ export let activationIndicator: Indicator = {
     chartProfiles: ['total', 'Teacher', 'Personnel', 'Relative', 'Student'],
     frequency: 'month'
 };
+
+export let devicesIndicator: Indicator = {
+    name: 'stats.devices',
+    chartType: 'line',
+    since: "",
+    icon: 'device-icon',
+    api: 'accounts',
+    apiType: 'mixed',
+    chartTitle: "stats.labels.devices",
+    chartFrequencies: ['day', 'week', 'month'],
+    chartProfile: 'total',
+    chartProfiles: ['total', 'Teacher', 'Personnel', 'Relative', 'Student'],
+    frequency: 'month'
+};

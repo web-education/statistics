@@ -7,6 +7,7 @@ export type IndicatorName =
     'stats.activatedAccounts' |
     'stats.mostUsedApp' |
     'stats.mostUsedConnector' |
+    'stats.devices' |
     'stats.dailyPeak' |
     'stats.weeklyPeak';
     
@@ -21,6 +22,7 @@ export type IndicatorApiType =
     'loaded' |
     'access' | 
     'unique_visitors' | 
+    'device_type' |
     // mixed type stands for indicator type which data can't be retrieved directly from API 
     // but is a calculation of 2 indicators data (for example: ConnectionsDividedByUniqueVisitors)
     'mixed';

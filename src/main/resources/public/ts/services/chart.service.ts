@@ -487,6 +487,109 @@ export class ChartService {
 	}
 	
 	/**
+	 * Specific chart for devices
+	 * @param ctx canvas context of chart.js dom element
+	 * @param indicator device indicator
+	 * @param entity current entity (to retrieve associated data)
+	 */
+	public async getDevicesLineChart(ctx: any, indicator: Indicator, entity: Entity): Promise<typeof Chart> {
+		let chartDateLabels: Array<string> = [];
+		let chartDateArray: Array<Date> = [];
+		let chartData = {};
+		let datasets: Array<Dataset> = [];
+		
+		// get data from cache if exists otherwise get data from API
+		let data: Array<StatsResponse> = await cacheService.getDataFromCacheOrApi(indicator, entity);
+		// filter by selected profile in graph
+		if (indicator.chartProfile !== 'total') {
+			data = data.filter(d => d.profile === indicator.chartProfile);
+		}
+		
+		if (data && data.length > 0) {
+			// sort response data by date
+			data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+			// generate chart labels from dates in response data
+			chartDateArray = dateService.getDates(
+				dateService.getMinDateFromData(data)
+				, dateService.getMaxDateFromData(data)
+				, indicator.frequency);
+			switch (indicator.frequency) {
+				case 'month':
+					chartDateLabels = dateService.getMonthLabels(chartDateArray);
+					break;
+				case 'week':
+					chartDateLabels = dateService.getWeekLabels(chartDateArray);
+					break;
+				case 'day':
+					chartDateLabels = dateService.getDayLabels(chartDateArray);
+					break;
+				default:
+					break;
+			}
+			
+			// group data by device
+			chartData = statsApiService.groupByKeyWithDate(data, 'device_type', 'authentications');
+			
+			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
+			chartDateArray.forEach((date, index) => {
+				Object.values(chartData).forEach((deviceData: Array<{date: Date, value: number}>) => {
+					if (!deviceData.find(x => dateService.isInSameRange(date, x.date, indicator.frequency))) {
+						deviceData.splice(index, 0, {date: date, value: 0});
+					}
+					deviceData.forEach((data, index) => {
+						if (data.value === null) {
+							deviceData.splice(index, 1, {date: data.date, value: 0});
+						}
+					});
+				});
+			});
+
+			// sum values if multiple values for same date
+			Object.keys(chartData).forEach(deviceData => {
+				chartData[deviceData] = chartData[deviceData].reduce((acc: Array<{date: Date, value: number}>, obj) => {
+					let found = false;
+					acc.forEach((accItem, index) => {
+						if (accItem.date.getTime() === obj.date.getTime()) {
+							found = true;
+							acc[index].value += obj.value;
+						}
+					});
+					if (!found) {
+						acc.push(obj);
+					}
+					return acc;
+				}, []);
+			});
+
+			// fill the chart datasets data array with chartData values
+			datasets = datasetService.getDevicesDataset();
+			datasets.forEach(dataset => {
+				if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
+					dataset.data = chartData[dataset.key].map(x => x.value);
+				} else {
+					// if no data for a specific device,
+					// fill the corresponding dataset data with 0 value for each date of the chart
+					chartDateArray.forEach(() => dataset.data.push(0));
+				}
+				delete dataset.key;
+			});
+		}
+		
+		return new Chart(ctx, {
+			type: indicator.chartType,
+			data: {
+				'labels': chartDateLabels,
+				'datasets': datasets
+			},
+			options: {
+				tooltips: TOOLTIPS_CONFIG,
+				legend: LEGEND_CONFIG,
+				scales: SCALES_CONFIG
+			}
+		});
+	}
+	
+	/**
 	 * Builds and return a Bar Chart for Chart.js from indicator data/labels and entity
 	 * @param ctx canvas context of chart.js dom element
 	 * @param indicator 

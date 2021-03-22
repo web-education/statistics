@@ -13,7 +13,8 @@ export class CacheService {
 			dateService.getSinceDateISOStringWithoutMs(),
 			'month',
 			entity.level,
-			[entity.id]
+			[entity.id],
+			true
 		);
 		// get accessData from API
 		let accessData: Array<StatsAccessResponse> = await statsApiService.getStats(
@@ -80,7 +81,9 @@ export class CacheService {
             dateService.getSinceDateISOStringWithoutMs(), 
             indicator.frequency,
             entity.level,
-			[entity.id]);
+			[entity.id],
+			true
+		);
 		// add data to entity cache
 		if (cacheIndicator) {
 			entity.cacheData.indicators = entity.cacheData.indicators.filter(i => i.name === cacheIndicator.name && i.frequency === cacheIndicator.frequency);
