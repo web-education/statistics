@@ -7,8 +7,8 @@ import { Entity, StructuresResponse } from './services/entities.service';
 import { entitiesService } from './services/entities.service';
 import { cacheService } from './services/cache.service';
 import { indicatorService } from './services/indicator.service';
-import { connectionsIndicator, uniqueVisitorsIndicator, connectionsUniqueVisitorsIndicator, activationIndicator } from './indicators/line.indicators';
-import { mostUsedAppsIndicator, mostUsedConnectorIndicator } from './indicators/bar.indicators';
+import { connectionsIndicator, uniqueVisitorsIndicator, connectionsUniqueVisitorsIndicator, activationIndicator, appDetailsIndicator } from './indicators/line.indicators';
+import { ALL_APPS_LABEL, mostUsedAppsIndicator, mostUsedConnectorIndicator } from './indicators/bar.indicators';
 import { connectionsDailyPeakIndicator, connectionsWeeklyPeakIndicator } from './indicators/stackedbar.indicators';
 import { userService } from './services/user.service';
 
@@ -16,7 +16,7 @@ declare const Chart: any;
 
 interface StatsControllerScope {
 	$root: any;
-	display: {loading: boolean}
+	display: {loading: boolean, selectedAppName: string}
 	structuresTree: Array<StructuresResponse>;
 	entities: Array<Entity>;
 	scopeEntity: {current: Entity};
@@ -40,6 +40,7 @@ interface StatsControllerScope {
 	closeStructureTree(): void;
 	getSinceDateLabel(indicator: Indicator, entity: Entity): string;
 	showProfileFilter(): boolean;
+	openAppDetails(appName: string): void;
 }
 
 /**
@@ -66,7 +67,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('list', 'icons-list');
 	
 	$scope.display = {
-		loading: true
+		loading: true,
+		selectedAppName: ''
 	}
 	
 	// get user structures and classes
@@ -182,18 +184,24 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		
 		switch(indicator.chartType){
 			case 'line':
-				if (indicator.name === 'stats.connectionsByUniqueVisitors') {
-					$scope.chart = await chartService.getConnectionsUniqueVisitorsLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				} else if (indicator.name === 'stats.activatedAccounts') {
-					$scope.chart = await chartService.getActivationsAndLoadedLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				} else {
-					$scope.chart = await chartService.getLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+				switch (indicator.name) {
+					case 'stats.connectionsByUniqueVisitors':
+						$scope.chart = await chartService.getConnectionsUniqueVisitorsLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+						break;
+					case 'stats.activatedAccounts':
+						$scope.chart = await chartService.getActivationsAndLoadedLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+					case 'stats.mostUsedApp':
+						$scope.chart = await chartService.getAppDetailsLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+					default:
+						$scope.chart = await chartService.getLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
+						break;
 				}
 				break;
 			case 'stackedbar':
 				$scope.chart = await chartService.getStackedBarChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				break;
 			case 'bar':
+				$scope.display.selectedAppName = indicator.allAppsLabel;
 				$scope.chart = await chartService.getBarChart($scope.ctx, indicator, $scope.scopeEntity.current);
 				break;
 		}
@@ -256,7 +264,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	$scope.getExportUrl = () => encodeURI(`/stats/export?indicator=${$scope.currentIndicator.api}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.scopeEntity.current.level}&entity=${$scope.scopeEntity.current.id}&accumulate=true`);
 	
 	$scope.showProfileFilter = (): boolean => {
-		if (!$scope.currentIndicator) {
+		if (!$scope.currentIndicator || $scope.currentIndicator.appName) {
 			return false;
 		}
 		return $scope.currentIndicator.name === 'stats.mostUsedApp' || 
@@ -277,5 +285,20 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			}
 		}
 		return indicator.since;
+	}
+	
+	$scope.openAppDetails = async (): Promise<void> => {
+		console.log($scope.display.selectedAppName);
+		
+		// if ($scope.currentIndicator.name === 'stats.mostUsedApp' && $scope.display.selectedAppName === ALL_APPS_LABEL) {
+			
+		// } else if () {
+			
+		// }
+		
+		// appDetailsIndicator.name = $scope.currentIndicator.name;
+		// appDetailsIndicator.appName = $scope.display.selectedAppName;
+		// appDetailsIndicator.chartTitle = $scope.currentIndicator.chartTitle;
+		// $scope.openIndicator(appDetailsIndicator);
 	}
 }]);

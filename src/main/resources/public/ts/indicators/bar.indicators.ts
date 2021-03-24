@@ -1,5 +1,8 @@
 import { Indicator } from "./indicator";
 
+export const ALL_APPS_LABEL = 'Toutes les applications';
+export const ALL_CONNECTORS_LABEL = 'Tous les connecteurs'
+
 export let mostUsedAppsIndicator: Indicator = {
     name: 'stats.mostUsedApp',
     chartType: 'bar',
@@ -10,7 +13,9 @@ export let mostUsedAppsIndicator: Indicator = {
     chartTitle: 'stats.labels.mostUsedApps',
     chartProfile: 'total',
     chartProfiles: ['total', 'Teacher', 'Personnel', 'Relative', 'Student'],
-    frequency: 'month'
+    frequency: 'month',
+    appNames: [],
+    allAppsLabel: ALL_APPS_LABEL
 };
 
 export let mostUsedConnectorIndicator: Indicator = {
@@ -23,5 +28,7 @@ export let mostUsedConnectorIndicator: Indicator = {
     chartTitle: 'stats.labels.mostUsedConnectors',
     chartProfile: 'total',
     chartProfiles: ['total', 'Teacher', 'Personnel', 'Relative', 'Student'],
-    frequency: 'month'
+    frequency: 'month',
+    appNames: [],
+    allAppsLabel: ALL_CONNECTORS_LABEL
 }

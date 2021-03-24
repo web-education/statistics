@@ -49,3 +49,16 @@ export let activationIndicator: Indicator = {
     chartProfiles: ['total', 'Teacher', 'Personnel', 'Relative', 'Student'],
     frequency: 'month'
 };
+
+export let appDetailsIndicator: Indicator = {
+    name: null, // will be set when selecting app
+    appName: null, // will be set when selecting app
+    chartType: 'line',
+    since: "",
+    icon: null,
+    api: 'access',
+    apiType: 'access',
+    chartTitle: null,
+    chartFrequencies: ['day', 'week', 'month'],
+    frequency: 'month'
+}

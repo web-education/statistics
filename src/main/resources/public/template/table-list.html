@@ -34,7 +34,7 @@
     <!-- Actual chart -->
     <section class="charts-section eight cell twelve-mobile" ng-show="currentIndicator">
         <!-- For line charts - menu to group by duration (day / week / month) -->
-        <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'line'">
+        <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'line' || currentIndicator.appName">
             <div>[[lang.translate('stats.groupBy')]] :</div>
             <div ng-repeat="frequency in currentIndicator.chartFrequencies">
                 <input type="radio" ng-model="currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(currentIndicator)">
@@ -44,7 +44,15 @@
 
         <!-- Information -->
         <h2>[[lang.translate(currentIndicator.chartTitle)]]</h2>
-
+        
+        <select 
+            ng-if="currentIndicator.name === 'stats.mostUsedApp' || currentIndicator.name === 'stats.mostUsedConnector'"
+            ng-model="display.selectedAppName" 
+            ng-change="openAppDetails()"
+        >
+            <option ng-repeat="appName in currentIndicator.appNames" value="[[appName]]">[[appName]]</option>
+        </select>
+        
         <!-- Chart container -->
         <div style="text-align: center">
             <canvas id="chart" width="600" height="400"></canvas>

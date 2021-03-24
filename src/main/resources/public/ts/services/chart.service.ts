@@ -499,7 +499,7 @@ export class ChartService {
 		let chartData: ChartDataGroupedByProfileAndModule;
 		switch (indicator.name) {
 			case 'stats.mostUsedApp':
-				chartData = await cacheService.getDataGroupedByProfileAndModule(mostUsedAppsIndicator, entity);;
+				chartData = await cacheService.getDataGroupedByProfileAndModule(mostUsedAppsIndicator, entity);
 				break;
 			case 'stats.mostUsedConnector':
 				chartData = await cacheService.getDataGroupedByProfileAndModule(mostUsedConnectorIndicator, entity);
@@ -507,6 +507,18 @@ export class ChartService {
 			default:
 				break;
 		}
+		
+		// app list for app selection details
+		const apps: Array<string> = [];
+		Object.values(chartData).forEach((appData: {appName: string, value: Array<string>}) => {
+			Object.keys(appData).forEach(appName => {
+				if (apps.findIndex(name => name === appName) === -1) {
+					apps.push(appName);
+				}
+			})
+		});
+		apps.sort();
+		indicator.appNames = [indicator.allAppsLabel, ...apps];
 		
 		// calculate Total datas
 		let total = {};
@@ -631,6 +643,23 @@ export class ChartService {
 					display: true,
 					position: 'bottom'
 				}
+			}
+		}));
+	}
+	
+	public async getAppDetailsLineChart(ctx: any, indicator: Indicator, entity: Entity): Promise<typeof Chart> {
+		// get app data
+		
+		return Promise.resolve(new Chart(ctx, {
+			type: 'line',
+			data: {
+				'labels': [],
+				'datasets': null
+			},
+			options: {
+				tooltips: TOOLTIPS_CONFIG,
+				legend: LEGEND_CONFIG,
+				scales: SCALES_CONFIG
 			}
 		}));
 	}

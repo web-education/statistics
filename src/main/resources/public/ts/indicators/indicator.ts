@@ -8,7 +8,8 @@ export type IndicatorName =
     'stats.mostUsedApp' |
     'stats.mostUsedConnector' |
     'stats.dailyPeak' |
-    'stats.weeklyPeak';
+    'stats.weeklyPeak' |
+    'stats.app.details';
     
 export type IndicatorApi = 
     'accounts' | 
@@ -37,4 +38,7 @@ export type Indicator = {
     chartFrequencies?: Array<Frequency>;
     chartProfile?: string;
     chartProfiles?: Array<string>;
+    appNames?: Array<string>;
+    allAppsLabel?: string;
+    appName?: string;
 };
