@@ -146,8 +146,7 @@ public class PGStatsService implements StatsService {
                 "SUM(s.authentications) as authentications, SUM(s.authentications_wta) as authentications_wta " +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
-                "WHERE s.platform_id = $" + ++lastParamNumber + " AND (s.date BETWEEN $" + ++lastParamNumber + " AND $" +
-                ++lastParamNumber + ") AND device_type IN " + sumDevice.stream()
+                "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) AND device_type IN " + sumDevice.stream()
                         .map(x -> x.toString()).collect(Collectors.joining("','", "('", "') "));
             if (entityIds != null && !entityIds.isEmpty()) {
                 query += "AND " + entityLevel + "_id IN " +
