@@ -67,11 +67,26 @@ public class PGStatsService implements StatsService {
             } else {
                 query = genListStatsQuery(params, entityIds, entityLevel, selectUai, t);
             }
+            log.info("query : " + query);
+            log.info("tuple : " + deepToString(t));
             readPgPool.preparedQuery(query, t, pgRowsToEither(handler));
         } catch (Exception e) {
             handler.handle(new Either.Left<>(e.getMessage()));
         }
 	}
+
+    private String deepToString(Tuple t) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        final int size = t.size();
+        for (int i = 0; i < size; i++) {
+            sb.append(t.getValue(i));
+            if (i + 1 < size)
+            sb.append(",");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 
     private String genListStatsQuery(MultiMap params, final List<String> entityIds, final String entityLevel,
             final String selectUai, final Tuple t) {
