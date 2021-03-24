@@ -75,6 +75,7 @@ public class PGStatsService implements StatsService {
         }
 	}
 
+    // TODO remove
     private String deepToString(Tuple t) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
@@ -120,6 +121,7 @@ public class PGStatsService implements StatsService {
         final JsonObject deviceMapping = allowedValues.getJsonObject("devices-mapping" + (export ? "-export": ""));
         final JsonArray selectDevices = deviceMapping.getJsonArray("select-devices");
         final JsonObject sumDevices = deviceMapping.getJsonObject("sum-devices");
+        int lastParamNumber = 3;
         String query =
                 "SELECT e.name as entity_name, " + selectUai + " s.date as date, s." + entityLevel + "_id as " +
                 entityLevel + "_id, s.profile as profile, s.device_type as device_type, " +
@@ -133,25 +135,28 @@ public class PGStatsService implements StatsService {
             IntStream.rangeClosed(4, entityIds.size() + 3).boxed()
             .map(i -> "$" + i).collect(Collectors.joining(",", "(", ")"));
             entityIds.stream().forEach(e -> t.addString(e));
+            lastParamNumber = entityIds.size() + 3;
         }
 
         for (String d: sumDevices.fieldNames()) {
             final JsonArray sumDevice = sumDevices.getJsonArray(d);
-            query += "UNION ALL " +
+            query += " UNION ALL " +
                 "SELECT e.name as entity_name, " + selectUai + " s.date as date, s." + entityLevel + "_id as " +
                 entityLevel + "_id, s.profile as profile, '" + d + "' as device_type, " +
                 "SUM(s.authentications) as authentications, SUM(s.authentications_wta) as authentications_wta " +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
-                "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) AND device_type IN " + sumDevice.stream()
+                "WHERE s.platform_id = $" + ++lastParamNumber + " AND (s.date BETWEEN $" + ++lastParamNumber + " AND $" +
+                ++lastParamNumber + ") AND device_type IN " + sumDevice.stream()
                         .map(x -> x.toString()).collect(Collectors.joining("','", "('", "') "));
             if (entityIds != null && !entityIds.isEmpty()) {
                 query += "AND " + entityLevel + "_id IN " +
-                IntStream.rangeClosed(4, entityIds.size() + 3).boxed()
+                IntStream.rangeClosed(lastParamNumber + 1, entityIds.size() + lastParamNumber).boxed()
                 .map(i -> "$" + i).collect(Collectors.joining(",", "(", ")"));
                 entityIds.stream().forEach(e -> t.addString(e));
+                lastParamNumber += entityIds.size();
             }
-            query += "GROUP BY" + IntStream.rangeClosed(1, (StringUtils.isEmpty(selectUai) ? 5 : 6)).boxed()
+            query += " GROUP BY" + IntStream.rangeClosed(1, (StringUtils.isEmpty(selectUai) ? 5 : 6)).boxed()
                     .map(i -> " " + i).collect(Collectors.joining(","));
         }
 
