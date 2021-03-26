@@ -11,7 +11,7 @@
 
     <div>
         <div class="structure-tree" ng-if="scopeEntity.current">
-            <strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+            <strong class="structure-tree__current">[[ scopeEntity.current.name ]]</strong>
             <structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
         </div>
     </div>
@@ -22,9 +22,9 @@
 			<ul>
 				<li ng-repeat="indicator in indicators" class="indicator-list-box">
                     <a ng-click="openIndicator(indicator)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: currentIndicator === indicator }">
-                        <h1 class="indicator-number">[[getAggregatedValue(indicator, scopeEntity.current)]]</h1>
-    					<div class="indicator-name">[[lang.translate(indicator.name)]]</div>
-                        <div class="indicator-since"><i18n>stats.since</i18n> [[lang.translate(getSinceDateLabel(indicator, scopeEntity.current))]]</div>
+                        <h1 class="indicator-number">[[ indicator.getTotalValue(scopeEntity.current) ]]</h1>
+    					<div class="indicator-name">[[ lang.translate(indicator.name) ]]</div>
+                        <div class="indicator-since"><i18n>stats.since</i18n> [[ lang.translate(indicator.getSinceDate(scopeEntity.current)) ]]</div>
                     </a>
 				</li>
 			</ul>
@@ -35,7 +35,7 @@
     <section class="charts-section eight cell twelve-mobile" ng-show="currentIndicator">
         <!-- For line charts - menu to group by duration (day / week / month) -->
         <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'line'">
-            <div>[[lang.translate('stats.groupBy')]] :</div>
+            <div>[[ lang.translate('stats.groupBy' )]] :</div>
             <div ng-repeat="frequency in currentIndicator.chartFrequencies">
                 <input type="radio" ng-model="currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(currentIndicator)">
                 <label>[[lang.translate('stats.'+frequency)]]</label>
@@ -43,7 +43,7 @@
         </div>
 
         <!-- Information -->
-        <h2>[[lang.translate(currentIndicator.chartTitle)]]</h2>
+        <h2>[[ lang.translate(currentIndicator.chartTitle) ]]</h2>
 
         <!-- Chart container -->
         <div style="text-align: center">
@@ -53,7 +53,7 @@
 		</div>
 		<!-- Group by profile -->
         <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': currentIndicator.name === 'stats.activatedAccounts'}" 
-            ng-if="showProfileFilter()">
+            ng-if="currentIndicator.showProfileFilter()">
             <div ng-repeat="profile in currentIndicator.chartProfiles">
                 <input type="radio" ng-model="currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(currentIndicator)">
                 <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>
@@ -62,8 +62,8 @@
     </section>
 
     <a 
-        ng-if="isDataExportable()"
-        ng-href="[[getExportUrl()]]" 
+        ng-if="currentIndicator.isDataExportable()"
+        ng-href="[[ getExportUrl() ]]" 
 		translate content="stats.export" 
 		style="padding: 10px 0;" 
 		target="_blank"

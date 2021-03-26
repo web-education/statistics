@@ -1,7 +1,6 @@
 import http, { AxiosResponse } from 'axios';
-import { IndicatorApiType } from '../indicators/indicator';
+import { IndicatorApiType, IndicatorFrequency } from '../indicators/abstractIndicator';
 import { StatsResponse } from './stats-api.service';
-import { Frequency } from './chart.service';
 
 export type StructuresResponse = {
     id: string;
@@ -21,7 +20,7 @@ export type Entity = {
         indicators: Array<{
             name: string,
             apiType: IndicatorApiType,
-            frequency: Frequency,
+            frequency: IndicatorFrequency,
             data: Array<StatsResponse>,
             totalValue?: number | string
         }>,
