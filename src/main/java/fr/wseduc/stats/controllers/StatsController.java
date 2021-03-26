@@ -43,7 +43,7 @@ import fr.wseduc.rs.*;
 import fr.wseduc.security.ActionType;
 import fr.wseduc.security.SecuredAction;
 import fr.wseduc.webutils.Either;
-
+import fr.wseduc.webutils.I18n;
 import io.vertx.core.MultiMap;
 import org.entcore.common.aggregation.processing.AggregationProcessing;
 import org.entcore.common.events.EventHelper;
@@ -156,13 +156,13 @@ public class StatsController extends MongoDbControllerHelper {
 				structureService.getSubStructures(request.params().get("entity"), either -> {
 					if (either.isRight()) {
 						request.params().set("entity", (List<String>) either.right().getValue().getJsonArray("ids").getList());
-						statsService.listStats(request.params(), handler);
+						statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
 					} else {
 						renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
 					}
 				});
 			} else {
-				statsService.listStats(request.params(), handler);
+				statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
 			}
 		}
 	}
