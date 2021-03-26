@@ -35,6 +35,6 @@ public interface StatsService {
 
 	public void listStats(MultiMap data, Handler<Either<String, JsonArray>> handler);
 
-	public void listStatsExport(MultiMap data, Handler<Either<String, JsonArray>> handler);
+	public void listStatsExport(MultiMap data, String language, Handler<Either<String, JsonArray>> handler);
 	
 }

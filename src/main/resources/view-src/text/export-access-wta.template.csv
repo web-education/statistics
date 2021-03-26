@@ -1,4 +1,4 @@
 "Etablissement";"UAI";"Date";"Profil";"Nombre d'accès";"Application"
 {{#list}}
-"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile}}";"{{access_wta}}";"{{module}}"
+"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile_translated}}";"{{access_wta}}";"{{module_translated}}"
 {{/list}}

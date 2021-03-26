@@ -20,6 +20,6 @@
         "sum-devices" : {
             "smartphone" : ["smartphone", "phablet"]
         }
-    }
-
+    },
+    "languages" : ["fr", "en"]
 }

@@ -41,15 +41,15 @@ public class PGStatsService implements StatsService {
 
 	@Override
 	public void listStats(MultiMap params, Handler<Either<String, JsonArray>> handler) {
-        listStats(params, false, handler);
+        listStats(params, false, "en", handler);
     }
 
     @Override
-	public void listStatsExport(MultiMap params, Handler<Either<String, JsonArray>> handler) {
-        listStats(params, true, handler);
+	public void listStatsExport(MultiMap params, String language, Handler<Either<String, JsonArray>> handler) {
+        listStats(params, true, language, handler);
     }
 
-    private void listStats(MultiMap params, boolean export, Handler<Either<String, JsonArray>> handler) {
+    private void listStats(MultiMap params, boolean export, String language, Handler<Either<String, JsonArray>> handler) {
         try {
             final LocalDateTime from = LocalDateTime.parse(params.get("from"));
             final LocalDateTime to = (Utils.isNotEmpty(params.get("to"))) ? LocalDateTime.parse(params.get("to")) : LocalDateTime.now();
@@ -59,13 +59,18 @@ public class PGStatsService implements StatsService {
                 handler.handle(new Either.Left<>("invalid.entity.level"));
                 return;
             }
+            if (export && (language == null || !allowedValues.getJsonArray("languages").contains(language))) {
+                handler.handle(new Either.Left<>("invalid.language"));
+                return;
+            }
+
             final String selectUai = ("structure".equals(entityLevel)) ? "e.uai as uai, " : "";
             final Tuple t = Tuple.of(platformId, from, to);
             final String query;
             if ("true".equals(params.get("device")) && "accounts".equals(params.get("indicator"))) {
                 query = genDeviceQuery(params, entityIds, entityLevel, selectUai, t, export);
             } else {
-                query = genListStatsQuery(params, entityIds, entityLevel, selectUai, t);
+                query = genListStatsQuery(params, entityIds, entityLevel, selectUai, t, export, language);
             }
             log.info("query : " + query);
             log.info("tuple : " + deepToString(t));
@@ -90,12 +95,17 @@ public class PGStatsService implements StatsService {
     }
 
     private String genListStatsQuery(MultiMap params, final List<String> entityIds, final String entityLevel,
-            final String selectUai, final Tuple t) {
+            final String selectUai, final Tuple t, boolean export, String language) {
         String query =
                 "SELECT e.name as entity_name, " + selectUai + " s.* " +
+                (export ? ", tp.translation as profile_translated ":"") +
+                ((export && "access".equals(params.get("indicator"))) ? ", tm.translation as module_translated ":"") +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
+                (export ? "JOIN utils.translations tp on s.profile = tp.key and tp.language_key = '" + language + "' " : "") +
+                ((export && "access".equals(params.get("indicator"))) ? "JOIN utils.translations tm on s.module = tm.key and tp.language_key = '" + language + "' ": "") +
                 "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) ";
+
         if (entityIds != null && !entityIds.isEmpty()) {
             query += "AND " + entityLevel + "_id IN " +
             IntStream.rangeClosed(4, entityIds.size() + 3).boxed()

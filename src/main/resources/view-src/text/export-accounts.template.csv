@@ -1,4 +1,4 @@
 "Etablissement";"UAI";"Date";"Profil";"Connexions";"Visiteurs uniques";"Comptes chargés";"Comptes activés"
 {{#list}}
-"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile}}";"{{authentications}}";"{{unique_visitors}}";"{{loaded}}";"{{activated}}"
+"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile_translated}}";"{{authentications}}";"{{unique_visitors}}";"{{loaded}}";"{{activated}}"
 {{/list}}
