@@ -1,16 +1,21 @@
-import { ng, template, ui, _, $, idiom as lang, currentLanguage } from 'entcore';
+import { ng, template, ui, _, $, idiom as lang } from 'entcore';
 
-import { Indicator, IndicatorApi } from './indicators/indicator';
-import { chartService } from './services/chart.service';
+import { Indicator, IndicatorApi } from './indicators/abstractIndicator';
 import { dateService } from './services/date.service';
 import { Entity, StructuresResponse } from './services/entities.service';
 import { entitiesService } from './services/entities.service';
 import { cacheService } from './services/cache.service';
-import { indicatorService } from './services/indicator.service';
-import { connectionsIndicator, uniqueVisitorsIndicator, connectionsUniqueVisitorsIndicator, activationIndicator, devicesIndicator } from './indicators/line.indicators';
-import { mostUsedAppsIndicator, mostUsedConnectorIndicator } from './indicators/bar.indicators';
-import { connectionsDailyPeakIndicator, connectionsWeeklyPeakIndicator } from './indicators/stackedbar.indicators';
 import { userService } from './services/user.service';
+import { ConnectionsIndicator } from './indicators/line/connectionsIndicator';
+import { UniqueVisitorsIndicator } from './indicators/line/uniqueVisitorsIndicator';
+import { ConnectionsPerUniqueVisitorIndicator } from './indicators/line/connectionsPerUniqueVisitorIndicator';
+import { MostUsedAppsIndicator } from './indicators/bar/mostUsedAppsIndicator';
+import { MostUsedConnectorsIndicator } from './indicators/bar/mostUsedConnectorsIndicator';
+import { DevicesIndicator } from './indicators/line/devicesIndicator';
+import { ConnectionsDailyPeakIndicator } from './indicators/stackedBar/connectionsDailyPeakIndicator';
+import { ConnectionsWeeklyPeakIndicator } from './indicators/stackedBar/connectionsWeeklyPeakIndicator';
+import { ActivationAndLoadedIndicator } from './indicators/line/activationAndLoadedIndicator';
+import { statsApiService } from './services/stats-api.service';
 
 declare const Chart: any;
 
@@ -33,13 +38,9 @@ interface StatsControllerScope {
 	indicatorDetail(indicator: Indicator): void;
 	openView(container: any, view: any);
 	$apply: any;
-	getAggregatedValue(indicator: Indicator, entity: Entity): number | string;
 	selectEntity(id: string): Promise<void>;
 	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
-	isDataExportable(): boolean;
 	closeStructureTree(): void;
-	getSinceDateLabel(indicator: Indicator, entity: Entity): string;
-	showProfileFilter(): boolean;
 }
 
 /**
@@ -110,40 +111,35 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	// get user connectors
 	const connectors = await userService.getConnectors();
-	console.log(connectors);
 	
 	/**** LIST OF INDICATORS ****/	
 	$scope.indicators = [
-		connectionsIndicator,
-		uniqueVisitorsIndicator,
-		connectionsUniqueVisitorsIndicator,
-		mostUsedAppsIndicator
+		ConnectionsIndicator.getInstance(),
+		UniqueVisitorsIndicator.getInstance(),
+		ConnectionsPerUniqueVisitorIndicator.getInstance(),
+		MostUsedAppsIndicator.getInstance()
 	];
 	if (connectors && connectors.length > 0) {
-		$scope.indicators.push(mostUsedConnectorIndicator);
+		$scope.indicators.push(MostUsedConnectorsIndicator.getInstance());
 	}
 	$scope.indicators = [
 		...$scope.indicators,
-		devicesIndicator,
-		connectionsDailyPeakIndicator,
-		connectionsWeeklyPeakIndicator,
-		activationIndicator
+		DevicesIndicator.getInstance(),
+		ConnectionsDailyPeakIndicator.getInstance(),
+		ConnectionsWeeklyPeakIndicator.getInstance(),
+		ActivationAndLoadedIndicator.getInstance()
 	];
 	
 	/**** INIT Data ****/
 	let initData = async () => {
 		$scope.display.loading = true;
-		
-		// init accounts and access data per month for current entity (also init total values for connections and activations)
-		await cacheService.initEntityMonthCacheData($scope.indicators, $scope.scopeEntity.current);
-		
-		// init total values for graphs that need specific calculation
-		await indicatorService.initConnectionsWeeklyPeakTotalValue($scope.scopeEntity.current);
-		await indicatorService.initConnectionsDailyPeakTotalValue($scope.scopeEntity.current);
-		indicatorService.initMostAccessedAppTotalValue($scope.scopeEntity.current);
-		indicatorService.initMostAccessedConnectorTotalValue($scope.scopeEntity.current);
-		indicatorService.initUniqueVisitorsTotalValue($scope.scopeEntity.current);
-		indicatorService.initConnectionsUniqueVisitorsTotalValue($scope.scopeEntity.current);
+
+		$scope.indicators.forEach(async indicator => {
+			// init indicators data per month for current entity
+			await indicator.initCachedData($scope.scopeEntity.current);
+			// init indicators total values for current entity
+			await indicator.initTotalValueForEntity($scope.scopeEntity.current);
+		});
 		
 		// spinner
 		setTimeout(() => {
@@ -151,27 +147,20 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			safeScopeApply();
 		}, 500);
 		
-		safeScopeApply();
+		safeScopeApply(); 
 	}
 	
 	initData();
-	
-	$scope.getAggregatedValue = function(indicator: Indicator, entity: Entity) {
-		if (entity.cacheData) {
-			let entityCacheDataIndicator = entity.cacheData.indicators.find(i => i.name === indicator.name);
-			if (entityCacheDataIndicator) {
-				return entityCacheDataIndicator.totalValue as number | string;
-			}
-		}
-		return 0;
-	}
 
 	$scope.openIndicator = async function(indicator){
-		if(!indicator)
-			return
+		if(!indicator) {
+			return;
+		}
+		
 		$scope.currentIndicator = indicator;
 		let chartContext = $('#chart').get(0).getContext('2d');
-		if($scope.ctx && $scope.ctx !== chartContext){
+		
+		if ($scope.ctx && $scope.ctx !== chartContext){
 			$scope.ctx = chartContext;
 		} else {
 			$scope.ctx = $scope.ctx && $scope.ctx === chartContext ? $scope.ctx : chartContext;
@@ -181,25 +170,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			$scope.chart.destroy();
 		}
 		
-		switch(indicator.chartType){
-			case 'line':
-				if (indicator.name === 'stats.connectionsByUniqueVisitors') {
-					$scope.chart = await chartService.getConnectionsUniqueVisitorsLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				} else if (indicator.name === 'stats.activatedAccounts') {
-					$scope.chart = await chartService.getActivationsAndLoadedLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				} else if (indicator.name === 'stats.devices') {
-					$scope.chart = await chartService.getDevicesLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				} else {
-					$scope.chart = await chartService.getLineChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				}
-				break;
-			case 'stackedbar':
-				$scope.chart = await chartService.getStackedBarChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				break;
-			case 'bar':
-				$scope.chart = await chartService.getBarChart($scope.ctx, indicator, $scope.scopeEntity.current);
-				break;
-		}
+		let indicatorChart = await indicator.getChart($scope.ctx, $scope.scopeEntity.current);
+		$scope.chart = indicatorChart;
 	}
 
 	$scope.indicatorDetail = function(indicator){
@@ -243,44 +215,6 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		$scope.openIndicator(indicator);
 	}
 	
-	$scope.isDataExportable = function(): boolean {
-		if (!$scope.currentIndicator) {
-			return false;
-		}
-		return $scope.currentIndicator.name === 'stats.connections' || 
-			   $scope.currentIndicator.name === 'stats.uniqueVisitors' || 
-			   $scope.currentIndicator.name === 'stats.connectionsByUniqueVisitors' || 
-			   $scope.currentIndicator.name === 'stats.activatedAccounts' || 
-			   $scope.currentIndicator.name === 'stats.mostUsedApp' || 
-			   $scope.currentIndicator.name === 'stats.mostUsedConnector' ||
-			   $scope.currentIndicator.name === 'stats.devices';
-	}
-	
 	// get export API call
 	$scope.getExportUrl = () => encodeURI(`/stats/export?indicator=${$scope.currentIndicator.api}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.scopeEntity.current.level}&entity=${$scope.scopeEntity.current.id}&accumulate=true`);
-	
-	$scope.showProfileFilter = (): boolean => {
-		if (!$scope.currentIndicator) {
-			return false;
-		}
-		return $scope.currentIndicator.name === 'stats.mostUsedApp' || 
-			   $scope.currentIndicator.name === 'stats.mostUsedConnector' ||
-			   $scope.currentIndicator.name === 'stats.devices' ||
-			   $scope.currentIndicator.name === 'stats.activatedAccounts';
-	}
-	
-	// moved from dateService to controller cause of currentLanguage not ready in dateService when initializing indicators...
-	$scope.getSinceDateLabel = function(indicator: Indicator, entity: Entity): string {
-		if (!indicator.since && entity.cacheData && entity.cacheData.indicators) {
-			const indicatorCache = entity.cacheData.indicators.find(i => i.name === indicator.name);
-			
-			if (indicatorCache.data && indicatorCache.data.length > 0) {
-				let minDate = indicatorCache.data.reduce((a, b) => a.date < b.date ? a : b);
-				return new Date(minDate.date).toLocaleString([currentLanguage], {month: "long", year: "numeric"});
-			} else {
-				return dateService.getSinceDate().toLocaleString([currentLanguage], {month: "long", year: "numeric"});
-			}
-		}
-		return indicator.since;
-	}
 }]);

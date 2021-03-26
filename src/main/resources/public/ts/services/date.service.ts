@@ -1,6 +1,6 @@
 import { idiom as lang, currentLanguage } from "entcore";
 import { StatsResponse } from "./stats-api.service";
-import { Frequency } from "./chart.service";
+import { IndicatorFrequency } from "../indicators/abstractIndicator";
 
 export class DateService {
 
@@ -23,7 +23,7 @@ export class DateService {
 		return new Date(data.reduce((a, b) => new Date(a.date) > new Date(b.date) ? a : b).date);
 	}
 	
-	public getDates(minDate: Date, maxDate: Date, frequency: Frequency): Array<Date> {
+	public getDates(minDate: Date, maxDate: Date, frequency: IndicatorFrequency): Array<Date> {
 		let datesArray: Array<Date> = [];
 		let resDate = minDate;
 		datesArray.push(new Date(resDate));
@@ -47,7 +47,7 @@ export class DateService {
 		return datesArray;
 	}
 	
-	public isInSameRange(date1: Date, date2: Date, frequency: Frequency): boolean {
+	public isInSameRange(date1: Date, date2: Date, frequency: IndicatorFrequency): boolean {
 		switch (frequency) {
 			case 'month':
 				return this.isSameMonth(date1, date2);

@@ -1,6 +1,5 @@
 import http from 'axios';
-import { Frequency } from './chart.service';
-import { IndicatorApi, IndicatorApiType } from '../indicators/indicator';
+import { IndicatorApi, IndicatorApiType, IndicatorFrequency } from '../indicators/abstractIndicator';
 import { EntityLevel } from './entities.service';
 
 export interface StatsResponse {
@@ -41,7 +40,7 @@ export class StatsApiService {
      * @param entities ids of structure or class
      * @param device boolean get device data or not
      */
-    async getStats(api: IndicatorApi, from: string, frequency: Frequency, entitylevel: EntityLevel, entities?: Array<string>, device?: boolean): Promise<Array<StatsResponse>> {
+    async getStats(api: IndicatorApi, from: string, frequency: IndicatorFrequency, entitylevel: EntityLevel, entities: Array<string>, device: boolean): Promise<Array<StatsResponse>> {
         let queryString = `?indicator=${api}&from=${from}&frequency=${frequency}&entityLevel=${entitylevel}`;
         if (device) {
             queryString += `&device=${device}`;
@@ -59,72 +58,47 @@ export class StatsApiService {
     }
     
     /**
-     * Returns Object with key associated to attribute name values from a data array returned by getStats API.
      * 
-     * @param data data array returned by getStats API
-     * @param key the key to group by
-     * @param attributeName the data attribute name containing values
-     * 
-     * Example:
-     * 
-     * array = [{
-     *  activations: 12
-     *  authentications: 20
-     *  profile: "Personnel"
-     * },
+     * @param data input data (api stats data)
+     * @param key1 first api attribute to groupBy
+     * @param key2 second api attribute to groupBy
+     * @param value api attribute to get values from
+     * @returns object, example:
      * {
-     *  activations: 12
-     *  authentications: 30
-     *  profile: "Personnel"
-     * },
-     * {
-     *  activations: 12
-     *  authentications: 40
-     *  profile: "Student"
-     * },
-     * {
-     *  activations: 12
-     *  authentications: 50
-     *  profile: "Student"
-     * }]
-     * 
-     * groupByKey($array, 'profile', 'authentications')
-     * 
-     * will group 'authentications' values by 'profile' like this:
-     * 
-     * {
-     *  Personnel: [20, 30], 
-     *  Student: [40, 50], 
-     *  ...
+     *      key1: {
+     *          key2: [values, ...]
+     *      } 
      * }
-     * 
      */
-    public groupByKey(data: Array<StatsResponse>, key: string, attributeName: IndicatorApiType) {
-        return data.reduce((acc, x) => {
-            (acc[x[key]] = acc[x[key]] || []).push(x[attributeName]);
-            return acc;
-        }, {});
-    }
-    
-    public groupByKeys(data: Array<StatsResponse>, key1: string, key2: string, attributeName: IndicatorApiType) {
+    public groupByKeys(data: Array<StatsResponse>, key1: string, key2: string, value: IndicatorApiType) {
         return data.reduce((acc, x) => {
             if (!acc[x[key1]]) {
                 acc[x[key1]] = {};
             }
-            (acc[x[key1]][x[key2]] = acc[x[key1]][x[key2]] || []).push(x[attributeName]);
+            (acc[x[key1]][x[key2]] = acc[x[key1]][x[key2]] || []).push(x[value]);
             return acc;
         }, {});
     }
     
-    public groupByKeyWithDate(data: Array<StatsResponse>, key: string, attributeName: IndicatorApiType) {
+    /**
+     * @param data input data (api stats data)
+     * @param key api attribute to groupBy
+     * @param value api attribute to get values from
+     * @returns object with key as keys and array of {date: Date, value: number} as values
+     * 
+     * Usage: statsApiService.groupByKeyWithDate(apiData, 'device_type', 'authentications')
+     * This will group data by key 'device_type' for 'authentications' values with date.
+     * This will return: 
+     * {
+     *      desktop: [{date: '01/01/2020', value: 30}, ...], 
+     *      mobile: [{date: '01/01/2020', value: 20}, ...]
+     * }
+     */
+    public groupByKeyValuesWithDate(data: Array<StatsResponse>, key: string, value: IndicatorApiType) {
         return data.reduce((acc, x) => {
-            (acc[x[key]] = acc[x[key]] || []).push({date: new Date(x.date), value: x[attributeName]});
+            (acc[x[key]] = acc[x[key]] || []).push({date: new Date(x.date), value: x[value]});
             return acc;
         }, {});
-    }
-
-    public groupByProfileWithDate(data, attributeName: IndicatorApiType) {
-        return this.groupByKeyWithDate(data, 'profile', attributeName);
     }
 };
 

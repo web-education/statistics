@@ -5,24 +5,24 @@
 	</div>
 	  
 	<div class="structure-tree" ng-if="scopeEntity.current">
-		<strong class="structure-tree__current">[[scopeEntity.current.name]]</strong>
+		<strong class="structure-tree__current">[[ scopeEntity.current.name ]]</strong>
 		<structure-tree items="structuresTree" select="selectEntity(id)" close="closeStructureTree()"></structure-tree>
 	</div>
 			
 	<div class="indicator-icons-container">
 		<div ng-repeat="indicator in indicators" class="indicator-icon-box" ng-click="indicatorDetail(indicator)">
 			<i class="[[indicator.icon]] indicator-icon"></i>
-			<h1 class="indicator-number">[[getAggregatedValue(indicator, scopeEntity.current)]]</h1>
-			<div class="indicator-name">[[lang.translate(indicator.name)]]</div>
-			<div class="indicator-since"><i18n>stats.since</i18n> [[lang.translate(getSinceDateLabel(indicator, scopeEntity.current))]]</div>
+			<h1 class="indicator-number">[[ indicator.getTotalValue(scopeEntity.current) ]]</h1>
+			<div class="indicator-name">[[ lang.translate(indicator.name) ]]</div>
+			<div class="indicator-since"><i18n>stats.since</i18n> [[ lang.translate(indicator.getSinceDate(scopeEntity.current)) ]]</div>
 		</div>
 	</div>
 
 	<div class="stats-definitions">
-		<h1 style="margin-top: 0px">[[lang.translate('stats.definitions')]]</h1>
+		<h1 style="margin-top: 0px">[[ lang.translate('stats.definitions') ]]</h1>
 		<div ng-repeat="definition in definitions" style="margin-bottom: 10px">
-			<b>[[lang.translate('stats.'+definition)]]</b>:&nbsp
-			<span>[[lang.translate('stats.def.'+definition)]]</span>
+			<b>[[ lang.translate('stats.'+definition) ]]</b>:&nbsp
+			<span>[[ lang.translate('stats.def.'+definition) ]]</span>
 			<br>
 		</div>
 	</div>
