@@ -12,18 +12,20 @@ export type StructuresResponse = {
 
 export type EntityLevel = "platform" | "structure" | "class" | "tenant";
 
+export type EntityCachedIndicator = {
+    name: string,
+    apiType: IndicatorApiType,
+    frequency: IndicatorFrequency,
+    data: Array<StatsResponse>,
+    totalValue?: number | string
+}
+
 export type Entity = {
     id: string;
     name: string;
     level?: EntityLevel;
     cacheData?: {
-        indicators: Array<{
-            name: string,
-            apiType: IndicatorApiType,
-            frequency: IndicatorFrequency,
-            data: Array<StatsResponse>,
-            totalValue?: number | string
-        }>,
+        indicators: Array<EntityCachedIndicator>,
         lastUpdate: Date
     };
 }
