@@ -3,6 +3,15 @@ import { Entity, EntityLevel } from "./entities.service";
 import { StatsResponse, statsApiService } from "./stats-api.service";
 import { Indicator, IndicatorApi, IndicatorFrequency, IndicatorName } from "../indicators/abstractIndicator";
 
+export type CachedData = {
+	api: IndicatorApi, 
+	frequency: IndicatorFrequency,
+	entityLevel: EntityLevel,
+	device: boolean,
+	data: Array<StatsResponse>,
+	lastUpdate: Date
+}
+
 export class CacheService {
     private cachedStatsApiData: Array<CachedData>;
 
@@ -19,20 +28,23 @@ export class CacheService {
 		if (!this.cachedStatsApiData) {
 			this.cachedStatsApiData = [];
 		}
+		// if data in cache and no need refresh then return the data
 		const cachedData = this.cachedStatsApiData.find(x => x.api === api && x.frequency === frequency && x.entityLevel === entityLevel && x.device === device);
-		if (!cachedData) {
-			let data = await statsApiService.getStats(
-				api, 
-				dateService.getSinceDateISOStringWithoutMs(), 
-				frequency,
-				entityLevel,
-				[entityId],
-				device
-			);
-			this.cachedStatsApiData.push({api, frequency, entityLevel, device, data});
-			return data;
+		if (cachedData && !this.needsRefresh(cachedData.lastUpdate)) {
+			return cachedData.data;
 		}
-		return cachedData.data;
+		// else retrieve data from API
+		let data = await statsApiService.getStats(
+			api, 
+			dateService.getSinceDateISOStringWithoutMs(), 
+			frequency,
+			entityLevel,
+			[entityId],
+			device
+		);
+		// store data in cache
+		this.cachedStatsApiData.push({api, frequency, entityLevel, device, data, lastUpdate: new Date()});
+		return data;
 	}
     
 	/**
@@ -44,7 +56,7 @@ export class CacheService {
     public async getIndicatorData(indicator: Indicator, entity: Entity): Promise<Array<StatsResponse>> {		
 		// get data from entity cache data if present
 		let cachedIndicator = this.getIndicatorFromEntityCache(indicator.name, indicator.frequency, entity);
-		if (cachedIndicator && !cacheService.needsRefresh(entity.cacheData.lastUpdate)) {
+		if (cachedIndicator && !this.needsRefresh(entity.cacheData.lastUpdate)) {
 			return cachedIndicator.data;
 		}
 		
@@ -82,14 +94,6 @@ export class CacheService {
     public needsRefresh(date: Date): boolean {
         return dateService.moreThanOneHourAgo(date);
     }
-}
-
-export type CachedData = {
-	api: IndicatorApi, 
-	frequency: IndicatorFrequency,
-	entityLevel: EntityLevel,
-	device: boolean,
-	data: Array<StatsResponse>
 }
 
 export const cacheService = new CacheService();
