@@ -134,12 +134,13 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	let initData = async () => {
 		$scope.display.loading = true;
 
-		$scope.indicators.forEach(async indicator => {
+		for (let index = 0; index < $scope.indicators.length; index++) {
+			const indicator = $scope.indicators[index];
 			// init indicators data per month for current entity
 			await indicator.initCachedData($scope.scopeEntity.current);
 			// init indicators total values for current entity
-			await indicator.initTotalValueForEntity($scope.scopeEntity.current);
-		});
+			indicator.initTotalValueForEntity($scope.scopeEntity.current);
+		}
 		
 		// spinner
 		setTimeout(() => {

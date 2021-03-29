@@ -41,11 +41,7 @@ export class StatsApiService {
      * @param device boolean get device data or not
      */
     async getStats(api: IndicatorApi, from: string, frequency: IndicatorFrequency, entitylevel: EntityLevel, entities: Array<string>, device: boolean): Promise<Array<StatsResponse>> {
-        let queryString = `?indicator=${api}&from=${from}&frequency=${frequency}&entityLevel=${entitylevel}`;
-        if (device) {
-            queryString += `&device=${device}`;
-        }
-            
+        let queryString = `?indicator=${api}&from=${from}&frequency=${frequency}&entityLevel=${entitylevel}`;     
         let entitiesString = '';
         if (entities) {
             entities.forEach(entity => {
@@ -53,6 +49,9 @@ export class StatsApiService {
             });
         }
         queryString = queryString + entitiesString;
+        if (device) {
+            queryString += `&device=${device}`;
+        }
         let res = await http.get(`/stats/list${queryString}`);
         return res.data as Array<StatsResponse>;
     }

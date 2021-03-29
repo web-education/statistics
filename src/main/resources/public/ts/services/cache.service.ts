@@ -19,7 +19,7 @@ export class CacheService {
 		if (!this.cachedStatsApiData) {
 			this.cachedStatsApiData = [];
 		}
-		const cachedData = this.cachedStatsApiData.find(x => x.api === api && x.frequency === frequency && x.entityLevel === entityLevel);
+		const cachedData = this.cachedStatsApiData.find(x => x.api === api && x.frequency === frequency && x.entityLevel === entityLevel && x.device === device);
 		if (!cachedData) {
 			let data = await statsApiService.getStats(
 				api, 
@@ -29,7 +29,7 @@ export class CacheService {
 				[entityId],
 				device
 			);
-			this.cachedStatsApiData.push({api, frequency, entityLevel, data});
+			this.cachedStatsApiData.push({api, frequency, entityLevel, device, data});
 			return data;
 		}
 		return cachedData.data;
@@ -88,6 +88,7 @@ export type CachedData = {
 	api: IndicatorApi, 
 	frequency: IndicatorFrequency,
 	entityLevel: EntityLevel,
+	device: boolean,
 	data: Array<StatsResponse>
 }
 
