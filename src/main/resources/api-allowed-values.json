@@ -5,8 +5,15 @@
     "modules" : ["ShareBigFiles","ClassParam","Calendar","Pages","Scrapbook","CollaborativeWall","Poll","Actualites","Annuaire","Homeworks","Conversation",
         "MyAccount","SchoolBook","Rbs","Website","Exercizer","Archive","Support","Community","TimelineGenerator","Workspace","Mindmap","Blog","Forum","Zimbra",
         "Admin","Mediacentre","Wiki","WebConference","CollaborativeEditor","Presences","Stats","Rack",
-        "artips","LaboMEP","madmagz","Educagri","Edulib","KNE-CNS","Universalis","Pearltrees","projet-voltaire","EduMaxicours","Moodle","numericours","Pearltrees",
-        "Pronote","ProEPS","HiSQOOL","library","numeritab","CIDJ","MSEL","GRR","Educ-Arte"
+        "AideAuDevoirs","Alise","app-e","Application Mobile","artips","Balado","BiblioCollege","Brne","Capytale","CerisePrim","CerisePro","Cesame","Chamilo",
+        "CIDJ","CNS","corelycee","DeltaExpert","Educagri","Educ-Arte","Edulib","Edulib2","Edulib-Belin","Edulib-Magnard","EduMalin","EduMaxicours","EduMedia",
+        "edumoov","Elea","Eliot","ElyceeHDF","English-Attack","Esidoc","EulerRessources","EulerRessources-pp","ExplorateurDeMetiers","FoliosOnisep","GRR",
+        "HiSQOOL","HumanRoads","Interforum","InterForum","JuniorUniversalis","KiosqueEDU","KiosqueEDU-aca","KNE-Annabac","KNE-CNS","Kwyk","Labomep","LaboMEP",
+        "LDE","LeLivreScolaire","LeSite-tv","library","Lstl","madmagz","madmagz-77","madmagz-aisne","madmagz-draaf","madmagz-ent04","madmagz-idf","madmagz-na",
+        "madmagz-nord","madmagz-oise","madmagz-paris","madmagz-regionhdf","madmagz-somme1d","madmagz-somme2d","milliweb-oAuth","MindViewOnline","Moodle","MSEL",
+        "numericours","numeritab","OGIL","OGIL-Region","Onisep","Onisep-Services","Passerelle","PasserellePise","Pearltrees","PMB-lyceeconnecte","ProEPS",
+        "projet-voltaire","Pronote","Sacoche","Salvum","Schooltoring Mobile Application","Speakshake","Tactileo","TurboSelf","Universalis","Universalis-Junior",
+        "Webclasseur","Wims-Auto","Wims-Euler","Wims-Math"
     ],
     "devices-mapping" : {
         "select-devices" : ["desktop", "mobile_app", "tablet"],
