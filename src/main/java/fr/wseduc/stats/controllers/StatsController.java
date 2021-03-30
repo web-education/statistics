@@ -62,6 +62,8 @@ import io.vertx.core.json.JsonObject;
  */
 public class StatsController extends MongoDbControllerHelper {
 
+	public static final String UTF8_BOM = "\uFEFF";
+
 	//Computation service
 	private StatsService statsService;
 	private final StructureService structureService = new StructureService();
@@ -137,7 +139,7 @@ public class StatsController extends MongoDbControllerHelper {
 								request.response().putHeader("Content-Type", "application/csv");
 								request.response().putHeader("Content-Disposition",
 										"attachment; filename=export-stats-" + params.get("indicator") + ".csv");
-								request.response().end(export);
+								request.response().end(UTF8_BOM + export);
 							} else {
 								renderError(request);
 							}
