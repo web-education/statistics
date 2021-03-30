@@ -126,6 +126,27 @@ export class DevicesIndicator extends AbstractLineIndicator {
 		});
 	}
 
+	initTotalValueForEntity(entity: Entity): void {
+		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
+		const dataGroupedByDevice = statsApiService.groupByKeyValuesWithDate(cachedIndicator.data, 'device_type', 'authentications');
+		
+		let devicesTotal: Array<{device: string, total: number}> = [];
+		Object.keys(dataGroupedByDevice).forEach(device => {
+			let total = 0;
+			total += dataGroupedByDevice[device].reduce((acc, value) => acc + value.value, 0);
+			devicesTotal.push({device, total});
+		});
+		
+		let max = 0;
+		devicesTotal.forEach(deviceTotal => {
+			if (deviceTotal.total > max) {
+				max = deviceTotal.total;
+			}
+		});
+		
+		cachedIndicator.totalValue = devicesTotal.find(deviceTotal => deviceTotal.total === max).device;
+	}
+
 	isDataExportable(): boolean {
         return true;
     }
