@@ -5,7 +5,6 @@ import { dateService } from './services/date.service';
 import { Entity, StructuresResponse } from './services/entities.service';
 import { entitiesService } from './services/entities.service';
 import { cacheService } from './services/cache.service';
-import { userService } from './services/user.service';
 import { ConnectionsIndicator } from './indicators/line/connectionsIndicator';
 import { UniqueVisitorsIndicator } from './indicators/line/uniqueVisitorsIndicator';
 import { ConnectionsPerUniqueVisitorIndicator } from './indicators/line/connectionsPerUniqueVisitorIndicator';
@@ -15,7 +14,6 @@ import { DevicesIndicator } from './indicators/line/devicesIndicator';
 import { ConnectionsDailyPeakIndicator } from './indicators/stackedBar/connectionsDailyPeakIndicator';
 import { ConnectionsWeeklyPeakIndicator } from './indicators/stackedBar/connectionsWeeklyPeakIndicator';
 import { ActivationAndLoadedIndicator } from './indicators/line/activationAndLoadedIndicator';
-import { statsApiService } from './services/stats-api.service';
 
 declare const Chart: any;
 
@@ -34,7 +32,7 @@ interface StatsControllerScope {
 	definitions: Array<string>;
 	
 	getExportUrl(indicator: IndicatorApi): string;
-	openIndicator(indicator: Indicator): void;
+	openIndicator(indicator: Indicator): Promise<void>;
 	indicatorDetail(indicator: Indicator): void;
 	openView(container: any, view: any);
 	$apply: any;
@@ -108,41 +106,62 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			}
 		} catch (e) { }
 	};
-	
-	// get user connectors
-	const connectors = await userService.getConnectors();
-	
-	/**** LIST OF INDICATORS ****/	
+
+	// Indicators list
 	$scope.indicators = [
 		ConnectionsIndicator.getInstance(),
 		UniqueVisitorsIndicator.getInstance(),
 		ConnectionsPerUniqueVisitorIndicator.getInstance(),
-		MostUsedAppsIndicator.getInstance()
-	];
-	if (connectors && connectors.length > 0) {
-		$scope.indicators.push(MostUsedConnectorsIndicator.getInstance());
-	}
-	$scope.indicators = [
-		...$scope.indicators,
+		MostUsedAppsIndicator.getInstance(),
+		MostUsedConnectorsIndicator.getInstance(),
 		DevicesIndicator.getInstance(),
 		ConnectionsDailyPeakIndicator.getInstance(),
 		ConnectionsWeeklyPeakIndicator.getInstance(),
 		ActivationAndLoadedIndicator.getInstance()
 	];
 	
+	/**
+	 * Hide/Show MostUsedConnectors Indicator card.
+	 * If no data returned for connectors then hide card.
+	 */
+	const toggleMostUsedConnectorsIndicator = async (entity: Entity): Promise<void> => {
+		await MostUsedConnectorsIndicator.getInstance().initCachedData(entity);
+		const connectorsApiData = await cacheService.getIndicatorData(MostUsedConnectorsIndicator.getInstance(), entity);
+		const connectorsIndex = $scope.indicators.findIndex(i => i.name === MostUsedConnectorsIndicator.getInstance().name);
+
+		if (connectorsApiData && connectorsApiData.length > 0) {
+			// if data and not present, insert it after MostUsedAppsIndicator
+			if (connectorsIndex === -1) {
+				const mostUsedAppsIndex = $scope.indicators.findIndex(i => i.name === MostUsedAppsIndicator.getInstance().name);
+				$scope.indicators.splice(mostUsedAppsIndex + 1, 0, MostUsedConnectorsIndicator.getInstance());
+			}
+		} else {
+			// if no data and present, remove it
+			if (connectorsIndex > -1) {
+				$scope.indicators.splice(connectorsIndex, 1);
+			}
+		}
+	};
+	
 	/**** INIT Data ****/
 	let initData = async () => {
+		// Spinner on
 		$scope.display.loading = true;
+
+		await toggleMostUsedConnectorsIndicator($scope.scopeEntity.current);
 
 		for (let index = 0; index < $scope.indicators.length; index++) {
 			const indicator = $scope.indicators[index];
 			// init indicators data per month for current entity
-			await indicator.initCachedData($scope.scopeEntity.current);
+			// (connectors already initialised before)
+			if (indicator.name !== 'stats.mostUsedConnector') {
+				await indicator.initCachedData($scope.scopeEntity.current);
+			}
 			// init indicators total values for current entity
 			indicator.initTotalValueForEntity($scope.scopeEntity.current);
 		}
 		
-		// spinner
+		// Spinner off
 		setTimeout(() => {
 			$scope.display.loading = false;
 			safeScopeApply();
@@ -153,7 +172,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	initData();
 
-	$scope.openIndicator = async function(indicator){
+	$scope.openIndicator = async (indicator): Promise<void> => {
 		if(!indicator) {
 			return;
 		}
@@ -202,18 +221,29 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		template.open(container, view);
 	}
 	
-	/**** Update Data when switching Entity ****/
-	$scope.selectEntity = async function(id: string): Promise<void> {
-		$scope.scopeEntity.current = $scope.entities.find(e => e.id === id);
+	const initEntityOnChange = async (entityId: string): Promise<void> => {
+		$scope.scopeEntity.current = $scope.entities.find(e => e.id === entityId);
 		if (!$scope.scopeEntity.current.cacheData 
 			|| cacheService.needsRefresh($scope.scopeEntity.current.cacheData.lastUpdate)) {
 			await initData();
 		}
+		await toggleMostUsedConnectorsIndicator($scope.scopeEntity.current);
+	}
+
+	$scope.selectEntity = async (entityId: string): Promise<void> => {
+		await initEntityOnChange(entityId);
+		safeScopeApply();
 	}
 	
-	$scope.selectEntityAndOpenIndicator = async function(id: string, indicator: Indicator): Promise<void> {
-		await $scope.selectEntity(id); 
-		$scope.openIndicator(indicator);
+	$scope.selectEntityAndOpenIndicator = async (entityId: string, indicator: Indicator): Promise<void> => {
+		await initEntityOnChange(entityId);
+		if (indicator.name === 'stats.mostUsedConnector' && 
+			!$scope.indicators.find(i => i.name === 'stats.mostUsedConnector')) {
+			await $scope.openIndicator(ConnectionsIndicator.getInstance());
+		} else {
+			await $scope.openIndicator(indicator);
+		}
+		safeScopeApply();
 	}
 	
 	// get export API call
