@@ -3,9 +3,10 @@ import { Entity, EntityLevel } from "./entities.service";
 import { StatsResponse, statsApiService } from "./stats-api.service";
 import { Indicator, IndicatorApi, IndicatorFrequency, IndicatorName } from "../indicators/abstractIndicator";
 
-export type CachedData = {
+export type ApiCachedData = {
 	api: IndicatorApi, 
 	frequency: IndicatorFrequency,
+	entityId: string,
 	entityLevel: EntityLevel,
 	device: boolean,
 	data: Array<StatsResponse>,
@@ -13,23 +14,28 @@ export type CachedData = {
 }
 
 export class CacheService {
-    private cachedStatsApiData: Array<CachedData>;
+    private apiCachedData: Array<ApiCachedData>;
 
 	/**
 	 * Get api data if cached or retrieve from API and stores in cache
 	 * @param api accounts or access API
 	 * @param frequency 
-	 * @param entityLevel
 	 * @param entityId 
+	 * @param entityLevel
 	 * @param device 
 	 * @returns api data from cache or API
 	 */
 	async getData(api: IndicatorApi, frequency: IndicatorFrequency, entityLevel: EntityLevel, entityId: string, device: boolean): Promise<Array<StatsResponse>> {
-		if (!this.cachedStatsApiData) {
-			this.cachedStatsApiData = [];
+		if (!this.apiCachedData) {
+			this.apiCachedData = [];
 		}
 		// if data in cache and no need refresh then return the data
-		const cachedData = this.cachedStatsApiData.find(x => x.api === api && x.frequency === frequency && x.entityLevel === entityLevel && x.device === device);
+		const cachedData = this.apiCachedData.find(x => 
+			x.api === api && 
+			x.frequency === frequency && 
+			x.entityLevel === entityLevel && 
+			x.entityId === entityId &&
+			x.device === device);
 		if (cachedData && !this.needsRefresh(cachedData.lastUpdate)) {
 			return cachedData.data;
 		}
@@ -43,7 +49,7 @@ export class CacheService {
 			device
 		);
 		// store data in cache
-		this.cachedStatsApiData.push({api, frequency, entityLevel, device, data, lastUpdate: new Date()});
+		this.apiCachedData.push({api, frequency, entityLevel, entityId, device, data, lastUpdate: new Date()});
 		return data;
 	}
     
