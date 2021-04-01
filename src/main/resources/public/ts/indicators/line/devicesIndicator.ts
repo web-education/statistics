@@ -144,7 +144,10 @@ export class DevicesIndicator extends AbstractLineIndicator {
 			}
 		});
 		
-		cachedIndicator.totalValue = devicesTotal.find(deviceTotal => deviceTotal.total === max).device;
+		const deviceTotal = devicesTotal.find(deviceTotal => deviceTotal.total === max);
+		if (deviceTotal) {
+			cachedIndicator.totalValue = deviceTotal.device;
+		} 
 	}
 
 	isDataExportable(): boolean {
