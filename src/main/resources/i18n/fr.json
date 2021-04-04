@@ -75,5 +75,15 @@
     "myaccount": "Mon compte",
     "classparam": "Paramétrage de la classe",
     "zimbra" : "Messagerie",
-    "presences" : "Présences"
+    "presences" : "Présences",
+    "stats.etabs": "Etablissement",
+    "stats.uai": "UAI",
+    "stats.date": "Date",
+    "stats.profile": "Profil",
+    "stats.authentications": "Connexions",
+    "stats.unique.visitors": "Visiteurs uniques",
+    "stats.loaded": "Comptes chargés",
+    "stats.activated" : "Comptes activés",
+    "stats.access.nb": "Nombre d'accès",
+    "stats.module" : "Application"
 }

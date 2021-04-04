@@ -103,7 +103,7 @@ public class PGStatsService implements StatsService {
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
                 (export ? "JOIN utils.translations tp on s.profile = tp.key and tp.language_key = '" + language + "' " : "") +
-                ((export && "access".equals(params.get("indicator"))) ? "JOIN utils.translations tm on s.module = tm.key and tp.language_key = '" + language + "' ": "") +
+                ((export && "access".equals(params.get("indicator"))) ? "JOIN utils.translations tm on s.module = tm.key and tm.language_key = '" + language + "' ": "") +
                 "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) ";
 
         if (entityIds != null && !entityIds.isEmpty()) {
