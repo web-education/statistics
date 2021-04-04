@@ -1,4 +1,4 @@
-"Etablissement";"UAI";"Date";"Profil";"Nombre d'accès";"Application"
+"{{#i18n}}stats.etabs{{/i18n}}";"{{#i18n}}stats.uai{{/i18n}}";"{{#i18n}}stats.date{{/i18n}}";"{{#i18n}}stats.profile{{/i18n}}";"{{#i18n}}stats.authentications{{/i18n}}";"{{#i18n}}stats.unique.visitors{{/i18n}}";"{{#i18n}}stats.access.nb{{/i18n}}";"{{#i18n}}stats.module{{/i18n}}"
 {{#list}}
 "{{entity_name}}";"{{uai}}";"{{date}}";"{{profile_translated}}";"{{access_wta}}";"{{module_translated}}"
 {{/list}}
