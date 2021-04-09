@@ -32,16 +32,19 @@ export abstract class AbstractBarIndicator extends Indicator {
 		let chartData = await this.getChartData(entity);
 		
 		// calculate Total dataset
-		let total = {};
-		Object.keys(chartData).forEach(profileKey => {
-			Object.keys(chartData[profileKey]).forEach(moduleKey => {
-				if (!total[moduleKey]) {
-					total[moduleKey] = [];
-				}
-				total[moduleKey].push(...chartData[profileKey][moduleKey]);
-			})
-		});
-		chartData['total'] = total;
+
+		if (this.chartProfile === 'total') {
+			let total = {};
+			Object.keys(chartData).forEach(profileKey => {
+				Object.keys(chartData[profileKey]).forEach(moduleKey => {
+					if (!total[moduleKey]) {
+						total[moduleKey] = [];
+					}
+					total[moduleKey].push(...chartData[profileKey][moduleKey]);
+				})
+			});
+			chartData['total'] = total;
+		}
 		
 		// sum data for each module for chartProfile
 		let sumData = [];
@@ -53,7 +56,7 @@ export abstract class AbstractBarIndicator extends Indicator {
 		datasets[0].data = sumData;
 		
 		// Chart labels
-		let chartLabels: Array<string> = await this.getChartLabels(entity);
+		let chartLabels: Array<string> = await this.getChartLabels(entity, chartData);
 		
 		// sorting		
 		let labelAndDataArray: Array<{label: string, data: number}> = chartLabels.map((x, i) => {
@@ -88,18 +91,16 @@ export abstract class AbstractBarIndicator extends Indicator {
 		});
 	}
 
-	async getChartLabels(entity: Entity): Promise<Array<string>> {
-		const cachedIndicatorData = await cacheService.getIndicatorData(this, entity);
-		const chartData = statsApiService.groupByKeys(cachedIndicatorData, 'profile', 'module', this.apiType);
+	async getChartLabels(entity: Entity, chartData): Promise<Array<string>> {
         let labels = [];
-		Object.keys(chartData).forEach(profileKey => {
-			Object.keys(chartData[profileKey]).forEach(moduleKey => {
-                const moduleTranslated = lang.translate(moduleKey.toLowerCase());
-				if (!labels.includes(moduleTranslated)) {
-					labels.push(moduleTranslated);
-				}
-			})
-        });
+
+		Object.keys(chartData[this.chartProfile]).forEach(moduleKey => {
+			const moduleTranslated = lang.translate(moduleKey.toLowerCase());
+			if (!labels.includes(moduleTranslated)) {
+				labels.push(moduleTranslated);
+			}
+		})
+
         return labels;
 	}
 
