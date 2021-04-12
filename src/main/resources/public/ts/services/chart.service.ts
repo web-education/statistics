@@ -506,16 +506,18 @@ export class ChartService {
 		}
 		
 		// calculate Total datas
-		let total = {};
-		Object.keys(chartData).forEach(profileKey => {
-			Object.keys(chartData[profileKey]).forEach(moduleKey => {
-				if (!total[moduleKey]) {
-					total[moduleKey] = [];
-				}
-				total[moduleKey].push(...chartData[profileKey][moduleKey]);
-			})
-		});
-		chartData['total'] = total;
+		if (indicator.chartProfile === 'total') {
+			let total = {};
+			Object.keys(chartData).forEach(profileKey => {
+				Object.keys(chartData[profileKey]).forEach(moduleKey => {
+					if (!total[moduleKey]) {
+						total[moduleKey] = [];
+					}
+					total[moduleKey].push(...chartData[profileKey][moduleKey]);
+				})
+			});
+			chartData['total'] = total;
+		}
 		
 		// sum data for each module for chartProfile
 		let sumData = [];
@@ -529,7 +531,7 @@ export class ChartService {
 		let chartLabels: Array<string>;
 		switch (indicator.name) {
 			case 'stats.mostUsedTool':
-				chartLabels = await this.getMostUsedToolChartLabels(entity);
+				chartLabels = await this.getMostUsedToolChartLabels(entity, chartData, indicator.chartProfile);
 				break;
 			default:
 				break;
@@ -638,17 +640,14 @@ export class ChartService {
 		}));
 	}
 	
-	private async getMostUsedToolChartLabels(entity: Entity): Promise<Array<string>> {
-        let chartData: ChartDataGroupedByProfileAndModule = await cacheService.getDataGroupedByProfileAndModule(mostUsedToolIndicator, entity);
+	private async getMostUsedToolChartLabels(entity: Entity, chartData, chartProfile: string): Promise<Array<string>> {
         let labels = [];
-		Object.keys(chartData).forEach(profileKey => {
-			Object.keys(chartData[profileKey]).forEach(moduleKey => {
-                const moduleTranslated = lang.translate(moduleKey.toLowerCase());
-				if (!labels.includes(moduleTranslated)) {
-					labels.push(moduleTranslated);
-				}
-			})
-        });
+		Object.keys(chartData[chartProfile]).forEach(moduleKey => {
+			const moduleTranslated = lang.translate(moduleKey.toLowerCase());
+			if (!labels.includes(moduleTranslated)) {
+				labels.push(moduleTranslated);
+			}
+		})
         return labels;
 	}
 	
