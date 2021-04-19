@@ -10,21 +10,21 @@
     </div>
 
     <div>
-        <div class="structure-tree" ng-if="scopeEntity.current">
-            <strong class="structure-tree__current">[[ scopeEntity.current.name ]]</strong>
-            <structure-tree items="structuresTree" select="selectEntityAndOpenIndicator(id, currentIndicator)"></structure-tree>
+        <div class="structure-tree" ng-if="state.currentEntity">
+            <strong class="structure-tree__current">[[ state.currentEntity.name ]]</strong>
+            <structure-tree items="state.structuresTree" select="selectEntityAndOpenIndicator(id, state.currentIndicator)"></structure-tree>
         </div>
     </div>
 
     <!-- Indicator list -->
-    <section class="vertical four cell twelve-mobile" ng-if="scopeEntity.current">
+    <section class="vertical four cell twelve-mobile" ng-if="state.currentEntity">
 		<nav class="vertical">
 			<ul>
-				<li ng-repeat="indicator in indicators" class="indicator-list-box">
-                    <a ng-click="openIndicator(indicator)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: currentIndicator === indicator }">
-                        <h1 class="indicator-number">[[ indicator.getTotalValue(scopeEntity.current) ]]</h1>
+				<li ng-repeat="indicator in state.indicators" class="indicator-list-box">
+                    <a ng-click="openIndicator(indicator)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: state.currentIndicator === indicator }">
+                        <h1 class="indicator-number">[[ indicator.getTotalValue(state.currentEntity) ]]</h1>
     					<div class="indicator-name">[[ lang.translate(indicator.name) ]]</div>
-                        <div class="indicator-since"><i18n>stats.since</i18n> [[ lang.translate(indicator.getSinceDate(scopeEntity.current)) ]]</div>
+                        <div class="indicator-since"><i18n>stats.since</i18n> [[ lang.translate(indicator.getSinceDate(state.currentEntity)) ]]</div>
                     </a>
 				</li>
 			</ul>
@@ -32,18 +32,18 @@
 	</section>
 
     <!-- Actual chart -->
-    <section class="charts-section eight cell twelve-mobile" ng-show="currentIndicator">
+    <section class="charts-section eight cell twelve-mobile" ng-show="state.currentIndicator">
         <!-- For line charts - menu to group by duration (day / week / month) -->
-        <div class="chart-granularity-container right-magnet" ng-if="currentIndicator.chartType === 'line'">
+        <div class="chart-granularity-container right-magnet" ng-if="state.currentIndicator.chartType === 'line'">
             <div>[[ lang.translate('stats.groupBy' )]] :</div>
-            <div ng-repeat="frequency in currentIndicator.chartFrequencies">
-                <input type="radio" ng-model="currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(currentIndicator)">
+            <div ng-repeat="frequency in state.currentIndicator.chartFrequencies">
+                <input type="radio" ng-model="state.currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(state.currentIndicator)">
                 <label>[[lang.translate('stats.'+frequency)]]</label>
             </div>
         </div>
 
         <!-- Information -->
-        <h2>[[ lang.translate(currentIndicator.chartTitle) ]]</h2>
+        <h2>[[ lang.translate(state.currentIndicator.chartTitle) ]]</h2>
 
         <!-- Chart container -->
         <div style="text-align: center">
@@ -52,17 +52,17 @@
             <div id="chart-legend-container"></div-->
 		</div>
 		<!-- Group by profile -->
-        <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': currentIndicator.name === 'stats.activatedAccounts'}" 
-            ng-if="currentIndicator.showProfileFilter()">
-            <div ng-repeat="profile in currentIndicator.chartProfiles">
-                <input type="radio" ng-model="currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(currentIndicator)">
+        <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': state.currentIndicator.name === 'stats.activatedAccounts'}" 
+            ng-if="state.currentIndicator.showProfileFilter()">
+            <div ng-repeat="profile in state.currentIndicator.chartProfiles">
+                <input type="radio" ng-model="state.currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(state.currentIndicator)">
                 <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>
             </div>
         </div>
     </section>
 
     <a 
-        ng-if="currentIndicator.isDataExportable()"
+        ng-if="state.currentIndicator.isDataExportable()"
         ng-href="[[ getExportUrl() ]]" 
 		translate content="stats.export" 
 		style="padding: 10px 0;" 
