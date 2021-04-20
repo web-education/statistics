@@ -39,4 +39,8 @@ export class MostUsedAppsIndicator extends AbstractBarIndicator {
     showProfileFilter(): boolean {
         return true;
     }
+
+    postInit(entity: Entity) {
+
+    }
 }

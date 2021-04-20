@@ -12,7 +12,7 @@
 	<div class="indicator-icons-container">
 		<div ng-repeat="indicator in state.indicators" class="indicator-icon-box" ng-click="indicatorDetail(indicator)">
 			<i class="[[indicator.icon]] indicator-icon"></i>
-			<h1 class="indicator-number">[[ indicator.getTotalValue(state.currentEntity) ]]</h1>
+			<h1 class="indicator-number">[[ indicator.getTotal(state.currentEntity) ]]</h1>
 			<div class="indicator-name">[[ lang.translate(indicator.name) ]]</div>
 			<div class="indicator-since"><i18n>stats.since</i18n> [[ lang.translate(indicator.getSinceDate(state.currentEntity)) ]]</div>
 		</div>

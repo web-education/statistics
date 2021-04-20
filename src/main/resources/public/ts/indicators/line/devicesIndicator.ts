@@ -126,7 +126,7 @@ export class DevicesIndicator extends AbstractLineIndicator {
 		});
 	}
 
-	initTotalValueForEntity(entity: Entity): void {
+	initTotal(entity: Entity): void {
 		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
 		const dataGroupedByDevice = statsApiService.groupByKeyValuesWithDate(cachedIndicator.data, 'device_type', 'authentications');
 		
@@ -156,5 +156,9 @@ export class DevicesIndicator extends AbstractLineIndicator {
 
 	showProfileFilter(): boolean {
         return true;
+    }
+
+	postInit(entity: Entity) {
+
     }
 }

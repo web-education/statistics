@@ -109,7 +109,7 @@ export abstract class AbstractBarIndicator extends Indicator {
 		return statsApiService.groupByKeys(cachedIndicatorData, 'profile', 'module', this.apiType);
 	}
 
-	initTotalValueForEntity(entity: Entity) {
+	initTotal(entity: Entity): void {
 		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
 		const dataGroupedByModuleAndProfile = statsApiService.groupByKeys(cachedIndicator.data, 'module', 'profile', this.apiType);
 		
@@ -137,4 +137,6 @@ export abstract class AbstractBarIndicator extends Indicator {
 		// save value to Entity cache data
 		cachedIndicator.totalValue = app;
 	}
+
+	abstract postInit(entity: Entity);
 }

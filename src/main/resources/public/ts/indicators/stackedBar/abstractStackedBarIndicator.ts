@@ -60,4 +60,6 @@ export abstract class AbstractStackedBarIndicator extends Indicator {
     }
     abstract getChartLabels(): Array<string>;
     abstract getChartData(entity: Entity): Promise<any>;
+	abstract initTotal(entity: Entity): void;
+	abstract postInit(entity: Entity): void;
 }

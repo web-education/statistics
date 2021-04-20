@@ -121,7 +121,7 @@ export abstract class AbstractLineIndicator extends Indicator {
 		}
 	}
 
-	initTotalValueForEntity(entity: Entity): void {
+	initTotal(entity: Entity): void {
 		let totalValue = 0;
 		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
 		if (cachedIndicator && cachedIndicator.data) {
@@ -131,4 +131,6 @@ export abstract class AbstractLineIndicator extends Indicator {
 		}
 		cachedIndicator.totalValue = totalValue;
 	}
+
+	abstract postInit(entity: Entity);
 }

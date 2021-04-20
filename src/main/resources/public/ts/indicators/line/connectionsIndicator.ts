@@ -1,3 +1,4 @@
+import { Entity } from "../../services/entities.service";
 import { IndicatorApi, IndicatorApiType, IndicatorName, IndicatorChartType, IndicatorFrequency } from "../abstractIndicator";
 import { AbstractLineIndicator } from "./abstractLineIndicator";
 
@@ -30,5 +31,9 @@ export class ConnectionsIndicator extends AbstractLineIndicator {
     
     showProfileFilter(): boolean {
         return false;
+    }
+
+    postInit(entity: Entity) {
+
     }
 }

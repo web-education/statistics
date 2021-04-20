@@ -197,7 +197,7 @@ export class ActivationAndLoadedIndicator extends AbstractLineIndicator {
 		});
 	}   
 
-	initTotalValueForEntity(entity: Entity) {
+	initTotal(entity: Entity) {
 		let totalValue = 0;
 		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
 		if (cachedIndicator && cachedIndicator.data) {
@@ -220,5 +220,9 @@ export class ActivationAndLoadedIndicator extends AbstractLineIndicator {
 
 	showProfileFilter(): boolean {
         return true;
+    }
+
+	postInit(entity: Entity) {
+
     }
 }

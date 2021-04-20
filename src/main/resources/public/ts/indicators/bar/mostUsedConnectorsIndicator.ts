@@ -39,4 +39,8 @@ export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
     showProfileFilter(): boolean {
         return true;
     }
+
+    postInit(entity: Entity) {
+
+    }
 }

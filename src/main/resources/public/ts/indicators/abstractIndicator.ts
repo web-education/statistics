@@ -18,34 +18,27 @@ export abstract class Indicator {
     chartFrequencies: Array<IndicatorFrequency>;
     chartProfile: string;
     chartProfiles: Array<string>;
-    
-    abstract initTotalValueForEntity(entity: Entity): void;
-    abstract getChart(ctx: any, entity: Entity): Promise<typeof Chart>;
-    abstract getChartData(entity: Entity, apiData: Array<StatsResponse>, specificApiType: IndicatorApiType): Promise<any>;
-    abstract getChartLabels(entity: Entity, chartDates: Array<Date>): Array<string> | Promise<Array<string>>;
-    abstract isDataExportable(): boolean;
-    abstract showProfileFilter(): boolean;
 
     /**
-     * Get data for entity data caching and total value calculation.
-     * Overwrite this method for specific data retrieving (for example for apps/connectors, and device, see specific Indicators)
+     * Indicator initialization:
+     * - get data
+     * - stores data in entity cache
+     * - specific calculation with postInit
      * @param entity 
-     * @returns month data
      */
-    async getApiData(entity: Entity): Promise<Array<StatsResponse>> {
-        const apiData: Array<StatsResponse> = await cacheService.getData(this.api, this.frequency, entity.level, entity.id, false);
-        return apiData;
+     async init(entity: Entity): Promise<void> {
+        const apiData = await this.getApiData(entity);
+        this.initCache(entity, apiData);
+        this.initTotal(entity);
+        this.postInit(entity);
     }
 
     /**
-     * Initialize data and stores in Entity cache
+     * Store apiData in Entity cache
      * @param entity 
+     * @param apiData 
      */
-    async initCachedData(entity: Entity): Promise<void> {
-        const apiData = await this.getApiData(entity);
-        const totalValue = this.getTotalValue(entity);
-
-		// initialize entity cache data
+    private initCache(entity: Entity, apiData: Array<StatsResponse>): void {
         if (!entity.cacheData) {
             entity.cacheData = {
                 indicators: [],
@@ -57,22 +50,28 @@ export abstract class Indicator {
                 name: this.name,
                 apiType: this.apiType,
                 data: apiData,
-                frequency: this.frequency,
-                totalValue: totalValue
+                frequency: this.frequency
             });
             entity.cacheData.lastUpdate = new Date();
         }
     }
 
-    getTotalValue(entity: Entity): number | string {
-        let cachedIndicator = null;
-        cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, 'month', entity);
-        if (cachedIndicator) {
-            return cachedIndicator.totalValue;
-        }
-        return 0;
+    /**
+     * Get apiData
+     * Overwrite this method for specific data retrieving (for example for apps/connectors, and device, see specific Indicators)
+     * @param entity 
+     * @returns month data
+     */
+    async getApiData(entity: Entity): Promise<Array<StatsResponse>> {
+        const apiData: Array<StatsResponse> = await cacheService.getData(this.api, this.frequency, entity.level, entity.id, false);
+        return apiData;
     }
     
+    /**
+     * Get Since Date to display on cards
+     * @param entity 
+     * @returns 
+     */
     getSinceDate(entity: Entity): string {
         if (!this.since) {
 			const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
@@ -85,6 +84,27 @@ export abstract class Indicator {
 		}
 		return this.since;
     }
+
+    /**
+     * Returns total value for indicator card
+     * @param entity 
+     * @returns total
+     */
+    getTotal(entity: Entity): number | string {
+        let cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, 'month', entity);
+        if (cachedIndicator) {
+            return cachedIndicator.totalValue;
+        }
+        return 0;
+    }
+
+    abstract initTotal(entity: Entity): void;
+    abstract postInit(entity: Entity): void;
+    abstract getChart(ctx: any, entity: Entity): Promise<typeof Chart>;
+    abstract getChartData(entity: Entity, apiData: Array<StatsResponse>, specificApiType: IndicatorApiType): Promise<any>;
+    abstract getChartLabels(entity: Entity, chartDates: Array<Date>): Array<string> | Promise<Array<string>>;
+    abstract isDataExportable(): boolean;
+    abstract showProfileFilter(): boolean;
 }
 
 export type IndicatorName =
