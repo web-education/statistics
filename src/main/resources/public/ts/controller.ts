@@ -136,7 +136,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	 * If no data returned for connectors then hide card.
 	 */
 	const toggleMostUsedConnectorsIndicator = async (entity: Entity): Promise<void> => {
-		await MostUsedConnectorsIndicator.getInstance().initCachedData(entity);
+		await MostUsedConnectorsIndicator.getInstance().init(entity);
 		const connectorsApiData = await cacheService.getIndicatorData(MostUsedConnectorsIndicator.getInstance(), entity);
 		const connectorsIndex = $scope.state.indicators.findIndex(i => i.name === MostUsedConnectorsIndicator.getInstance().name);
 
@@ -166,10 +166,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			// init indicators data per month for current entity
 			// (connectors already initialised before)
 			if (indicator.name !== 'stats.mostUsedConnector') {
-				await indicator.initCachedData($scope.state.currentEntity);
+				await indicator.init($scope.state.currentEntity);
 			}
-			// init indicators total values for current entity
-			indicator.initTotalValueForEntity($scope.state.currentEntity);
 		}
 		
 		// Spinner off

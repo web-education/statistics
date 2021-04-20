@@ -22,7 +22,7 @@
 			<ul>
 				<li ng-repeat="indicator in state.indicators" class="indicator-list-box">
                     <a ng-click="openIndicator(indicator)" style="margin: 0px 0px 5px 0px" ng-class="{ selected: state.currentIndicator === indicator }">
-                        <h1 class="indicator-number">[[ indicator.getTotalValue(state.currentEntity) ]]</h1>
+                        <h1 class="indicator-number">[[ indicator.getTotal(state.currentEntity) ]]</h1>
     					<div class="indicator-name">[[ lang.translate(indicator.name) ]]</div>
                         <div class="indicator-since"><i18n>stats.since</i18n> [[ lang.translate(indicator.getSinceDate(state.currentEntity)) ]]</div>
                     </a>

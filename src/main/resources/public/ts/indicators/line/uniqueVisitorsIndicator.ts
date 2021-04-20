@@ -30,7 +30,7 @@ export class UniqueVisitorsIndicator extends AbstractLineIndicator {
      * Specific total value for current month
      * @param entity 
      */
-    initTotalValueForEntity(entity: Entity) {
+    initTotal(entity: Entity) {
         let totalValue = 0;
 		const uniqueVisitorsCacheIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);;
 		uniqueVisitorsCacheIndicator.data.forEach((d: StatsAccountsResponse) => {
@@ -47,5 +47,9 @@ export class UniqueVisitorsIndicator extends AbstractLineIndicator {
 
     showProfileFilter(): boolean {
         return false;
+    }
+
+    postInit(entity: Entity) {
+
     }
 }

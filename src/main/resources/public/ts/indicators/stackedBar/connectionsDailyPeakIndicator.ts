@@ -72,7 +72,7 @@ export class ConnectionsDailyPeakIndicator extends AbstractStackedBarIndicator {
         return chartData;
 	}
 
-    async initTotalValueForEntity(entity: Entity): Promise<void> {
+    async initTotal(entity: Entity): Promise<void> {
         let chartData = {};
 		const connectionsDailyPeakIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
 		
@@ -119,7 +119,12 @@ export class ConnectionsDailyPeakIndicator extends AbstractStackedBarIndicator {
 		connectionsDailyPeakIndicator.totalValue = indexOfMaxValue + 'h';
     }
 
-    getTotalValue(entity: Entity): number | string {
+    /**
+     * Overwrite getTotal for total value in indicator card
+     * @param entity 
+     * @returns 
+     */
+    getTotal(entity: Entity): number | string {
         let cachedIndicator = null;
         cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, 'hour', entity);
         if (cachedIndicator) {
@@ -134,5 +139,9 @@ export class ConnectionsDailyPeakIndicator extends AbstractStackedBarIndicator {
 
     showProfileFilter(): boolean {
         return false;
+    }
+
+    postInit(entity: Entity) {
+
     }
 }

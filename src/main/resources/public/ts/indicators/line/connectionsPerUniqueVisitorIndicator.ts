@@ -145,7 +145,7 @@ export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator 
 		});
 	}
 
-	initTotalValueForEntity(entity: Entity) {
+	initTotal(entity: Entity) {
 		let currentDate = new Date();
 		
 		let authenticationsTotalValue = 0;
@@ -176,5 +176,9 @@ export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator 
 
 	showProfileFilter(): boolean {
         return false;
+    }
+
+	postInit(entity: Entity) {
+
     }
 }
