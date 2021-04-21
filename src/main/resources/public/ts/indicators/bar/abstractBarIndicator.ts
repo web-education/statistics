@@ -2,19 +2,19 @@ import { idiom as lang } from "entcore";
 import { cacheService } from "../../services/cache.service";
 import { Dataset, datasetService } from "../../services/dataset.service";
 import { Entity } from "../../services/entities.service";
-import { statsApiService } from "../../services/stats-api.service";
+import { statsApiService, StatsResponse } from "../../services/stats-api.service";
 import { Indicator, IndicatorApi, IndicatorApiType, IndicatorChartType, IndicatorFrequency, IndicatorName, SCALES_CONFIG, TOOLTIPS_CONFIG } from "../abstractIndicator";
 
 declare const Chart: any;
 
 export abstract class AbstractBarIndicator extends Indicator {
+    chartType: IndicatorChartType = 'bar';
     name: IndicatorName;
     api: IndicatorApi;
     apiType: IndicatorApiType;
     frequency: IndicatorFrequency;
     since: string;
     icon: string;
-    chartType: IndicatorChartType;
     chartTitle: string;
     chartFrequencies: IndicatorFrequency[];
     chartProfile: string;
@@ -138,5 +138,5 @@ export abstract class AbstractBarIndicator extends Indicator {
 		cachedIndicator.totalValue = app;
 	}
 
-	abstract postInit(entity: Entity);
+	abstract postInit(apiData: Array<StatsResponse>): void;
 }

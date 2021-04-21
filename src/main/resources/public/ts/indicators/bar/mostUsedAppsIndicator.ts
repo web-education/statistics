@@ -40,7 +40,7 @@ export class MostUsedAppsIndicator extends AbstractBarIndicator {
         return true;
     }
 
-    postInit(entity: Entity) {
+    postInit(apiData: Array<StatsResponse>) {
 
     }
 }

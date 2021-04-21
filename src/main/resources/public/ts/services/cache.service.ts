@@ -1,6 +1,6 @@
 import { dateService } from "./date.service";
-import { Entity, EntityLevel } from "./entities.service";
-import { StatsResponse, statsApiService } from "./stats-api.service";
+import { Entity, EntityCachedIndicator, EntityLevel } from "./entities.service";
+import { statsApiService, StatsResponse } from "./stats-api.service";
 import { Indicator, IndicatorApi, IndicatorFrequency, IndicatorName } from "../indicators/abstractIndicator";
 
 export type ApiCachedData = {
@@ -90,7 +90,7 @@ export class CacheService {
 		return response;
 	}
     
-	public getIndicatorFromEntityCache(indicatorName: IndicatorName, indicatorFrequency: IndicatorFrequency, entity: Entity) {
+	public getIndicatorFromEntityCache(indicatorName: IndicatorName, indicatorFrequency: IndicatorFrequency, entity: Entity): EntityCachedIndicator {
 		if (entity.cacheData && entity.cacheData.indicators) {
 			return entity.cacheData.indicators.find(i => i.name === indicatorName && i.frequency === indicatorFrequency);
 		}

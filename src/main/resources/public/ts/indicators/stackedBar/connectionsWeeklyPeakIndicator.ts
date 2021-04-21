@@ -2,12 +2,11 @@ import { idiom as lang } from "entcore";
 import { cacheService } from "../../services/cache.service";
 import { Entity } from "../../services/entities.service";
 import { StatsAccountsResponse, StatsResponse } from "../../services/stats-api.service";
-import { IndicatorApi, IndicatorApiType, IndicatorChartType, IndicatorFrequency, IndicatorName } from "../abstractIndicator";
+import { IndicatorApi, IndicatorApiType, IndicatorFrequency, IndicatorName } from "../abstractIndicator";
 import { AbstractStackedBarIndicator } from "./abstractStackedBarIndicator";
 
 export class ConnectionsWeeklyPeakIndicator extends AbstractStackedBarIndicator {
     name: IndicatorName = 'stats.weeklyPeak';
-    chartType: IndicatorChartType = 'stackedbar';
     since = '';
     icon = 'calendar-button';
     api: IndicatorApi = 'accounts';
@@ -158,7 +157,7 @@ export class ConnectionsWeeklyPeakIndicator extends AbstractStackedBarIndicator 
         return false;
     }
 
-    postInit(entity: Entity) {
+    postInit(apiData: Array<StatsResponse>): void {
 
     }
 }

@@ -30,7 +30,7 @@ export abstract class Indicator {
         const apiData = await this.getApiData(entity);
         this.initCache(entity, apiData);
         this.initTotal(entity);
-        this.postInit(entity);
+        this.postInit(apiData);
     }
 
     /**
@@ -99,7 +99,7 @@ export abstract class Indicator {
     }
 
     abstract initTotal(entity: Entity): void;
-    abstract postInit(entity: Entity): void;
+    abstract postInit(apiData: Array<StatsResponse>): void;
     abstract getChart(ctx: any, entity: Entity): Promise<typeof Chart>;
     abstract getChartData(entity: Entity, apiData: Array<StatsResponse>, specificApiType: IndicatorApiType): Promise<any>;
     abstract getChartLabels(entity: Entity, chartDates: Array<Date>): Array<string> | Promise<Array<string>>;

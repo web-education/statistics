@@ -1,13 +1,12 @@
 import { cacheService } from "../../services/cache.service";
 import { dateService } from "../../services/date.service";
 import { Entity } from "../../services/entities.service";
-import { StatsAccountsResponse } from "../../services/stats-api.service";
+import { StatsAccountsResponse, StatsResponse } from "../../services/stats-api.service";
 import { IndicatorApi, IndicatorName, IndicatorApiType, IndicatorChartType, IndicatorFrequency } from "../abstractIndicator";
 import { AbstractLineIndicator } from "./abstractLineIndicator";
 
 export class UniqueVisitorsIndicator extends AbstractLineIndicator {
     name: IndicatorName = 'stats.uniqueVisitors';
-    chartType: IndicatorChartType = 'line';
     since = 'stats.firstDayOfMonth';
     icon = 'unique-visitors-icon';
     api: IndicatorApi = 'accounts';
@@ -49,7 +48,7 @@ export class UniqueVisitorsIndicator extends AbstractLineIndicator {
         return false;
     }
 
-    postInit(entity: Entity) {
+    postInit(apiData: Array<StatsResponse>): void {
 
     }
 }
