@@ -1,17 +1,18 @@
 import { Dataset, datasetService } from "../../services/dataset.service";
 import { Entity } from "../../services/entities.service";
+import { StatsResponse } from "../../services/stats-api.service";
 import { Indicator, IndicatorApi, IndicatorApiType, IndicatorChartType, IndicatorFrequency, IndicatorName, TOOLTIPS_CONFIG } from "../abstractIndicator";
 
 declare const Chart: any;
 
 export abstract class AbstractStackedBarIndicator extends Indicator {
+    chartType: IndicatorChartType = 'stackedbar';
     name: IndicatorName;
     api: IndicatorApi;
     apiType: IndicatorApiType;
     frequency: IndicatorFrequency;
     since: string;
     icon: string;
-    chartType: IndicatorChartType;
     chartTitle: string;
     chartFrequencies: IndicatorFrequency[];
     chartProfile: string;
@@ -61,5 +62,5 @@ export abstract class AbstractStackedBarIndicator extends Indicator {
     abstract getChartLabels(): Array<string>;
     abstract getChartData(entity: Entity): Promise<any>;
 	abstract initTotal(entity: Entity): void;
-	abstract postInit(entity: Entity): void;
+	abstract postInit(apiData: Array<StatsResponse>): void;
 }

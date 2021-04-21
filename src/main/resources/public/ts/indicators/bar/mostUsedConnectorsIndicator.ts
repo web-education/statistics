@@ -1,12 +1,11 @@
 import { cacheService } from "../../services/cache.service";
 import { Entity } from "../../services/entities.service";
 import { StatsResponse } from "../../services/stats-api.service";
-import { IndicatorApi, IndicatorApiType, IndicatorName, IndicatorChartType, IndicatorFrequency } from "../abstractIndicator";
+import { IndicatorApi, IndicatorApiType, IndicatorName, IndicatorFrequency } from "../abstractIndicator";
 import { AbstractBarIndicator } from "./abstractBarIndicator";
 
 export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
     name: IndicatorName = 'stats.mostUsedConnector';
-    chartType: IndicatorChartType = 'bar';
     since = "";
     icon = 'stats-service-icon';
     api: IndicatorApi = 'access';
@@ -40,7 +39,7 @@ export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
         return true;
     }
 
-    postInit(entity: Entity) {
+    postInit(apiData: Array<StatsResponse>): void {
 
     }
 }

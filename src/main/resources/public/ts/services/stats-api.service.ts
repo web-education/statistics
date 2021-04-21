@@ -2,7 +2,7 @@ import http from 'axios';
 import { IndicatorApi, IndicatorApiType, IndicatorFrequency } from '../indicators/abstractIndicator';
 import { EntityLevel } from './entities.service';
 
-export interface StatsResponse {
+export interface StatsCommonResponse {
     id: string;
     platform_id: string;
     date: string;
@@ -11,7 +11,7 @@ export interface StatsResponse {
     profile: string;
 }
 
-export interface StatsAccountsResponse extends StatsResponse {
+export interface StatsAccountsResponse extends StatsCommonResponse {
     loaded: number;
     activated: number;
     authentications: number;
@@ -21,13 +21,15 @@ export interface StatsAccountsResponse extends StatsResponse {
     device_type: string;
 };
 
-export interface StatsAccessResponse extends StatsResponse {
+export interface StatsAccessResponse extends StatsCommonResponse {
     type: string;
     module: string;
     access: number;
     unique_access_minute: number;
     unique_access: number;
 }
+
+export type StatsResponse = StatsAccountsResponse & StatsAccessResponse;
 
 export class StatsApiService {
     
@@ -53,7 +55,7 @@ export class StatsApiService {
             queryString += `&device=${device}`;
         }
         let res = await http.get(`/stats/list${queryString}`);
-        return res.data as Array<StatsResponse>;
+        return res.data;
     }
     
     /**

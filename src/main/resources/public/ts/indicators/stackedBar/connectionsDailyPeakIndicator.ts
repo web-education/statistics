@@ -2,12 +2,11 @@ import { idiom as lang } from "entcore";
 import { cacheService } from "../../services/cache.service";
 import { Entity } from "../../services/entities.service";
 import { StatsAccountsResponse, StatsResponse } from "../../services/stats-api.service";
-import { IndicatorApi, IndicatorApiType, IndicatorChartType, IndicatorFrequency, IndicatorName } from "../abstractIndicator";
+import { IndicatorApi, IndicatorApiType, IndicatorFrequency, IndicatorName } from "../abstractIndicator";
 import { AbstractStackedBarIndicator } from "./abstractStackedBarIndicator";
 
 export class ConnectionsDailyPeakIndicator extends AbstractStackedBarIndicator {
     name: IndicatorName = 'stats.dailyPeak';
-    chartType: IndicatorChartType = 'stackedbar';
     since = '';
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'authentications';
@@ -141,7 +140,7 @@ export class ConnectionsDailyPeakIndicator extends AbstractStackedBarIndicator {
         return false;
     }
 
-    postInit(entity: Entity) {
+    postInit(apiData: Array<StatsResponse>): void {
 
     }
 }

@@ -3,7 +3,7 @@ import { Dataset, datasetService } from "../../services/dataset.service";
 import { dateService } from "../../services/date.service";
 import { Entity } from "../../services/entities.service";
 import { StatsAccountsResponse, statsApiService, StatsResponse } from "../../services/stats-api.service";
-import { IndicatorApi, IndicatorApiType, IndicatorChartType, IndicatorFrequency, IndicatorName, LEGEND_CONFIG, SCALES_CONFIG, TOOLTIPS_CONFIG } from "../abstractIndicator";
+import { IndicatorApi, IndicatorApiType, IndicatorFrequency, IndicatorName, LEGEND_CONFIG, SCALES_CONFIG, TOOLTIPS_CONFIG } from "../abstractIndicator";
 import { AbstractLineIndicator } from "./abstractLineIndicator";
 import { ConnectionsIndicator } from "./connectionsIndicator";
 import { UniqueVisitorsIndicator } from "./uniqueVisitorsIndicator";
@@ -12,7 +12,6 @@ declare const Chart: any;
 
 export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator {
     name: IndicatorName = 'stats.connectionsByUniqueVisitors';
-    chartType: IndicatorChartType = 'line';
     since = 'stats.firstDayOfMonth';
     icon = 'connection-by-visitors-icon';
     api: IndicatorApi = 'accounts';
@@ -178,7 +177,7 @@ export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator 
         return false;
     }
 
-	postInit(entity: Entity) {
+	postInit(apiData: Array<StatsResponse>): void {
 
     }
 }

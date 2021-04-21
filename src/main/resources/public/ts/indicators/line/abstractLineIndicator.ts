@@ -8,13 +8,13 @@ import { Indicator, IndicatorApi, IndicatorApiType, IndicatorChartType, Indicato
 declare const Chart: any;
 
 export abstract class AbstractLineIndicator extends Indicator {
+    chartType: IndicatorChartType = 'line';
     name: IndicatorName;
     api: IndicatorApi;
     apiType: IndicatorApiType;
     frequency: IndicatorFrequency;
     since: string;
     icon: string;
-    chartType: IndicatorChartType;
     chartTitle: string;
     chartFrequencies: Array<IndicatorFrequency>;
     chartProfile: string;
@@ -132,5 +132,5 @@ export abstract class AbstractLineIndicator extends Indicator {
 		cachedIndicator.totalValue = totalValue;
 	}
 
-	abstract postInit(entity: Entity);
+	abstract postInit(apiData: Array<StatsResponse>): void;
 }

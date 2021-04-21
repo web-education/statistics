@@ -3,14 +3,13 @@ import { Dataset, datasetService } from "../../services/dataset.service";
 import { dateService } from "../../services/date.service";
 import { Entity } from "../../services/entities.service";
 import { statsApiService, StatsResponse } from "../../services/stats-api.service";
-import { IndicatorApi, IndicatorApiType, IndicatorChartType, IndicatorFrequency, IndicatorName, LEGEND_CONFIG, SCALES_CONFIG, TOOLTIPS_CONFIG } from "../abstractIndicator";
+import { IndicatorApi, IndicatorApiType, IndicatorFrequency, IndicatorName, LEGEND_CONFIG, SCALES_CONFIG, TOOLTIPS_CONFIG } from "../abstractIndicator";
 import { AbstractLineIndicator } from "./abstractLineIndicator";
 
 declare const Chart: any;
 
 export class DevicesIndicator extends AbstractLineIndicator {
     name: IndicatorName = 'stats.devices';
-    chartType: IndicatorChartType = 'line';
     since = '';
     icon = 'device-icon';
     api: IndicatorApi = 'accounts';
@@ -158,7 +157,7 @@ export class DevicesIndicator extends AbstractLineIndicator {
         return true;
     }
 
-	postInit(entity: Entity) {
+	postInit(apiData: Array<StatsResponse>): void {
 
     }
 }
