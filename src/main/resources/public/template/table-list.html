@@ -69,4 +69,37 @@
 		target="_blank"
     >
     </a>
+    <lightbox>
+        <div class="row">
+            <h2>Exporter les statistiques</h2>
+            <!-- TODO : cas 1 - En tant qu'utilisateur rattaché à une structure chapeau ou ayant accès à plusieurs établissements, navigant sur une structure chapeau, lorsque je clique sur le bouton "Exporter les statistiques" en bas à droite des graphes, une lightbox me propose de choisir les données de la structure chapeau ou le détails des données. -->
+            <div> 
+                <p>Souhaitez-vous exporter :
+                    <form>
+                        <input type="radio" for=""><label id="">Les données consolidées au niveau de la structure <strong>"[Nom de la structure chapeau]"</strong></label><br />
+                        <input type="radio" for=""><label>Les données détaillées par établissement scolaire</label>
+                    </form>
+                </p>
+                <div class="info relative">
+                    <span><strong>À noter : </strong>Dans l'export consolidé au niveau de la structure principale, l'activité d'un utilisateur rattaché à plusieurs établissements est comptabilisée une seule fois.</span>
+                    <span class="tipbox">
+                        <i class="help square-medium"></i>
+                        <div class="tipbox-content tipbox bot">
+                            Dans l'export consolidé au niveau de la structure principale, l'activité d'un utilisateur rattaché à plusieurs établissements est comptabilisée une seule fois. Dans le détail par établissement, cette activité est comptabilisée pour chaque établissement auquel l'utilisateur est rattaché.
+                        </div>
+                    </span>
+                </div>
+                <button class="right-magnet">Exporter</button>
+            </div>
+            <!-- TODO : Cas 2 -  En tant qu'utilisateur ADML rattaché à une ou plusieurs structure lorsque je clique sur le bouton "Exporter les statistiques" en bas à droite des graphes depuis uns structure simple (établissement), une lightbox me propose de choisir les données de l'établissement ou le détail par classe -->
+            <!-- <div>
+                <p>Souhaitez-vous exporter :
+                    <form>
+                        <input type="radio" for=""><label id="">Les données de la structure <strong>"[Nom de la structure]"</strong></label><br />
+                        <input type="radio" for=""><label>Les données détaillées par classes</label>
+                    </form>
+                </p>
+            </div> -->
+        </div>
+    </lightbox>
 </article>
