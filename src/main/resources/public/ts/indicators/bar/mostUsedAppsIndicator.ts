@@ -1,12 +1,13 @@
+import { idiom as lang } from "entcore";
+import { AppService } from "../../services/app.service";
 import { cacheService } from "../../services/cache.service";
 import { Entity } from "../../services/entities.service";
 import { StatsResponse } from "../../services/stats-api.service";
-import { IndicatorApi, IndicatorApiType, IndicatorName, IndicatorChartType, IndicatorFrequency } from "../abstractIndicator";
+import { IndicatorApi, IndicatorApiType, IndicatorName, IndicatorFrequency } from "../abstractIndicator";
 import { AbstractBarIndicator } from "./abstractBarIndicator";
 
 export class MostUsedAppsIndicator extends AbstractBarIndicator {
     name: IndicatorName = 'stats.mostUsedApp';
-    chartType: IndicatorChartType = 'bar';
     since = "";
     icon = 'stats-service-icon';
     api: IndicatorApi = 'access';
@@ -15,6 +16,8 @@ export class MostUsedAppsIndicator extends AbstractBarIndicator {
     chartProfile = 'total';
     chartProfiles = ['total', 'Teacher', 'Personnel', 'Relative', 'Student'];
     frequency: IndicatorFrequency = 'month';
+    // apps combo select
+    appNames: Array<{key: string, value: string}>;
 
     private static readonly INSTANCE = new MostUsedAppsIndicator();
 
@@ -40,7 +43,8 @@ export class MostUsedAppsIndicator extends AbstractBarIndicator {
         return true;
     }
 
-    postInit(apiData: Array<StatsResponse>) {
-
+    postInit(apiData: Array<StatsResponse>): void {
+        // initialize apps list for apps combo select
+        this.appNames = AppService.getInstance().getAppNames(apiData);
     }
 }
