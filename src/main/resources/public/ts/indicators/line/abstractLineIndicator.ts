@@ -39,7 +39,7 @@ export abstract class AbstractLineIndicator extends Indicator {
 			
 			let chartDates: Array<Date> = this.getChartDates(apiData);
 			chartLabels = this.getChartLabels(entity, chartDates);
-			let chartData = this.getChartData(entity, apiData, null);
+			let chartData = await this.getChartData(entity, apiData, null);
 
 			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
 			chartDates.forEach((date, index) => {
@@ -103,9 +103,9 @@ export abstract class AbstractLineIndicator extends Indicator {
 
 	getChartData(entity: Entity, apiData: Array<StatsResponse>, specificApiType: IndicatorApiType): any { // FIXME Return Type
 		if (!specificApiType) {
-			return statsApiService.groupByKeyValuesWithDate(apiData, 'profile', this.apiType);
+			return statsApiService.groupByKeyWithDate(apiData, 'profile', this.apiType);
 		}
-		return statsApiService.groupByKeyValuesWithDate(apiData, 'profile', specificApiType);
+		return statsApiService.groupByKeyWithDate(apiData, 'profile', specificApiType);
 	}
 
 	getChartLabels(entity: Entity, chartDates: Array<Date>): Array<string> {

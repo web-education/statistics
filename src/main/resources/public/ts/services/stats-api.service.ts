@@ -80,6 +80,16 @@ export class StatsApiService {
             return acc;
         }, {});
     }
+
+    public groupByKeysWithDate(data: Array<StatsResponse>, key1: string, key2: string, value: IndicatorApiType) {
+        return data.reduce((acc, x) => {
+            if (!acc[x[key1]]) {
+                acc[x[key1]] = {};
+            }
+            (acc[x[key1]][x[key2]] = acc[x[key1]][x[key2]] || []).push({date: new Date(x.date), value: x[value]});
+            return acc;
+        }, {});
+    }
     
     /**
      * @param data input data (api stats data)
@@ -87,7 +97,7 @@ export class StatsApiService {
      * @param value api attribute to get values from
      * @returns object with key as keys and array of {date: Date, value: number} as values
      * 
-     * Usage: statsApiService.groupByKeyWithDate(apiData, 'device_type', 'authentications')
+     * Usage: statsApiService.groupByKeyValuesWithDate(apiData, 'device_type', 'authentications')
      * This will group data by key 'device_type' for 'authentications' values with date.
      * This will return: 
      * {
@@ -95,7 +105,7 @@ export class StatsApiService {
      *      mobile: [{date: '01/01/2020', value: 20}, ...]
      * }
      */
-    public groupByKeyValuesWithDate(data: Array<StatsResponse>, key: string, value: IndicatorApiType) {
+    public groupByKeyWithDate(data: Array<StatsResponse>, key: string, value: IndicatorApiType) {
         return data.reduce((acc, x) => {
             (acc[x[key]] = acc[x[key]] || []).push({date: new Date(x.date), value: x[value]});
             return acc;

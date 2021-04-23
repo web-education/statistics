@@ -1,3 +1,4 @@
+import { AppService } from "../../services/app.service";
 import { cacheService } from "../../services/cache.service";
 import { Entity } from "../../services/entities.service";
 import { StatsResponse } from "../../services/stats-api.service";
@@ -14,6 +15,8 @@ export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
     chartProfile = 'total';
     chartProfiles = ['total', 'Teacher', 'Personnel', 'Relative', 'Student'];
     frequency: IndicatorFrequency = 'month';
+    // apps combo select
+    appNames: Array<{key: string, value: string}>;
 
     private static readonly INSTANCE = new MostUsedConnectorsIndicator();
 
@@ -40,6 +43,7 @@ export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
     }
 
     postInit(apiData: Array<StatsResponse>): void {
-
+        // initialize apps list for apps combo select
+        this.appNames = AppService.getInstance().getAppNames(apiData);
     }
 }

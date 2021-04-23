@@ -113,6 +113,8 @@ export type IndicatorName =
     'stats.connectionsByUniqueVisitors' |
     'stats.activatedAccounts' |
     'stats.mostUsedApp' |
+    'stats.appDetails' |
+    'stats.connectorDetails' |
     'stats.mostUsedConnector' |
     'stats.devices' |
     'stats.dailyPeak' |

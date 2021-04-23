@@ -14,6 +14,9 @@ import { DevicesIndicator } from './indicators/line/devicesIndicator';
 import { ConnectionsDailyPeakIndicator } from './indicators/stackedBar/connectionsDailyPeakIndicator';
 import { ConnectionsWeeklyPeakIndicator } from './indicators/stackedBar/connectionsWeeklyPeakIndicator';
 import { ActivationAndLoadedIndicator } from './indicators/line/activationAndLoadedIndicator';
+import { AppDetailsIndicator } from './indicators/line/appDetailsIndicator';
+import { ConnectorDetailsIndicator } from "./indicators/line/connectorDetailsIndicator";
+import { AppService } from './services/app.service';
 
 declare const Chart: any;
 
@@ -23,6 +26,8 @@ type StatsControllerState = {
 	currentEntity: Entity;
 	currentIndicator: Indicator;
 	indicators: Array<Indicator>;
+	selectedAppName: string;
+	allAppsOrConnectorsI18nKey: string;
 	chart: typeof Chart;
 	ctx: any;
 }
@@ -42,6 +47,7 @@ interface StatsControllerScope {
 	selectEntity(id: string): Promise<void>;
 	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
 	openAppDetails(): void;
+	displayAppsSelect(): boolean;
 	$apply: any;
 }
 
@@ -74,6 +80,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		currentEntity: null,
 		currentIndicator: null,
 		indicators: [],
+		selectedAppName: 'stats.mostUsedApps.allApps',
+		allAppsOrConnectorsI18nKey: 'stats.mostUsedApps.allApps',
 		chart: null,
 		ctx: null,
 	};
@@ -187,6 +195,16 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 		
 		$scope.state.currentIndicator = indicator;
+
+		if (indicator.name === 'stats.mostUsedApp') {
+			$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedApps.allApps';
+		} else if (indicator.name === 'stats.mostUsedConnector') {
+			$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedConnector.allConnectors';
+		}
+		if (indicator.name === 'stats.mostUsedApp' || indicator.name === 'stats.mostUsedConnector') {
+			$scope.state.selectedAppName = $scope.state.allAppsOrConnectorsI18nKey;
+		}
+
 		let chartContext = $('#chart').get(0).getContext('2d');
 		
 		if ($scope.state.ctx && $scope.state.ctx !== chartContext){
@@ -218,6 +236,35 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			timeoutFunction(1)
 		}, 50)
 
+	}
+
+	$scope.openAppDetails = async function() {
+		if ($scope.state.selectedAppName) {
+			AppService.getInstance().setSelectedAppName($scope.state.selectedAppName);
+
+			if ($scope.state.selectedAppName === 'stats.mostUsedApps.allApps') {
+				await $scope.openIndicator(MostUsedAppsIndicator.getInstance());
+			} else {
+				let detailsIndicator;
+				if ($scope.state.currentIndicator.name === 'stats.mostUsedApp' ||
+					$scope.state.currentIndicator.name === 'stats.appDetails') {
+					detailsIndicator = AppDetailsIndicator.getInstance();
+				} else {
+					detailsIndicator = ConnectorDetailsIndicator.getInstance();
+				}
+				await detailsIndicator.init($scope.state.currentEntity);
+				await $scope.openIndicator(detailsIndicator);
+			}
+			safeScopeApply();
+		}
+	}
+
+	$scope.displayAppsSelect = function(): boolean {
+		return $scope.state.currentIndicator &&
+			($scope.state.currentIndicator.name === 'stats.mostUsedApp' || 
+			$scope.state.currentIndicator.name === 'stats.mostUsedConnector' ||
+			$scope.state.currentIndicator.name === 'stats.appDetails' ||
+			$scope.state.currentIndicator.name === 'stats.connectorDetails');
 	}
 
 	$scope.openView = function(container, view){

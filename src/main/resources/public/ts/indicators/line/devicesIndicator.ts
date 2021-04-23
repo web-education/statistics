@@ -65,7 +65,7 @@ export class DevicesIndicator extends AbstractLineIndicator {
 			chartLabels = super.getChartLabels(entity, chartDates);
 			
 			// chart data grouped by device
-			let chartData = statsApiService.groupByKeyValuesWithDate(apiData, 'device_type', 'authentications');
+			let chartData = statsApiService.groupByKeyWithDate(apiData, 'device_type', 'authentications');
 			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
 			chartDates.forEach((date, index) => {
 				Object.values(chartData).forEach((deviceData: Array<{date: Date, value: number}>) => {
@@ -127,7 +127,7 @@ export class DevicesIndicator extends AbstractLineIndicator {
 
 	initTotal(entity: Entity): void {
 		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);
-		const dataGroupedByDevice = statsApiService.groupByKeyValuesWithDate(cachedIndicator.data, 'device_type', 'authentications');
+		const dataGroupedByDevice = statsApiService.groupByKeyWithDate(cachedIndicator.data, 'device_type', 'authentications');
 		
 		let devicesTotal: Array<{device: string, total: number}> = [];
 		Object.keys(dataGroupedByDevice).forEach(device => {

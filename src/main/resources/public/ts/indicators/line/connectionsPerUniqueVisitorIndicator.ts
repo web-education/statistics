@@ -54,7 +54,7 @@ export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator 
 			chartLabels = this.getChartLabels(entity, chartDates);
 			
 			// connections data
-			let connectionsData = statsApiService.groupByKeyValuesWithDate(apiData, 'profile', connectionsIndicator.apiType);
+			let connectionsData = statsApiService.groupByKeyWithDate(apiData, 'profile', connectionsIndicator.apiType);
 			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
 			chartDates.forEach((date, index) => {
 				Object.values(connectionsData).forEach((profileData: Array<{date: Date, value: number}>) => {
@@ -71,7 +71,7 @@ export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator 
 			
 			// unique visitors data
             const uniqueVisitorsIndicator = UniqueVisitorsIndicator.getInstance();
-			let uniqueVisitorsData = statsApiService.groupByKeyValuesWithDate(apiData, 'profile', uniqueVisitorsIndicator.apiType);
+			let uniqueVisitorsData = statsApiService.groupByKeyWithDate(apiData, 'profile', uniqueVisitorsIndicator.apiType);
 			// for every dates in chart, fill the chartData with 0 value if no data for that date and replace null values by O
 			chartDates.forEach((date, index) => {
 				Object.values(uniqueVisitorsData).forEach((profileData: Array<{date: Date, value: number}>) => {
