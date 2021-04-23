@@ -1,3 +1,4 @@
+import { idiom as lang } from "entcore";
 import { cacheService } from "../../services/cache.service";
 import { Dataset, datasetService } from "../../services/dataset.service";
 import { dateService } from "../../services/date.service";
@@ -145,7 +146,7 @@ export class DevicesIndicator extends AbstractLineIndicator {
 		
 		const deviceTotal = devicesTotal.find(deviceTotal => deviceTotal.total === max);
 		if (deviceTotal) {
-			cachedIndicator.totalValue = deviceTotal.device;
+			cachedIndicator.totalValue = lang.translate(`stats.device.${deviceTotal.device}`);
 		} 
 	}
 
