@@ -5,12 +5,12 @@
 		</h1>
 		<nav class="contextual-buttons choice-view six cell">
 			<div class="display-buttons" ng-if="template.contains('list', 'table-list') || template.contains('list', 'icons-list')">
-				<i class="show-icons"
-					 ng-class="{ selected: template.contains('list', 'icons-list') }"
-					 ng-click="openView('list', 'icons-list')"></i>
 				<i class="show-list"
 				   ng-class="{ selected: template.contains('list', 'table-list') }"
 				   ng-click="indicatorDetail(state.indicators[0])"></i>
+				<i class="show-icons"
+					 ng-class="{ selected: template.contains('list', 'icons-list') }"
+					 ng-click="openView('list', 'icons-list')"></i>
 			</div>
 		</nav>
 	</div>
