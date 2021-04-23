@@ -10,8 +10,9 @@ export type Dataset = {
 	backgroundColor: string;
     borderWidth?: number;
 	fill?: boolean | string | number;
-	lineTension?: number,
-	spanGaps?: boolean,
+	lineTension?: number;
+	spanGaps?: boolean;
+	minBarLength?: number;
     data: Array<number>;
 }
 
@@ -105,6 +106,7 @@ export class DatasetService {
 		return [{
             label: lang.translate('stats.' + profile.toLowerCase()),
             backgroundColor: "rgb(56, 137, 193)",
+			minBarLength: 4,
 			data: []
         }];
 	}
