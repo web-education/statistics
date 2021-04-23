@@ -12,7 +12,7 @@ declare const Chart: any;
 export class DevicesIndicator extends AbstractLineIndicator {
     name: IndicatorName = 'stats.devices';
     since = '';
-    icon = 'device-icon';
+    icon = 'devices-icon';
     api: IndicatorApi = 'accounts';
     apiType: IndicatorApiType = 'mixed';
     chartTitle = "stats.labels.devices";

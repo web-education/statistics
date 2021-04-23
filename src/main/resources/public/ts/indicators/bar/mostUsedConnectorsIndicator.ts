@@ -8,7 +8,7 @@ import { AbstractBarIndicator } from "./abstractBarIndicator";
 export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
     name: IndicatorName = 'stats.mostUsedConnector';
     since = "";
-    icon = 'stats-service-icon';
+    icon = 'connector-icon';
     api: IndicatorApi = 'access';
     apiType: IndicatorApiType = 'access';
     chartTitle = 'stats.labels.mostUsedConnectors';
