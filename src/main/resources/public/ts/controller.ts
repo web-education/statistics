@@ -244,6 +244,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 
 			if ($scope.state.selectedAppName === 'stats.mostUsedApps.allApps') {
 				await $scope.openIndicator(MostUsedAppsIndicator.getInstance());
+			} else if ($scope.state.selectedAppName === 'stats.mostUsedConnector.allConnectors') {
+				await $scope.openIndicator(MostUsedConnectorsIndicator.getInstance());
 			} else {
 				let detailsIndicator;
 				if ($scope.state.currentIndicator.name === 'stats.mostUsedApp' ||
