@@ -1,7 +1,6 @@
 import { ng, template, ui, _, $, idiom as lang } from 'entcore';
 
-import { Indicator, IndicatorApi } from './indicators/abstractIndicator';
-import { dateService } from './services/date.service';
+import { Indicator } from './indicators/abstractIndicator';
 import { Entity, StructuresResponse } from './services/entities.service';
 import { entitiesService } from './services/entities.service';
 import { cacheService } from './services/cache.service';
@@ -17,6 +16,8 @@ import { ActivationAndLoadedIndicator } from './indicators/line/activationAndLoa
 import { AppDetailsIndicator } from './indicators/line/appDetailsIndicator';
 import { ConnectorDetailsIndicator } from "./indicators/line/connectorDetailsIndicator";
 import { AppService } from './services/app.service';
+import { ExportType, ExportService } from './services/export.service';
+import { UserService } from "./services/user.service";
 
 declare const Chart: any;
 
@@ -28,19 +29,27 @@ type StatsControllerState = {
 	indicators: Array<Indicator>;
 	selectedAppName: string;
 	allAppsOrConnectorsI18nKey: string;
+	exportType: ExportType;
 	chart: typeof Chart;
 	ctx: any;
 }
 
 interface StatsControllerScope {
 	$root: any;
-	display: {loading: boolean}
+	display: {
+		loading: boolean, 
+		lightbox: {
+			export: {
+				topLevelEntity: boolean,
+				bottomLevelEntity: boolean
+			}
+		}
+	}
 	state: StatsControllerState,
 	template: typeof template;
 	lang: typeof lang;
 	definitions: Array<string>;
 	
-	getExportUrl(indicator: IndicatorApi): string;
 	openIndicator(indicator: Indicator): Promise<void>;
 	indicatorDetail(indicator: Indicator): void;
 	openView(container: any, view: any);
@@ -50,6 +59,8 @@ interface StatsControllerScope {
 	displayAppsSelect(): boolean;
 	isOnlyOneConnector(indicator: Indicator): boolean;
 	isIndicatorSelected(indicator: Indicator): boolean;
+	export(): void;
+	exportFromLightbox(): void;
 	$apply: any;
 }
 
@@ -84,30 +95,41 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		indicators: [],
 		selectedAppName: 'stats.mostUsedApps.allApps',
 		allAppsOrConnectorsI18nKey: 'stats.mostUsedApps.allApps',
+		exportType: null,
 		chart: null,
 		ctx: null,
 	};
 
 	$scope.display = {
-		loading: true
+		loading: true,
+		lightbox: {
+			export: {
+				topLevelEntity: false,
+				bottomLevelEntity: false
+			}
+		}
 	};
 	
-	// get user structures and classes
+	// build structures tree for structures select component
 	let structures: Array<StructuresResponse> = await entitiesService.getStructures();
 	$scope.state.structuresTree = entitiesService.asTree(structures);
+	
 	$scope.state.entities = [];
 	structures.forEach(s => {
 		$scope.state.entities.push({
 			id: s.id,
 			name: s.name,
-			level: 'structure'
+			level: 'structure',
+			children: s.children,
+			classes: s.classes
 		});
 		if (s.classes && s.classes.length > 0) {
 			s.classes.forEach(c => {
 				$scope.state.entities.push({
 					id: c.id,
 					name: c.name,
-					level: 'class'
+					level: 'class',
+					parentStructureId: s.id
 				});
 			});
 		}
@@ -313,9 +335,6 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 		safeScopeApply();
 	}
-	
-	// get export API call
-	$scope.getExportUrl = () => encodeURI(`/stats/export?indicator=${$scope.state.currentIndicator.api}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.state.currentEntity.level}&entity=${$scope.state.currentEntity.id}&accumulate=true`);
 
 	$scope.isOnlyOneConnector = (indicator: Indicator): boolean => {
 		if (indicator && indicator.appNames) {
@@ -336,5 +355,49 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 		
 		return $scope.state.currentIndicator === indicator;
+	}
+
+	/**
+	 * Called when user clicks on export link.
+	 */
+	$scope.export = () => {
+		if (!$scope.state.currentEntity) {
+			return;
+		}
+
+		// SHOW LIGHTBOX for ADMC/ADML
+		if (UserService.getInstance().isAdml(model.me.functions, $scope.state.currentEntity) || 
+			UserService.getInstance().isAdmc(model.me.functions)) {
+			// if toplevel structure => aggregated or details by structures data
+			if (entitiesService.isTopLevelStructure($scope.state.currentEntity)) {
+				$scope.state.exportType = 'topLevel.aggregated';
+				$scope.display.lightbox.export.topLevelEntity = true;
+			} else {
+				// else => structure data or structure classes data
+				$scope.state.exportType = 'bottomLevel.structure';
+				$scope.display.lightbox.export.bottomLevelEntity = true;
+			}
+		} 
+		// DIRECT EXPORT for non ADMC/ADML
+		else {
+			// pas de lightbox pour les non ADML/ADMC, on exporte la structure courante ou les classes de l'utilisateur s'il est sur une classe
+			let exportUrl: string = '';
+			if ($scope.state.currentEntity.level === 'structure') {
+				exportUrl = ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, 'bottomLevel.structure');
+			} else {
+				// if current = classe, export all user classes
+				exportUrl = ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, 'user.classes', model.me.classes);
+			}
+			window.open(exportUrl, '_blank');
+		}
+	}
+
+	/**
+	 * Called when user confirms export in lighbox. (For ADMC/ADML)
+	 */
+	$scope.exportFromLightbox = () => {
+		$scope.display.lightbox.export.topLevelEntity = false;
+		$scope.display.lightbox.export.bottomLevelEntity = false;
+		window.open(ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, $scope.state.exportType, model.me.classes), '_blank');
 	}
 }]);

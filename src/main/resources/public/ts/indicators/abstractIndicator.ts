@@ -19,6 +19,7 @@ export abstract class Indicator {
     chartProfile: string;
     chartProfiles: Array<string>;
     appNames?: Array<{key: string, value: string}>;
+    exportFrequency?: IndicatorFrequency;
 
     /**
      * Indicator initialization:
