@@ -163,9 +163,11 @@ export class ConnectionsPerUniqueVisitorIndicator extends AbstractLineIndicator 
 			}
 		});
 		
+		const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);;
 		if (uniqueVisitorsTotalValue > 0) {
-			const cachedIndicator = cacheService.getIndicatorFromEntityCache(this.name, this.frequency, entity);;
 			cachedIndicator.totalValue = Math.round(authenticationsTotalValue / uniqueVisitorsTotalValue);
+		} else {
+			cachedIndicator.totalValue = 0;
 		}
 	}
 
