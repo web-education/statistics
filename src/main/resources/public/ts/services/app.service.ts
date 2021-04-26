@@ -20,7 +20,7 @@ export class AppService {
         this.selectedAppName = appName;
     }
 
-    getAppNames(apiData: Array<StatsResponse>) {
+    getAppNames(apiData: Array<StatsResponse>): Array<{key: string, value: string}> {
         const results: Array<{key: string, value: string}> = [];
         apiData.forEach(data => {
             if (results.findIndex(app => app.key === data.module) === -1) {

@@ -48,6 +48,7 @@ interface StatsControllerScope {
 	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
 	openAppDetails(): void;
 	displayAppsSelect(): boolean;
+	isOnlyOneConnector(indicator: Indicator): boolean;
 	isIndicatorSelected(indicator: Indicator): boolean;
 	$apply: any;
 }
@@ -194,20 +195,28 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		if(!indicator) {
 			return;
 		}
-		
+
 		$scope.state.currentIndicator = indicator;
 
-		if (indicator.name === 'stats.mostUsedApp') {
+		if ($scope.state.currentIndicator.name === 'stats.mostUsedApp') {
 			$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedApps.allApps';
-		} else if (indicator.name === 'stats.mostUsedConnector') {
-			$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedConnector.allConnectors';
-		}
-		if (indicator.name === 'stats.mostUsedApp' || indicator.name === 'stats.mostUsedConnector') {
 			$scope.state.selectedAppName = $scope.state.allAppsOrConnectorsI18nKey;
+		} else if ($scope.state.currentIndicator.name === 'stats.mostUsedConnector') {
+			// if only one connector then display details indicator
+			const indicatorFromCache = $scope.state.currentEntity.cacheData.indicators.find(i => i.name === $scope.state.currentIndicator.name);
+			const connectorNames = AppService.getInstance().getAppNames(indicatorFromCache.data);
+			
+			if (connectorNames.length === 1) {
+				$scope.state.selectedAppName = connectorNames[0].key;
+				$scope.openAppDetails();
+				return;
+			} else {
+				$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedConnector.allConnectors';
+				$scope.state.selectedAppName = $scope.state.allAppsOrConnectorsI18nKey;
+			}
 		}
 
 		let chartContext = $('#chart').get(0).getContext('2d');
-		
 		if ($scope.state.ctx && $scope.state.ctx !== chartContext){
 			$scope.state.ctx = chartContext;
 		} else {
@@ -218,7 +227,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			$scope.state.chart.destroy();
 		}
 		
-		let indicatorChart = await indicator.getChart($scope.state.ctx, $scope.state.currentEntity);
+		let indicatorChart = await $scope.state.currentIndicator.getChart($scope.state.ctx, $scope.state.currentEntity);
 		$scope.state.chart = indicatorChart;
 	}
 
@@ -267,7 +276,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			($scope.state.currentIndicator.name === 'stats.mostUsedApp' || 
 			$scope.state.currentIndicator.name === 'stats.mostUsedConnector' ||
 			$scope.state.currentIndicator.name === 'stats.appDetails' ||
-			$scope.state.currentIndicator.name === 'stats.connectorDetails');
+			($scope.state.currentIndicator.name === 'stats.connectorDetails' && $scope.state.currentIndicator.appNames.length > 1));
 	}
 
 	$scope.openView = function(container, view){
@@ -307,6 +316,14 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	// get export API call
 	$scope.getExportUrl = () => encodeURI(`/stats/export?indicator=${$scope.state.currentIndicator.api}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.state.currentEntity.level}&entity=${$scope.state.currentEntity.id}&accumulate=true`);
+
+	$scope.isOnlyOneConnector = (indicator: Indicator): boolean => {
+		if (indicator && indicator.appNames) {
+			return indicator.appNames.length === 1;
+		}
+		return false;
+	}
+
 	$scope.isIndicatorSelected = (indicator: Indicator): boolean => {
 		if (!$scope.state.currentIndicator) {
 			return false;
