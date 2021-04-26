@@ -83,43 +83,65 @@
 
     <a 
         ng-if="state.currentIndicator.isDataExportable()"
-        ng-href="[[ getExportUrl() ]]" 
+        href="" 
+        ng-click="export()"
 		translate content="stats.export" 
-		style="padding: 10px 0;" 
-		target="_blank"
+        class="right-magnet top-spacing-twice"
     >
     </a>
-    <lightbox>
+
+    <!-- Cas 1 :
+        En tant qu'utilisateur rattaché à une structure chapeau ou ayant accès à plusieurs établissements, navigant sur une structure chapeau, 
+        lorsque je clique sur le bouton "Exporter les statistiques" en bas à droite des graphes, une lightbox me propose de choisir les données de la structure chapeau ou le détails des données. 
+    -->
+    <lightbox show="display.lightbox.export.topLevelEntity" on-close="display.lightbox.export.topLevelEntity = false">
         <div class="row">
-            <h2>Exporter les statistiques</h2>
-            <!-- TODO : cas 1 - En tant qu'utilisateur rattaché à une structure chapeau ou ayant accès à plusieurs établissements, navigant sur une structure chapeau, lorsque je clique sur le bouton "Exporter les statistiques" en bas à droite des graphes, une lightbox me propose de choisir les données de la structure chapeau ou le détails des données. -->
+            <h2><i18n>stats.export</i18n></h2>
             <div> 
-                <p>Souhaitez-vous exporter :
+                <p>
+                    <i18n>stats.export.lightbox.header</i18n>
                     <form>
-                        <input type="radio" for=""><label id="">Les données consolidées au niveau de la structure <strong>"[Nom de la structure chapeau]"</strong></label><br />
-                        <input type="radio" for=""><label>Les données détaillées par établissement scolaire</label>
+                        <input id="exportAggregated" type="radio" ng-model="state.exportType" value="topLevel.aggregated">
+                        <label for="exportAggregated"><i18n>stats.export.lightbox.data.aggregated</i18n> <strong>[[state.currentEntity.name]]</strong></label>
+                        <br />
+                        <input id="exportNotAggregated" type="radio" ng-model="state.exportType" value="topLevel.substructures">
+                        <label for="exportNotAggregated"><i18n>stats.export.lightbox.data.notAggregated</i18n></label>
                     </form>
                 </p>
                 <div class="info relative">
-                    <span><strong>À noter : </strong>Dans l'export consolidé au niveau de la structure principale, l'activité d'un utilisateur rattaché à plusieurs établissements est comptabilisée une seule fois.</span>
+                    <span><i18n>stats.export.lightbox.info</i18n></span>
                     <span class="tipbox">
                         <i class="help square-medium"></i>
                         <div class="tipbox-content tipbox bot">
-                            Dans l'export consolidé au niveau de la structure principale, l'activité d'un utilisateur rattaché à plusieurs établissements est comptabilisée une seule fois. Dans le détail par établissement, cette activité est comptabilisée pour chaque établissement auquel l'utilisateur est rattaché.
+                            <i18n>stats.export.lightbox.tipbox</i18n>
                         </div>
                     </span>
                 </div>
-                <button class="right-magnet">Exporter</button>
+                <button class="right-magnet" ng-click="exportFromLightbox()"><i18n>stats.export.button</i18n></button>
             </div>
-            <!-- TODO : Cas 2 -  En tant qu'utilisateur ADML rattaché à une ou plusieurs structure lorsque je clique sur le bouton "Exporter les statistiques" en bas à droite des graphes depuis uns structure simple (établissement), une lightbox me propose de choisir les données de l'établissement ou le détail par classe -->
-            <!-- <div>
-                <p>Souhaitez-vous exporter :
+        </div>
+    </lightbox>
+
+    <!-- Cas 2 : 
+        En tant qu'utilisateur ADML rattaché à une ou plusieurs structure lorsque je clique sur le bouton "Exporter les statistiques" en bas à droite des graphes depuis uns structure simple (établissement), 
+        une lightbox me propose de choisir les données de l'établissement ou le détail par classe 
+    -->
+    <lightbox show="display.lightbox.export.bottomLevelEntity" on-close="display.lightbox.export.bottomLevelEntity = false">
+        <div class="row">
+            <h2><i18n>stats.export</i18n></h2>
+            <div>
+                <p>
+                    <i18n>stats.export.lightbox.header</i18n>
                     <form>
-                        <input type="radio" for=""><label id="">Les données de la structure <strong>"[Nom de la structure]"</strong></label><br />
-                        <input type="radio" for=""><label>Les données détaillées par classes</label>
+                        <input id="exportStructure" type="radio" ng-model="state.exportType" value="bottomLevel.structure" checked>
+                        <label for="exportStructure"><i18n>stats.export.lightbox.data.structure</i18n> <strong>[[state.currentEntity.name]]</strong></label>
+                        <br />
+                        <input id="exportClasses" type="radio" ng-model="state.exportType" value="bottomLevel.structure.classes">
+                        <label for="exportClasses"><i18n>stats.export.lightbox.data.classes</i18n></label>
                     </form>
                 </p>
-            </div> -->
+            </div>
+            <button class="right-magnet" ng-click="exportFromLightbox()"><i18n>stats.export.button</i18n></button>
         </div>
     </lightbox>
 </article>

@@ -18,6 +18,7 @@ export class ConnectorDetailsIndicator extends AbstractLineIndicator {
     chartProfiles = null;
     // apps combo select
     appNames: Array<{key: string, value: string}>;
+    exportFrequency: IndicatorFrequency = 'day';
     
     private static readonly INSTANCE = new ConnectorDetailsIndicator();
     

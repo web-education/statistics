@@ -23,7 +23,10 @@ export type EntityCachedIndicator = {
 export type Entity = {
     id: string;
     name: string;
-    level?: EntityLevel;
+    level: EntityLevel;
+    children?: Array<{id: string, name: string}>;
+    classes?: Array<{id: string, name: string}>;
+    parentStructureId?: string, // only for classes
     cacheData?: {
         indicators: Array<EntityCachedIndicator>,
         lastUpdate: Date
@@ -60,6 +63,14 @@ export class EntitiesService {
             }
         });
         return data.filter(structure => !structure.parents || structure.parents.length === 0);
+    }
+
+    isStructure(entity: Entity) {
+        return entity.level === 'structure';
+    }
+
+    isTopLevelStructure(entity: Entity) {
+        return this.isStructure(entity) && entity.children;
     }
 }
 

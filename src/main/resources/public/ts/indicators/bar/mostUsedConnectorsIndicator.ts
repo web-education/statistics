@@ -17,6 +17,7 @@ export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
     frequency: IndicatorFrequency = 'month';
     // apps combo select
     appNames: Array<{key: string, value: string}>;
+    exportFrequency: IndicatorFrequency = 'day';
 
     private static readonly INSTANCE = new MostUsedConnectorsIndicator();
 
