@@ -48,6 +48,7 @@ interface StatsControllerScope {
 	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
 	openAppDetails(): void;
 	displayAppsSelect(): boolean;
+	isIndicatorSelected(indicator: Indicator): boolean;
 	$apply: any;
 }
 
@@ -306,4 +307,17 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	// get export API call
 	$scope.getExportUrl = () => encodeURI(`/stats/export?indicator=${$scope.state.currentIndicator.api}&from=${dateService.getSinceDateISOStringWithoutMs()}&frequency=day&entityLevel=${$scope.state.currentEntity.level}&entity=${$scope.state.currentEntity.id}&accumulate=true`);
+	$scope.isIndicatorSelected = (indicator: Indicator): boolean => {
+		if (!$scope.state.currentIndicator) {
+			return false;
+		} 
+
+		if ($scope.state.currentIndicator.name === 'stats.appDetails') {
+			return indicator.name === 'stats.mostUsedApp';
+		} else if ($scope.state.currentIndicator.name === 'stats.connectorDetails') {
+			return indicator.name === 'stats.mostUsedConnector';
+		}
+		
+		return $scope.state.currentIndicator === indicator;
+	}
 }]);
