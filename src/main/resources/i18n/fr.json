@@ -21,6 +21,7 @@
     "stats.firstDayOfMonth": "le début du mois",
     "stats.friday": "Vendredi",
     "stats.groupBy": "Grouper par",
+    "stats.filterBy": "Filtrer par",
     "stats.labels.activatedAccounts": "Évolution du nombre de comptes activés",
     "stats.labels.connections": "Évolution du nombre de connexions",
     "stats.labels.connectionsByUniqueVisitors": "Évolution du nombre de connexions par visiteur unique",

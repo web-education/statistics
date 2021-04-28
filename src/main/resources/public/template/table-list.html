@@ -37,15 +37,6 @@
         <!-- Information -->
         <h2>[[ lang.translate(state.currentIndicator.chartTitle) ]]</h2>
 
-        <!-- For line charts - menu to group by duration (day / week / month) -->
-        <div class="chart-granularity-container right-magnet" ng-if="state.currentIndicator.chartType === 'line'">
-            <div>[[ lang.translate('stats.groupBy' )]] :</div>
-            <div ng-repeat="frequency in state.currentIndicator.chartFrequencies">
-                <input type="radio" ng-model="state.currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(state.currentIndicator)">
-                <label>[[lang.translate('stats.'+frequency)]]</label>
-            </div>
-        </div>
-
         <select 
             ng-if="displayAppsSelect()"
             ng-model="state.selectedAppName" 
@@ -59,6 +50,17 @@
             </optgroup>
         </select>
 
+        <div class="chart-granularity-container right-magnet">
+            <!-- For line charts - menu to group by duration (day / week / month) -->
+            <div class="chart-groupby-container" ng-if="state.currentIndicator.chartType === 'line'">
+                <div>[[ lang.translate('stats.groupBy' )]] :</div>
+                <div ng-repeat="frequency in state.currentIndicator.chartFrequencies">
+                    <input type="radio" ng-model="state.currentIndicator.frequency" value="[[frequency]]" ng-change="openIndicator(state.currentIndicator)">
+                    <label>[[lang.translate('stats.'+frequency)]]</label>
+                </div>
+            </div>
+        </div>
+
         <p ng-if="isOnlyOneConnector(state.currentIndicator)">[[lang.translate(state.selectedAppName)]]</p>
 
         <!-- Chart container -->
@@ -67,12 +69,14 @@
             <!-- h5 class="legend-title">[[lang.translate("stats.legendTitle")]]</h5>
             <div id="chart-legend-container"></div-->
 		</div>
-		<!-- Group by profile -->
-        <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': state.currentIndicator.name === 'stats.activatedAccounts'}" 
-            ng-if="state.currentIndicator.showProfileFilter()">
-            <div ng-repeat="profile in state.currentIndicator.chartProfiles">
-                <input type="radio" ng-model="state.currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(state.currentIndicator)">
-                <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>
+        <div class="chart-granularity-container">
+            <!-- Group by profile -->
+            <div class="chart-profilecriteria-container" ng-if="state.currentIndicator.showProfileFilter()" ng-class="{'adjust-width-actvated-accounts': state.currentIndicator.name === 'stats.activatedAccounts'}">
+                <div>[[ lang.translate('stats.filterBy' )]] :</div>
+                <div ng-repeat="profile in state.currentIndicator.chartProfiles">
+                    <input type="radio" ng-model="state.currentIndicator.chartProfile" value="[[profile]]" ng-change="openIndicator(state.currentIndicator)">
+                    <label>[[lang.translate('stats.'+profile.toLowerCase())]]</label>
+                </div>
             </div>
         </div>
     </section>
