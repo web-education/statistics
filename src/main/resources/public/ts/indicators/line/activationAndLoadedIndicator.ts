@@ -161,7 +161,8 @@ export class ActivationAndLoadedIndicator extends AbstractLineIndicator {
 			}
 			datasets.push({
 				label: lang.translate('stats.activatedAccounts.legend'),
-				backgroundColor: 'rgb(255, 141, 46)',
+				backgroundColor: 'rgba(255, 141, 46, 0.75)',
+				borderWidth: 1,
 				fill: 'origin',
 				lineTension: 0,
 				spanGaps: true,
@@ -174,7 +175,8 @@ export class ActivationAndLoadedIndicator extends AbstractLineIndicator {
 			}
 			datasets.push({
 				label: lang.translate('stats.loaded.legend'),
-				backgroundColor: '#ccc',
+				backgroundColor: 'rgba(201, 202, 215, 0.25)',
+				borderWidth: 1,
 				fill: 'origin',
 				lineTension: 0,
 				spanGaps: true,

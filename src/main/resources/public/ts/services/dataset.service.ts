@@ -6,9 +6,11 @@ export type DatasetKey = 'Total' | 'Average' | 'Student' | 'Relative' | 'Teache
 export type Dataset = {
     key?: DatasetKey;
     label: string;
-	borderColor?: string;
-	backgroundColor: string;
+		borderColor?: string;
+		backgroundColor: string;
     borderWidth?: number;
+		pointBackgroundColor?: string;
+		pointBorderWidth?: number;		
 	fill?: boolean | string | number;
 	lineTension?: number;
 	spanGaps?: boolean;
@@ -26,8 +28,10 @@ export class DatasetService {
 		return [{
 				key: 'Teacher',
 				label: lang.translate("stats.teacher"),
-				borderColor: '#6fbe2e',
-				backgroundColor: '#6fbe2e',
+				borderColor: 'rgba(111, 190, 46, 0.5)',
+				backgroundColor: 'rgba(111, 190, 46, 0.5)',
+				pointBackgroundColor: 'rgba(111, 190, 46, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -35,8 +39,10 @@ export class DatasetService {
 			}, {
 				key: 'Personnel',
 				label: lang.translate("stats.personnel"),
-				borderColor: '#a348c0',
-				backgroundColor: '#a348c0',
+				borderColor: 'rgba(163, 72, 192, 0.5)',
+				backgroundColor: 'rgba(163, 72, 192, 0.5)',
+				pointBackgroundColor: 'rgba(163, 72, 192, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -44,8 +50,10 @@ export class DatasetService {
 			}, {
 				key: 'Relative',
 				label: lang.translate("stats.relative"),
-				borderColor: '#46afe6',
-				backgroundColor: '#46afe6',
+				borderColor: 'rgba(70, 175, 230, 0.5)',
+				backgroundColor: 'rgba(70, 175, 230, 0.5)',
+				pointBackgroundColor: 'rgba(70, 175, 230, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -53,8 +61,10 @@ export class DatasetService {
 			}, {
 				key: 'Student',
 				label: lang.translate("stats.student"),
-				borderColor: '#ff8d2e',
-				backgroundColor: '#ff8d2e',
+				borderColor: 'rgba(255, 141, 46, 0.5)',
+				backgroundColor: 'rgba(255, 141, 46, 0.5)',
+				pointBackgroundColor: 'rgba(255, 141, 46, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -62,8 +72,10 @@ export class DatasetService {
 			}, {
 				key: 'Guest',
 				label: lang.translate("stats.others"),
-				borderColor: '#ff3a55',
-				backgroundColor: '#ff3a55',
+				borderColor: 'rgba(255, 58, 85, 0.5)',
+				backgroundColor: 'rgba(255, 58, 85, 0.5)',
+				pointBackgroundColor: 'rgba(255, 58, 85, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -77,8 +89,10 @@ export class DatasetService {
 		res.unshift({
 			key: 'Total',
 			label: lang.translate("stats.total"),
-			borderColor: '#aaa',
-			backgroundColor: '#aaa',
+			borderColor: 'rgba(201, 202, 215, 0.5)',
+			backgroundColor: 'rgba(201, 202, 215, 0.5)',
+			pointBackgroundColor: 'rgba(201, 202, 215, 1)',
+			pointBorderWidth: 5,
 			borderWidth: BORDER_WIDTH_CONFIG,
 			fill: FILL_CONFIG,
 			lineTension: LINE_TENSION_CONFIG,
@@ -92,8 +106,10 @@ export class DatasetService {
 		res.unshift({
 			key: 'Average',
 			label: lang.translate("stats.average"),
-			borderColor: '#aaa',
-			backgroundColor: '#aaa',
+			borderColor: 'rgba(140, 147, 158, 0.5)',
+			backgroundColor: 'rgba(140, 147, 158, 0.5)',
+			pointBackgroundColor: 'rgba(140, 147, 158, 1)',
+			pointBorderWidth: 5,
 			borderWidth: BORDER_WIDTH_CONFIG,
 			fill: FILL_CONFIG,
 			lineTension: LINE_TENSION_CONFIG,
@@ -105,7 +121,7 @@ export class DatasetService {
     public getDatasetByProfile(profile): Array<Dataset> {
 		return [{
             label: lang.translate('stats.' + profile.toLowerCase()),
-            backgroundColor: "rgb(56, 137, 193)",
+            backgroundColor: "rgba(56, 137, 193, 0.75)",
 			minBarLength: 4,
 			data: []
         }];
@@ -115,8 +131,10 @@ export class DatasetService {
 		return [{
 				key: 'desktop',
 				label: lang.translate("stats.device.desktop"),
-				borderColor: '#6fbe2e',
-				backgroundColor: '#6fbe2e',
+				borderColor: 'rgba(111, 190, 46, 0.5)',
+				backgroundColor: 'rgba(111, 190, 46, 0.5)',
+				pointBackgroundColor: 'rgba(111, 190, 46, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -124,8 +142,10 @@ export class DatasetService {
 			}, {
 				key: 'mobile_app',
 				label: lang.translate("stats.device.mobile_app"),
-				borderColor: '#a348c0',
-				backgroundColor: '#a348c0',
+				borderColor: 'rgba(163, 72, 192, 0.5)',
+				backgroundColor: 'rgba(163, 72, 192, 0.5)',
+				pointBackgroundColor: 'rgba(163, 72, 192, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -133,8 +153,10 @@ export class DatasetService {
 			}, {
 				key: 'tablet',
 				label: lang.translate("stats.device.tablet"),
-				borderColor: '#46afe6',
-				backgroundColor: '#46afe6',
+				borderColor: 'rgba(70, 175, 230, 0.5)',
+				backgroundColor: 'rgba(70, 175, 230, 0.5)',
+				pointBackgroundColor: 'rgba(70, 175, 230, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -142,8 +164,10 @@ export class DatasetService {
 			}, {
 				key: 'smartphone',
 				label: lang.translate("stats.device.smartphone"),
-				borderColor: '#ff8d2e',
-				backgroundColor: '#ff8d2e',
+				borderColor: 'rgba(255, 141, 46, 0.5)',
+				backgroundColor: 'rgba(255, 141, 46, 0.5)',
+				pointBackgroundColor: 'rgba(255, 141, 46, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
@@ -151,8 +175,10 @@ export class DatasetService {
 			}, {
 				key: 'other',
 				label: lang.translate("stats.device.other"),
-				borderColor: '#ff3a55',
-				backgroundColor: '#ff3a55',
+				borderColor: 'rgba(255, 58, 85, 0.5)',
+				backgroundColor: 'rgba(255, 58, 85, 0.5)',
+				pointBackgroundColor: 'rgba(255, 58, 85, 1)',
+				pointBorderWidth: 5,
 				borderWidth: BORDER_WIDTH_CONFIG,
 				fill: FILL_CONFIG,
 				lineTension: LINE_TENSION_CONFIG,
