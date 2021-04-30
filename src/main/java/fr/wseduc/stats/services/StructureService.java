@@ -68,4 +68,19 @@ public class StructureService {
         neo4j.execute(query, params, Neo4jResult.validUniqueResultHandler(handler));
     }
 
+    public void getClassesForStructure(String structureId, Handler<Either<String, JsonObject>> handler) {
+        final String query =
+                "MATCH (c:Class)-[:BELONGS]->(s:Structure {id: {structureId}}) " +
+                        "RETURN COLLECT(DISTINCT c.id) as ids ";
+        final JsonObject params = new JsonObject().put("structureId", structureId);
+        neo4j.execute(query, params, Neo4jResult.validUniqueResultHandler(handler));
+    }
+
+    public void getUserClassesForStructure(String structureId, String userId, Handler<Either<String, JsonObject>> handler) {
+        final String query =
+                "MATCH (u:User {id: {userId}})-[:IN]->(:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s:Structure {id: {structureId}}) " +
+                        "RETURN COLLECT(DISTINCT c.id) as ids ";
+        final JsonObject params = new JsonObject().put("structureId", structureId).put("userId", userId);
+        neo4j.execute(query, params, Neo4jResult.validUniqueResultHandler(handler));
+    }
 }

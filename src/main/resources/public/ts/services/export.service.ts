@@ -28,24 +28,20 @@ export class ExportService {
 				exportParams += '&entityLevel=structure';
 				exportParams += `&entity=${entity.id}`;
 				exportParams += '&substructures=true';
-				exportParams += '&accumulate=false';
 				break;
 			case 'bottomLevel.structure':
 				exportParams += '&entityLevel=structure';
 				exportParams += `&entity=${entity.id}`;
-				exportParams += '&accumulate=false';
 				break;
 			case 'bottomLevel.structure.classes':
-				exportParams += '&entityLevel=class';
-				if (entity.classes) {
-					exportParams += `&entity=[${entity.classes.map(c => c.id).join(',')}]`;
-				}
-				exportParams += '&accumulate=false';
+				exportParams += '&entityLevel=structure';
+				exportParams += `&entity=${entity.id}`;
+				exportParams += '&structureClasses=true';
 				break;
 			case 'user.classes':
-				exportParams += '&entityLevel=class';
-				exportParams += `&entity=[${classIds.join(',')}]`;
-				exportParams += '&accumulate=false';
+				exportParams += '&entityLevel=struture';
+				exportParams += `&entity=${entity.parentStructureId}`;
+				exportParams += '&userclasses=true';
 				break;
 			default:
 				break;

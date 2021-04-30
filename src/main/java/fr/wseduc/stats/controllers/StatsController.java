@@ -25,16 +25,12 @@ package fr.wseduc.stats.controllers;
 import static fr.wseduc.webutils.Utils.getOrElse;
 import static org.entcore.common.http.response.DefaultResponseHandler.*;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import fr.wseduc.stats.filters.ExportStatsResourceProvider;
-import fr.wseduc.stats.filters.ListStatsResourceProvider;
 import fr.wseduc.stats.filters.StatsResourceProvider;
 import fr.wseduc.stats.services.StatsService;
 import fr.wseduc.stats.services.StatsServiceMongoImpl;
@@ -161,6 +157,32 @@ public class StatsController extends MongoDbControllerHelper {
 						statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
 					} else {
 						renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
+					}
+				});
+			} else if ("true".equals(request.params().get("structureClasses")) && "structure".equals(request.params().get("entityLevel"))) {
+				structureService.getClassesForStructure(request.params().get("entity"), either -> {
+					if (either.isRight()) {
+						request.params().set("entityLevel", "class");
+						request.params().set("entity", (List<String>) either.right().getValue().getJsonArray("ids").getList());
+						statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
+					} else {
+						renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
+					}
+				});
+			} else if ("true".equals(request.params().get("userClasses")) && "structure".equals(request.params().get("entityLevel"))) {
+				UserUtils.getUserInfos(eb, request, user -> {
+					if (user != null) {
+						structureService.getUserClassesForStructure(request.params().get("entity"), user.getUserId(), either -> {
+							if (either.isRight()) {
+								request.params().set("entityLevel", "class");
+								request.params().set("entity", (List<String>) either.right().getValue().getJsonArray("ids").getList());
+								statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
+							} else {
+								renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
+							}
+						});
+					} else {
+						unauthorized(request);
 					}
 				});
 			} else {
