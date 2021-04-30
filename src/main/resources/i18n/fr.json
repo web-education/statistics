@@ -92,5 +92,9 @@
     "stats.loaded": "Comptes chargés",
     "stats.activated" : "Comptes activés",
     "stats.access.nb": "Nombre d'accès",
-    "stats.module" : "Application"
+    "stats.module" : "Application",
+    "stats.onboarding.title": "(Re)découvrez votre application Statistiques",
+    "stats.onboarding.content": "Explorez vos différents indicateurs : connexions, visiteurs uniques, connexions par visiteur unique, accès aux applications, accès aux connecteurs, support le plus utilisé, activation des comptes, pics de fréquentation quotidiens et horaires.",
+    "stats.onboarding.adml.toplevelstructure": "Vous pouvez exporter les données de vos différentes structures, de façon consolidée ou détaillée. <br />Au niveau de vos établissements scolaires, vous pourrez également choisir d'exporter les statistiques par classes.",
+    "stats.onboarding.adml.bottomlevelstructure": "Vous pouvez exporter les données de votre établissement avec ou sans le détail par classes."
 }

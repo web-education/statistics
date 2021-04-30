@@ -42,7 +42,8 @@ interface StatsControllerScope {
 			export: {
 				topLevelEntity: boolean,
 				bottomLevelEntity: boolean
-			}
+			},
+			onboarding: boolean
 		}
 	}
 	state: StatsControllerState,
@@ -61,6 +62,9 @@ interface StatsControllerScope {
 	isIndicatorSelected(indicator: Indicator): boolean;
 	export(): void;
 	exportFromLightbox(): void;
+	closeOnboarding(): void;
+	isAdml(): boolean;
+	isTopLevelStructure(): boolean; 
 	$apply: any;
 }
 
@@ -106,7 +110,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			export: {
 				topLevelEntity: false,
 				bottomLevelEntity: false
-			}
+			},
+			onboarding: false
 		}
 	};
 	
@@ -185,6 +190,16 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			}
 		}
 	};
+
+	const initOnboarding = async () => {
+		let onboardingUserPrefs: {preference: any} = await UserService.getInstance().getUserPrefs(UserService.USER_PREF_ONBOARDING);
+		if (onboardingUserPrefs && onboardingUserPrefs.preference === null) {
+			$scope.display.lightbox.onboarding = true;
+		} else {
+			$scope.display.lightbox.onboarding = false;
+		}
+		safeScopeApply();
+	};
 	
 	/**** INIT Data ****/
 	let initData = async () => {
@@ -201,6 +216,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 				await indicator.init($scope.state.currentEntity);
 			}
 		}
+
+		await initOnboarding();
 		
 		// Spinner off
 		setTimeout(() => {
@@ -399,5 +416,23 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		$scope.display.lightbox.export.topLevelEntity = false;
 		$scope.display.lightbox.export.bottomLevelEntity = false;
 		window.open(ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, $scope.state.exportType, model.me.classes), '_blank');
+	}
+
+	const cancelOnboarding = async () => {
+		await UserService.getInstance().setUserPrefs(UserService.USER_PREF_ONBOARDING, false);
+		safeScopeApply();
+	}
+
+	$scope.closeOnboarding = () => {
+		$scope.display.lightbox.onboarding = false;
+		cancelOnboarding();
+	}
+
+	$scope.isAdml = (): boolean => {
+		return model.me && model.me.functions && model.me.functions.ADMIN_LOCAL && model.me.functions.ADMIN_LOCAL.scope;
+	}
+
+	$scope.isTopLevelStructure = (): boolean => {
+		return entitiesService.isTopLevelStructure($scope.state.currentEntity);
 	}
 }]);

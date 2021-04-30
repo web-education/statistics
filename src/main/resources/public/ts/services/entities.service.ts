@@ -65,12 +65,12 @@ export class EntitiesService {
         return data.filter(structure => !structure.parents || structure.parents.length === 0);
     }
 
-    isStructure(entity: Entity) {
+    isStructure(entity: Entity): boolean {
         return entity.level === 'structure';
     }
 
-    isTopLevelStructure(entity: Entity) {
-        return this.isStructure(entity) && entity.children;
+    isTopLevelStructure(entity: Entity): boolean {
+        return this.isStructure(entity) && entity.children !== undefined;
     }
 }
 
