@@ -175,7 +175,7 @@ export class ActivationAndLoadedIndicator extends AbstractLineIndicator {
 			}
 			datasets.push({
 				label: lang.translate('stats.loaded.legend'),
-				backgroundColor: 'rgba(201, 202, 215, 0.25)',
+				backgroundColor: 'rgba(201, 202, 215, 0.75)',
 				borderWidth: 1,
 				fill: 'origin',
 				lineTension: 0,
