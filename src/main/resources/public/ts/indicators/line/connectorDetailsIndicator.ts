@@ -47,6 +47,6 @@ export class ConnectorDetailsIndicator extends AbstractLineIndicator {
     }
 
     showProfileFilter(): boolean {
-        return true;
+        return false;
     }
 }

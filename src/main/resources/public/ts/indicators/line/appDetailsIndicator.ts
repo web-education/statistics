@@ -47,6 +47,6 @@ export class AppDetailsIndicator extends AbstractLineIndicator {
     }
 
     showProfileFilter(): boolean {
-        return true;
+        return false;
     }
 }

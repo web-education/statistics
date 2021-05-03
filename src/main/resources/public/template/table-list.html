@@ -69,9 +69,10 @@
             <!-- h5 class="legend-title">[[lang.translate("stats.legendTitle")]]</h5>
             <div id="chart-legend-container"></div-->
 		</div>
-        <div class="chart-granularity-container">
-            <!-- Group by profile -->
-            <div class="chart-profilecriteria-container" ng-if="state.currentIndicator.showProfileFilter()" ng-class="{'adjust-width-actvated-accounts': state.currentIndicator.name === 'stats.activatedAccounts'}">
+        
+        <!-- Group by profile -->
+        <div class="chart-granularity-container" ng-if="state.currentIndicator.showProfileFilter()">
+            <div class="chart-profilecriteria-container" ng-class="{'adjust-width-actvated-accounts': state.currentIndicator.name === 'stats.activatedAccounts'}">
                 <div>[[ lang.translate('stats.filterBy' )]] :</div>
                 <div ng-repeat="profile in state.currentIndicator.chartProfiles">
                     <input type="radio" ng-model="state.currentIndicator.chartProfile" id="[[profile]]" value="[[profile]]" ng-change="openIndicator(state.currentIndicator)">
