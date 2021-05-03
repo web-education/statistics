@@ -87,6 +87,8 @@ public class StatsResourceProvider implements ResourcesProvider {
                     }
                 }
             });
+        } else {
+            handler.handle(false);
         }
     }
 }

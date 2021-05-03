@@ -39,9 +39,9 @@ export class ExportService {
 				exportParams += '&structureClasses=true';
 				break;
 			case 'user.classes':
-				exportParams += '&entityLevel=struture';
+				exportParams += '&entityLevel=structure';
 				exportParams += `&entity=${entity.parentStructureId}`;
-				exportParams += '&userclasses=true';
+				exportParams += '&userClasses=true';
 				break;
 			default:
 				break;
