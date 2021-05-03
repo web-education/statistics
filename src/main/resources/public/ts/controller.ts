@@ -117,7 +117,18 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	// build structures tree for structures select component
 	let structures: Array<StructuresResponse> = await entitiesService.getStructures();
-	$scope.state.structuresTree = entitiesService.asTree(structures);
+
+	if (!UserService.getInstance().isAdml(model.me.functions) && UserService.getInstance().isTeacher(model.me.type)) {
+		const classes = [];
+		structures.forEach(s => {
+			if (s.classes && s.classes.length > 0) {
+				s.classes.forEach(c => classes.push(c));
+			}
+		});
+		$scope.state.structuresTree = classes;
+	} else {
+		$scope.state.structuresTree = entitiesService.asTree(structures);
+	}
 	
 	$scope.state.entities = [];
 	structures.forEach(s => {
@@ -140,7 +151,11 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 	});
 	
-	$scope.state.currentEntity = $scope.state.entities[0];
+	if (!UserService.getInstance().isAdml(model.me.functions) && UserService.getInstance().isTeacher(model.me.type)) {
+		$scope.state.currentEntity = $scope.state.entities.find(e => e.level === 'class');
+	} else {
+		$scope.state.currentEntity = $scope.state.entities[0];
+	}
 	
 	const safeScopeApply = (fn?: any) => {
 		try {
@@ -383,7 +398,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 
 		// SHOW LIGHTBOX for ADMC/ADML
-		if (UserService.getInstance().isAdml(model.me.functions, $scope.state.currentEntity) || 
+		if (UserService.getInstance().isAdmlOfEntity($scope.state.currentEntity, model.me.functions) || 
 			UserService.getInstance().isAdmc(model.me.functions)) {
 			// if toplevel structure => aggregated or details by structures data
 			if (entitiesService.isTopLevelStructure($scope.state.currentEntity)) {
@@ -429,7 +444,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 
 	$scope.isAdml = (): boolean => {
-		return model.me && model.me.functions && model.me.functions.ADMIN_LOCAL && model.me.functions.ADMIN_LOCAL.scope;
+		return UserService.getInstance().isAdml(model.me.functions);
 	}
 
 	$scope.isTopLevelStructure = (): boolean => {

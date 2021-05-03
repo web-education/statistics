@@ -1,6 +1,13 @@
 import http from 'axios';
 import { Entity } from "./entities.service";
 
+export const types = {
+	ENSEIGNANT: 'teacher',
+	ELEVE: 'student',
+	PERSEDUCNAT: 'personnel',
+	PERSRELELEVE: 'relative'
+}
+
 export class UserService {
     private static readonly INSTANCE = new UserService();
 	public static readonly USER_PREF_ONBOARDING = 'statsonboarding';
@@ -10,7 +17,11 @@ export class UserService {
         return UserService.INSTANCE;
     }
     
-    isAdml(functions: any, entity: Entity) {
+	isAdml(functions: any) {
+		return functions && functions.ADMIN_LOCAL && functions.ADMIN_LOCAL.scope;
+	}
+
+    isAdmlOfEntity(entity: Entity, functions: any) {
 		const scope = functions && functions.ADMIN_LOCAL && functions.ADMIN_LOCAL.scope;
 		if (!scope) {
 			return false;
@@ -27,6 +38,10 @@ export class UserService {
 
     isAdmc(functions: any) {
 		return functions && functions.SUPER_ADMIN && functions.SUPER_ADMIN.scope;
+	}
+
+	isTeacher(type): boolean {
+		return types[type] === 'teacher';
 	}
 
 	async getUserPrefs(pref: string): Promise<{preference: any}> {
