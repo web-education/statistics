@@ -125,7 +125,11 @@ public class StatsController extends MongoDbControllerHelper {
 			public void handle(Either<String, JsonArray> r) {
 				if (r.isRight()) {
 					MultiMap params = request.params();
-					String csvTemplateName = "text/export-" + params.get("indicator") + ("true".equals(params.get("accumulate")) ? "" : "-wta") +".template.csv";
+					String csvTemplateName = "text/export-" + params.get("indicator");
+					if ("structure".equals(params.get("entityLevel"))) {
+						csvTemplateName += ("true".equals(params.get("accumulate")) ? "" : "-wta");
+					}
+					csvTemplateName += ".template.csv";
 
 					processTemplate(request, csvTemplateName,
 							new JsonObject().put("list", r.right().getValue()), new Handler<String>() {
