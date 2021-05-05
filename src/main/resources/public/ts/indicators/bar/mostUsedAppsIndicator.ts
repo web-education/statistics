@@ -18,7 +18,7 @@ export class MostUsedAppsIndicator extends AbstractBarIndicator {
     frequency: IndicatorFrequency = 'month';
     // apps combo select
     appNames: Array<{key: string, value: string}>;
-    exportFrequency: IndicatorFrequency = 'day';
+    exportFrequency: IndicatorFrequency = 'month'; // temporary fix (exported data by day are different than graph data)
 
     private static readonly INSTANCE = new MostUsedAppsIndicator();
 
