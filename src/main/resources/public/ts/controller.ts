@@ -117,20 +117,9 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	
 	// build structures tree for structures select component
 	let structures: Array<StructuresResponse> = await entitiesService.getStructures();
-
-	if (!UserService.getInstance().isAdml(model.me.functions) && UserService.getInstance().isTeacher(model.me.type)) {
-		const classes = [];
-		structures.forEach(s => {
-			if (s.classes && s.classes.length > 0) {
-				s.classes.forEach(c => classes.push(c));
-			}
-		});
-		classes.sort((a, b) => a.name > b.name ? 1: -1);
-		$scope.state.structuresTree = classes;
-	} else {
-		$scope.state.structuresTree = entitiesService.asTree(structures);
-	}
+	$scope.state.structuresTree = entitiesService.asTree(structures);
 	
+	// initialize entities for state management
 	$scope.state.entities = [];
 	structures.forEach(s => {
 		$scope.state.entities.push({
@@ -149,6 +138,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 					parentStructureId: s.id
 				});
 			});
+			s.classes.sort((a,b) => a.name > b.name ? 1: -1);
 		}
 	});
 	
@@ -354,6 +344,10 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 
 	$scope.selectEntity = async (entityId: string): Promise<void> => {
+		const entity = $scope.state.entities.find(e => e.id === entityId);
+		if (entity && entity.level === 'structure' && !UserService.getInstance().isAdmlOfEntity(entity, model.me.functions)) {
+			return;
+		}
 		await initEntityOnChange(entityId);
 		safeScopeApply();
 	}
