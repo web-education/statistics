@@ -120,8 +120,9 @@ public class PGStatsService implements StatsService {
                 query += " AND type = $" + t.size();
             }
         }
-        if ("structure".equals(entityLevel) && entityIds != null && entityIds.size() > 1) {
-            query += " ORDER BY date DESC, entity_name ASC ";
+        query += " ORDER BY date DESC";
+        if (entityIds != null && entityIds.size() > 1) {
+            query += ", entity_name ASC ";
         }
         return query;
     }
