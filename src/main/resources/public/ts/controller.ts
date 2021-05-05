@@ -143,7 +143,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	});
 	
 	if (!UserService.getInstance().isAdml(model.me.functions) && UserService.getInstance().isTeacher(model.me.type)) {
-		$scope.state.currentEntity = $scope.state.entities.find(e => e.level === 'class');
+		const firstClass = structures.find(s => s.classes && s.classes.length > 0).classes[0];
+		$scope.state.currentEntity = $scope.state.entities.find(e => e.level === 'class' && e.id === firstClass.id);
 	} else {
 		$scope.state.currentEntity = $scope.state.entities[0];
 	}
