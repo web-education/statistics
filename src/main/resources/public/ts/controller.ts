@@ -125,6 +125,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 				s.classes.forEach(c => classes.push(c));
 			}
 		});
+		classes.sort((a, b) => a.name > b.name ? 1: -1);
 		$scope.state.structuresTree = classes;
 	} else {
 		$scope.state.structuresTree = entitiesService.asTree(structures);
