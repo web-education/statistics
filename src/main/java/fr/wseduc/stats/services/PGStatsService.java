@@ -68,7 +68,7 @@ public class PGStatsService implements StatsService {
             final Tuple t = Tuple.of(platformId, from, to);
             final String query;
             if ("true".equals(params.get("device")) && "accounts".equals(params.get("indicator"))) {
-                query = genDeviceQuery(params, entityIds, entityLevel, selectUai, t, export);
+                    query = genDeviceQuery(params, entityIds, entityLevel, selectUai, t, export, language);
             } else {
                 query = genListStatsQuery(params, entityIds, entityLevel, selectUai, t, export, language);
             }
@@ -128,17 +128,18 @@ public class PGStatsService implements StatsService {
     }
 
     private String genDeviceQuery(MultiMap params, final List<String> entityIds, final String entityLevel,
-            final String selectUai, final Tuple t, boolean export) {
+            final String selectUai, final Tuple t, boolean export, String language) {
         final JsonObject deviceMapping = allowedValues.getJsonObject("devices-mapping" + (export ? "-export": ""));
         final JsonArray selectDevices = deviceMapping.getJsonArray("select-devices");
         final JsonObject sumDevices = deviceMapping.getJsonObject("sum-devices");
         int lastParamNumber = 3;
         String query =
                 "SELECT e.name as entity_name, " + selectUai + " s.date as date, s." + entityLevel + "_id as " +
-                entityLevel + "_id, s.profile as profile, s.device_type as device_type, " +
+                entityLevel + "_id, " + (export ? "tp.translation as profile_translated": "s.profile as profile") + ", s.device_type as device_type, " +
                 "s.authentications as authentications " + ("structure".equals(entityLevel) ? ", s.authentications_wta as authentications_wta " : "") +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
+                (export ? "JOIN utils.translations tp on s.profile = tp.key and tp.language_key = '" + language + "' " : "") +
                 "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) AND device_type IN " + selectDevices.stream()
                         .map(x -> x.toString()).collect(Collectors.joining("','", "('", "') "));
         if (entityIds != null && !entityIds.isEmpty()) {
@@ -153,10 +154,11 @@ public class PGStatsService implements StatsService {
             final JsonArray sumDevice = sumDevices.getJsonArray(d);
             query += " UNION ALL " +
                 "SELECT e.name as entity_name, " + selectUai + " s.date as date, s." + entityLevel + "_id as " +
-                entityLevel + "_id, s.profile as profile, '" + d + "' as device_type, " +
+                entityLevel + "_id, " + (export ? "tp.translation as profile_translated": "s.profile as profile") + ", '" + d + "' as device_type, " +
                 "SUM(s.authentications) as authentications " + ("structure".equals(entityLevel) ? ", SUM(s.authentications_wta) as authentications_wta " : "") +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
+                (export ? "JOIN utils.translations tp on s.profile = tp.key and tp.language_key = '" + language + "' " : "") +
                 "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) AND device_type IN " + sumDevice.stream()
                         .map(x -> x.toString()).collect(Collectors.joining("','", "('", "') "));
             if (entityIds != null && !entityIds.isEmpty()) {
@@ -170,8 +172,9 @@ public class PGStatsService implements StatsService {
                     .map(i -> " " + i).collect(Collectors.joining(","));
         }
 
-        if ("structure".equals(entityLevel) && entityIds != null && entityIds.size() > 1) {
-            query += " ORDER BY date DESC, entity_name ASC ";
+        query += " ORDER BY date ASC";
+        if (entityIds != null && entityIds.size() > 1) {
+            query += ", entity_name ASC ";
         }
         return query;
     }

@@ -126,6 +126,7 @@ public class StatsController extends MongoDbControllerHelper {
 				if (r.isRight()) {
 					MultiMap params = request.params();
 					String csvTemplateName = "text/export-" + params.get("indicator");
+					csvTemplateName += "true".equals(params.get("device")) ? "-device": "";
 					if ("structure".equals(params.get("entityLevel"))) {
 						csvTemplateName += ("true".equals(params.get("accumulate")) ? "" : "-wta");
 					}
