@@ -89,8 +89,8 @@ export class DatasetService {
 		res.unshift({
 			key: 'Total',
 			label: lang.translate("stats.total"),
-			borderColor: 'rgba(201, 202, 215, 0.75)',
-			backgroundColor: 'rgba(201, 202, 215, 0.75)',
+			borderColor: 'rgba(140, 147, 158, 0.75)',
+			backgroundColor: 'rgba(140, 147, 158, 0.75)',
 			pointBackgroundColor: 'rgba(201, 202, 215, 1)',
 			pointBorderWidth: 5,
 			borderWidth: BORDER_WIDTH_CONFIG,
