@@ -99,11 +99,12 @@ public class PGStatsService implements StatsService {
         String query =
                 "SELECT e.name as entity_name, " + selectUai + " s.* " +
                 (export ? ", tp.translation as profile_translated ":"") +
-                ((export && "access".equals(params.get("indicator"))) ? ", tm.translation as module_translated ":"") +
+                ((export && "access".equals(params.get("indicator")) && "ACCESS".equals(params.get("type"))) ? ", tm.translation as module_translated ":"") +
+                ((export && "access".equals(params.get("indicator")) && "CONNECTOR".equals(params.get("type"))) ? ", s.module as module_translated ": "") +
                 "FROM stats." + getTableName(params) + "s " +
                 "JOIN repository." + entityLevel + ("class".equals(entityLevel) ? "es" : "s") + " e on s." + entityLevel + "_id = e.id " +
                 (export ? "JOIN utils.translations tp on s.profile = tp.key and tp.language_key = '" + language + "' " : "") +
-                ((export && "access".equals(params.get("indicator"))) ? "JOIN utils.translations tm on s.module = tm.key and tm.language_key = '" + language + "' ": "") +
+                ((export && "access".equals(params.get("indicator")) && "ACCESS".equals(params.get("type"))) ? "JOIN utils.translations tm on s.module = tm.key and tm.language_key = '" + language + "' ": "") +
                 "WHERE s.platform_id = $1 AND (s.date BETWEEN $2 AND $3) ";
 
         if (entityIds != null && !entityIds.isEmpty()) {
