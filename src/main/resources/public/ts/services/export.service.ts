@@ -47,6 +47,14 @@ export class ExportService {
 				break;
 		}
 
+		if (indicator.name === 'stats.mostUsedConnector') {
+			exportParams += '&type=CONNECTOR';
+		} else if (indicator.name === 'stats.mostUsedApp') {
+			exportParams += '&type=ACCESS';
+		} else if (indicator.name === 'stats.devices') {
+			exportParams += '&device=true';
+		}
+
 		return encodeURI(`${exportBaseUrl}${exportParams}`);
     }
 }
