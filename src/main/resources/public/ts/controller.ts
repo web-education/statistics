@@ -1,4 +1,4 @@
-import { ng, template, ui, _, $, idiom as lang } from 'entcore';
+import { ng, template, ui, _, $, idiom as lang, notify } from 'entcore';
 
 import { Indicator } from './indicators/abstractIndicator';
 import { Entity, StructuresResponse } from './services/entities.service';
@@ -91,6 +91,19 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	template.open('main', 'global');
 	template.open('list', 'icons-list');
 	
+	const safeScopeApply = (fn?: any) => {
+		try {
+			const phase = $scope.$root && $scope.$root.$$phase;
+			if (phase == '$apply' || phase == '$digest') {
+				if (fn && (typeof (fn) === 'function')) {
+					fn();
+				}
+			} else {
+				$scope.$apply(fn);
+			}
+		} catch (e) { }
+	};
+
 	$scope.state = {
 		structuresTree: [],
 		entities: [],
@@ -141,30 +154,20 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			s.classes.sort((a,b) => a.name > b.name ? 1: -1);
 		}
 	});
-	
+
 	if (!UserService.getInstance().isAdml(model.me.functions) && UserService.getInstance().isTeacher(model.me.type)) {
 		const firstStructureWithClass = structures.find(s => s.classes && s.classes.length > 0);
 		if (firstStructureWithClass) {
 			$scope.state.currentEntity = $scope.state.entities.find(e => e.level === 'class' && e.id === firstStructureWithClass.classes[0].id);
 		} else {
-			$scope.state.currentEntity = $scope.state.entities[0];
+			notify.error('stats.error.noclassesfound');
+			$scope.display.loading = false;
+			safeScopeApply();
+			throw new Error(`no classes found for teacher: ${model.me.username}`);
 		}
 	} else {
 		$scope.state.currentEntity = $scope.state.entities[0];
 	}
-	
-	const safeScopeApply = (fn?: any) => {
-		try {
-			const phase = $scope.$root && $scope.$root.$$phase;
-			if (phase == '$apply' || phase == '$digest') {
-				if (fn && (typeof (fn) === 'function')) {
-					fn();
-				}
-			} else {
-				$scope.$apply(fn);
-			}
-		} catch (e) { }
-	};
 
 	// Indicators list
 	$scope.state.indicators = [
