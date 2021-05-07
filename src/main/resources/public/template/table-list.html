@@ -32,7 +32,7 @@
 	</section>
 
     <!-- Actual chart -->
-    <section class="charts-section eight cell twelve-mobile" ng-show="state.currentIndicator">
+    <section class="charts-section eight cell twelve-mobile" ng-show="state.currentIndicator && !display.nodata">
 
         <div class="chart-granularity-container right-magnet">
             <!-- For line charts - menu to group by duration (day / week / month) -->
@@ -83,13 +83,17 @@
     </section>
 
     <a 
-        ng-if="state.currentIndicator.isDataExportable()"
+        ng-if="state.currentIndicator.isDataExportable() && !display.nodata"
         href="" 
         ng-click="export()"
 		translate content="stats.export" 
         class="right-magnet top-spacing-twice"
     >
     </a>
+
+    <div class="info eight cell centered-text" ng-if="display.nodata">
+        <i18n>stats.error.nodata</i18n>
+    </div>
 
     <!-- Cas 1 :
         En tant qu'utilisateur rattaché à une structure chapeau ou ayant accès à plusieurs établissements, navigant sur une structure chapeau, 

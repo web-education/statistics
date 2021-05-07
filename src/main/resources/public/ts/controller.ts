@@ -38,6 +38,7 @@ interface StatsControllerScope {
 	$root: any;
 	display: {
 		loading: boolean, 
+		nodata: boolean,
 		lightbox: {
 			export: {
 				topLevelEntity: boolean,
@@ -118,6 +119,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 
 	$scope.display = {
 		loading: true,
+		nodata: false,
 		lightbox: {
 			export: {
 				topLevelEntity: false,
@@ -159,7 +161,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		if (firstStructureWithClass) {
 			$scope.state.currentEntity = $scope.state.entities.find(e => e.level === 'class' && e.id === firstStructureWithClass.classes[0].id);
 		} else {
-			notify.error('stats.error.noclassesfound');
+			notify.info('stats.error.noclassesfound');
 			$scope.display.loading = false;
 			safeScopeApply();
 			throw new Error(`no classes found for teacher: ${model.me.username}`);
@@ -280,7 +282,13 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		}
 		
 		let indicatorChart = await $scope.state.currentIndicator.getChart($scope.state.ctx, $scope.state.currentEntity);
-		$scope.state.chart = indicatorChart;
+		if (indicatorChart && indicatorChart.data && indicatorChart.data.datasets && indicatorChart.data.datasets.length > 0) {
+			$scope.display.nodata = false;
+			$scope.state.chart = indicatorChart;
+		} else {
+			$scope.display.nodata = true;
+			safeScopeApply();
+		}
 	}
 
 	$scope.indicatorDetail = function(indicator){

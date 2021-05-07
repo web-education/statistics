@@ -19,17 +19,21 @@ export abstract class AbstractStackedBarIndicator extends Indicator {
     chartProfiles: string[];
 
     async getChart(ctx: any, entity: Entity): Promise<typeof Chart> {
-        let labels: Array<string> = await this.getChartLabels();
-		let datasets: Array<Dataset> = datasetService.getAllProfilesDataset();
+		let labels: Array<string> = [];
+		let datasets: Array<Dataset> = [];
 		let chartData = await this.getChartData(entity);
 		
-		// fill the chart datasets data array with the data just collected from API
-		datasets.forEach(dataset => {
-			if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
-				dataset.data = chartData[dataset.key];
-			}
-			delete dataset.key;
-		});
+		if (chartData.constructor === Object && Object.keys(chartData).length > 0) {
+			labels = await this.getChartLabels();
+			datasets = datasetService.getAllProfilesDataset();
+			// fill the chart datasets data array with the data just collected from API
+			datasets.forEach(dataset => {
+				if (chartData[dataset.key] && chartData[dataset.key].length > 0) {
+					dataset.data = chartData[dataset.key];
+				}
+				delete dataset.key;
+			});
+		}
 		
 		return Promise.resolve(new Chart(ctx, {
 			type: 'bar', // see options below for StackedBar configuration

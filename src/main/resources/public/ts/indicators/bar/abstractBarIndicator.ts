@@ -26,54 +26,56 @@ export abstract class AbstractBarIndicator extends Indicator {
 	 * @param entity 
 	 */
 	public async getChart(ctx: any, entity: Entity): Promise<typeof Chart> {
-		// get dataset for selected profile
-		let datasets: Array<Dataset> = datasetService.getDatasetByProfile(this.chartProfile);
+		let datasets: Array<Dataset> = [];
+		let sortedLabels: Array<string> = [];
 		// get chart data from API or cache
 		let chartData = await this.getChartData(entity);
 		
-		// calculate Total dataset
-
-		if (this.chartProfile === 'total') {
-			let total = {};
-			Object.keys(chartData).forEach(profileKey => {
-				Object.keys(chartData[profileKey]).forEach(moduleKey => {
-					if (!total[moduleKey]) {
-						total[moduleKey] = [];
-					}
-					total[moduleKey].push(...chartData[profileKey][moduleKey]);
-				})
-			});
-			chartData['total'] = total;
-		}
-		
-		// sum data for each module for chartProfile
-		let sumData = [];
-		if (chartData[this.chartProfile]) {
-			Object.keys(chartData[this.chartProfile]).forEach(moduleKey => {
-				sumData.push(chartData[this.chartProfile][moduleKey].reduce((acc, x) => acc + x));
-			});
-		}
-		datasets[0].data = sumData;
-		
-		// Chart labels
-		let chartLabels: Array<string> = await this.getChartLabels(entity, chartData);
-		
-		// sorting		
-		let labelAndDataArray: Array<{label: string, data: number}> = chartLabels.map((x, i) => {
-			return {
-				label: x,
-				data: datasets[0].data[i] || 0,
+		if (chartData.constructor === Object && Object.keys(chartData).length > 0) {
+			// get dataset for selected profile
+			datasets = datasetService.getDatasetByProfile(this.chartProfile);
+			// calculate Total dataset
+			if (this.chartProfile === 'total') {
+				let total = {};
+				Object.keys(chartData).forEach(profileKey => {
+					Object.keys(chartData[profileKey]).forEach(moduleKey => {
+						if (!total[moduleKey]) {
+							total[moduleKey] = [];
+						}
+						total[moduleKey].push(...chartData[profileKey][moduleKey]);
+					})
+				});
+				chartData['total'] = total;
 			}
-		});
-		
-		let sortedLabelAndDataArray = labelAndDataArray.sort((a, b) => b.data - a.data);
-		let sortedLabels: Array<string> = [];
-		let sortedData: Array<number> = [];
-		sortedLabelAndDataArray.forEach(x => {
-			sortedLabels.push(x.label);
-			sortedData.push(x.data);
-		});
-		datasets[0].data = sortedData;
+			
+			// sum data for each module for chartProfile
+			let sumData = [];
+			if (chartData[this.chartProfile]) {
+				Object.keys(chartData[this.chartProfile]).forEach(moduleKey => {
+					sumData.push(chartData[this.chartProfile][moduleKey].reduce((acc, x) => acc + x));
+				});
+			}
+			datasets[0].data = sumData;
+			
+			// Chart labels
+			let chartLabels: Array<string> = await this.getChartLabels(entity, chartData);
+			
+			// sorting		
+			let labelAndDataArray: Array<{label: string, data: number}> = chartLabels.map((x, i) => {
+				return {
+					label: x,
+					data: datasets[0].data[i] || 0,
+				}
+			});
+			
+			let sortedLabelAndDataArray = labelAndDataArray.sort((a, b) => b.data - a.data);
+			let sortedData: Array<number> = [];
+			sortedLabelAndDataArray.forEach(x => {
+				sortedLabels.push(x.label);
+				sortedData.push(x.data);
+			});
+			datasets[0].data = sortedData;
+		}
 		
 		return new Chart(ctx, {
 			type: this.chartType,
