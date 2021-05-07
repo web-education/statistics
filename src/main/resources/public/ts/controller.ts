@@ -84,8 +84,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	// home definitions
 	$scope.definitions = [
 		'uniqueVisitor',
-		'connectionsByUniqueVisitor',
-		'contents'
+		'connectionsByUniqueVisitor'
 	]
 	
 	template.open('main', 'global');
