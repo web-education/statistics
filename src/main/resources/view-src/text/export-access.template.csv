@@ -1,4 +1,4 @@
-"{{#i18n}}stats.etabs{{/i18n}}";"{{#i18n}}stats.uai{{/i18n}}";"{{#i18n}}stats.date{{/i18n}}";"{{#i18n}}stats.profile{{/i18n}}";"{{#i18n}}stats.access.nb{{/i18n}}";"{{#i18n}}stats.module{{/i18n}}"
+"{{#i18n}}stats.etabs{{/i18n}}";"{{#i18n}}stats.uai{{/i18n}}";"{{#i18n}}stats.date{{/i18n}}";"{{#i18n}}stats.profile{{/i18n}}";"{{#i18n}}stats.module{{/i18n}}";"{{#i18n}}stats.access.nb{{/i18n}}"
 {{#list}}
-"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile_translated}}";"{{access}}";"{{module_translated}}"
+"{{entity_name}}";"{{uai}}";"{{date}}";"{{profile_translated}}";"{{module_translated}}";"{{access}}"
 {{/list}}
