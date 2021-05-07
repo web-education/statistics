@@ -352,7 +352,13 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 
 	$scope.selectEntity = async (entityId: string): Promise<void> => {
 		const entity = $scope.state.entities.find(e => e.id === entityId);
-		if (entity && entity.level === 'structure' && !UserService.getInstance().isAdmlOfEntity(entity, model.me.functions)) {
+		if (entity && 
+			entity.level === 'structure' &&
+			entity.classes && 
+			entity.classes.length > 0 &&
+			UserService.getInstance().isTeacher(model.me.type) && 
+			!UserService.getInstance().isAdmlOfEntity(entity, model.me.functions)) {
+			notify.info('stats.error.nonadmlofstructure');
 			return;
 		}
 		await initEntityOnChange(entityId);
