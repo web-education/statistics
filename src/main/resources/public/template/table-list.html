@@ -34,6 +34,17 @@
     <!-- Actual chart -->
     <section class="charts-section eight cell twelve-mobile" ng-show="state.currentIndicator">
 
+        <div class="chart-granularity-container right-magnet">
+            <!-- For line charts - menu to group by duration (day / week / month) -->
+            <div class="chart-groupby-container" ng-if="state.currentIndicator.chartType === 'line'">
+                <div>[[ lang.translate('stats.groupBy' )]] :</div>
+                <div ng-repeat="frequency in state.currentIndicator.chartFrequencies">
+                    <input type="radio" ng-model="state.currentIndicator.frequency" id="[[frequency]]" value="[[frequency]]" ng-change="openIndicator(state.currentIndicator)">
+                    <label for="[[frequency]]">[[lang.translate('stats.'+frequency)]]</label>
+                </div>
+            </div>
+        </div>
+
         <!-- Information -->
         <h2>[[ lang.translate(state.currentIndicator.chartTitle) ]]</h2>
 
@@ -49,17 +60,6 @@
                 <option ng-repeat="appName in state.currentIndicator.appNames | orderBy: 'value'" value="[[appName.key]]">[[appName.value]]</option>
             </optgroup>
         </select>
-
-        <div class="chart-granularity-container right-magnet">
-            <!-- For line charts - menu to group by duration (day / week / month) -->
-            <div class="chart-groupby-container" ng-if="state.currentIndicator.chartType === 'line'">
-                <div>[[ lang.translate('stats.groupBy' )]] :</div>
-                <div ng-repeat="frequency in state.currentIndicator.chartFrequencies">
-                    <input type="radio" ng-model="state.currentIndicator.frequency" id="[[frequency]]" value="[[frequency]]" ng-change="openIndicator(state.currentIndicator)">
-                    <label for="[[frequency]]">[[lang.translate('stats.'+frequency)]]</label>
-                </div>
-            </div>
-        </div>
 
         <p ng-if="isOnlyOneConnector(state.currentIndicator)">[[lang.translate(state.selectedAppName)]]</p>
 
@@ -103,7 +103,7 @@
                     <i18n>stats.export.lightbox.header</i18n>
                     <form>
                         <input id="exportAggregated" type="radio" ng-model="state.exportType" value="topLevel.aggregated">
-                        <label for="exportAggregated"><i18n>stats.export.lightbox.data.aggregated</i18n> <strong>[[state.currentEntity.name]]</strong></label>
+                        <label for="exportAggregated"><i18n>stats.export.lightbox.data.aggregated</i18n> <b>[[state.currentEntity.name]]</b></label>
                         <br />
                         <input id="exportNotAggregated" type="radio" ng-model="state.exportType" value="topLevel.substructures">
                         <label for="exportNotAggregated"><i18n>stats.export.lightbox.data.notAggregated</i18n></label>
@@ -112,7 +112,7 @@
                 <div class="info relative">
                     <span><i18n>stats.export.lightbox.info</i18n></span>
                     <span class="tipbox">
-                        <i class="help square-medium"></i>
+                        <i class="help square-medium" style="font-size: 16px"></i>
                         <div class="tipbox-content tipbox bot">
                             <i18n>stats.export.lightbox.tipbox</i18n>
                         </div>
