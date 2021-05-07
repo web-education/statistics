@@ -98,5 +98,6 @@
     "stats.onboarding.adml.toplevelstructure": "Vous pouvez exporter les données de vos différentes structures, de façon consolidée ou détaillée. <br />Au niveau de vos établissements scolaires, vous pouvez également choisir d'exporter les statistiques par classes.",
     "stats.onboarding.adml.bottomlevelstructure": "Vous pouvez exporter les données de votre établissement avec ou sans le détail par classes.",
     "stats.error.noclassesfound": "Vous devez être rattachés à au moins une classe pour voir vos statistiques",
-    "stats.error.nonadmlofstructure": "Vous n'avez pas accès aux statistiques de l'établissement, merci de sélectionner une classe"
+    "stats.error.nonadmlofstructure": "Vous n'avez pas accès aux statistiques de l'établissement, merci de sélectionner une classe",
+    "stats.support": "Support"
 }
