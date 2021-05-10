@@ -28,5 +28,5 @@
             "smartphone" : ["smartphone", "phablet"]
         }
     },
-    "languages" : ["fr", "en"]
+    "languages" : ["fr", "en", "es", "pt", "it", "de"]
 }
