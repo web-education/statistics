@@ -64,6 +64,13 @@ public class PGStatsService implements StatsService {
                 return;
             }
 
+            // Temporary fix
+            // TODO remove this when es/it/pt/de language will be available in translation table
+            if (export && !"fr".equals(language) && !"en".equals(language)) {
+                language = "en";
+            }
+            // End of temporary fix
+
             final String selectUai = ("structure".equals(entityLevel)) ? "e.uai as uai, " : "";
             final Tuple t = Tuple.of(platformId, from, to);
             final String query;
