@@ -420,10 +420,17 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			if (entitiesService.isTopLevelStructure($scope.state.currentEntity)) {
 				$scope.state.exportType = 'topLevel.aggregated';
 				$scope.display.lightbox.export.topLevelEntity = true;
-			} else {
+			} else if ($scope.state.currentEntity.level === 'structure' && !entitiesService.isTopLevelStructure($scope.state.currentEntity)) {
 				// else => structure data or structure classes data
 				$scope.state.exportType = 'bottomLevel.structure';
 				$scope.display.lightbox.export.bottomLevelEntity = true;
+			} else if ($scope.state.currentEntity.level === 'class') {
+				// else => structure classes data
+				const parentStructure = $scope.state.entities.find(e => e.id === $scope.state.currentEntity.parentStructureId);
+				if (parentStructure) {
+					const exportUrl = ExportService.getInstance().getExportUrl(parentStructure, $scope.state.currentIndicator, 'bottomLevel.structure.classes');
+					window.open(exportUrl, '_blank');
+				}
 			}
 		} 
 		// DIRECT EXPORT for non ADMC/ADML
@@ -434,7 +441,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 				exportUrl = ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, 'bottomLevel.structure');
 			} else {
 				// if current = classe, export all user classes
-				exportUrl = ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, 'user.classes', model.me.classes);
+				exportUrl = ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, 'user.classes');
 			}
 			window.open(exportUrl, '_blank');
 		}
@@ -446,7 +453,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	$scope.exportFromLightbox = () => {
 		$scope.display.lightbox.export.topLevelEntity = false;
 		$scope.display.lightbox.export.bottomLevelEntity = false;
-		window.open(ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, $scope.state.exportType, model.me.classes), '_blank');
+		window.open(ExportService.getInstance().getExportUrl($scope.state.currentEntity, $scope.state.currentIndicator, $scope.state.exportType), '_blank');
 	}
 
 	const cancelOnboarding = async () => {

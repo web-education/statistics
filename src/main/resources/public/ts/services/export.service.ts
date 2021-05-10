@@ -12,7 +12,7 @@ export class ExportService {
         return ExportService.INSTANCE;
     }
 
-    getExportUrl(entity: Entity, indicator: Indicator, exportType: ExportType, classIds?: Array<string>): string {
+    getExportUrl(entity: Entity, indicator: Indicator, exportType: ExportType): string {
 		let exportBaseUrl = '/stats/export';
 		let exportParams = `?indicator=${indicator.api}&from=${dateService.getSinceDateISOStringWithoutMs()}`;
 		const frequency = indicator.exportFrequency ? indicator.exportFrequency : indicator.frequency;
