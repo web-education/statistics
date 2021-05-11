@@ -1,5 +1,5 @@
 {
-    "archive": "Export",
+    "archive": "Mes données",
     "blog": "Blog",
     "conversation": "Messagerie",
     "homeworks": "Cahier de textes",
@@ -100,5 +100,6 @@
     "stats.error.noclassesfound": "Vous devez être rattachés à au moins une classe pour voir vos statistiques",
     "stats.error.nonadmlofstructure": "Vous n'avez pas accès aux statistiques de l'établissement, merci de sélectionner une classe",
     "stats.error.nodata":"Données indisponibles",
-    "stats.support": "Support"
+    "stats.support": "Support",
+    "webconference": "Accès à une salle virtuelle"
 }
