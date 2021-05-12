@@ -358,14 +358,20 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		await toggleMostUsedConnectorsIndicator($scope.state.currentEntity);
 	}
 
-	$scope.selectEntity = async (entityId: string): Promise<void> => {
-		const entity = $scope.state.entities.find(e => e.id === entityId);
+	const hasStructureAccess = (entity: Entity): boolean => {
 		if (entity && 
 			entity.level === 'structure' &&
 			entity.classes && 
 			entity.classes.length > 0 &&
 			UserService.getInstance().isTeacher(model.me.type) && 
 			!UserService.getInstance().isAdmlOfEntity(entity, model.me.functions)) {
+				return false;
+		}
+		return true;
+	}
+
+	$scope.selectEntity = async (entityId: string): Promise<void> => {
+		if (!hasStructureAccess($scope.state.entities.find(e => e.id === entityId))) {
 			notify.info('stats.error.nonadmlofstructure');
 			return;
 		}
@@ -374,6 +380,10 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 	}
 	
 	$scope.selectEntityAndOpenIndicator = async (entityId: string, indicator: Indicator): Promise<void> => {
+		if (!hasStructureAccess($scope.state.entities.find(e => e.id === entityId))) {
+			notify.info('stats.error.nonadmlofstructure');
+			return;
+		}
 		await initEntityOnChange(entityId);
 		if (indicator.name === 'stats.mostUsedConnector' && 
 			!$scope.state.indicators.find(i => i.name === 'stats.mostUsedConnector')) {
