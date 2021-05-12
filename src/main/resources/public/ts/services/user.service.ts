@@ -37,7 +37,7 @@ export class UserService {
 	}
 
     isAdmc(functions: any) {
-		return functions && functions.SUPER_ADMIN && functions.SUPER_ADMIN.scope;
+		return functions && functions.SUPER_ADMIN;
 	}
 
 	isTeacher(type): boolean {
