@@ -49,6 +49,8 @@
         <h2>[[ lang.translate(state.currentIndicator.chartTitle) ]]</h2>
 
         <select 
+            class="styled-combo-box"
+            style="margin: 10px"
             ng-if="displayAppsSelect()"
             ng-model="state.selectedAppName" 
             ng-change="openAppDetails()"
