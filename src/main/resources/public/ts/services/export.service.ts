@@ -47,9 +47,9 @@ export class ExportService {
 				break;
 		}
 
-		if (indicator.name === 'stats.mostUsedConnector') {
+		if (indicator.name === 'stats.mostUsedConnector' || indicator.name === 'stats.connectorDetails') {
 			exportParams += '&type=CONNECTOR';
-		} else if (indicator.name === 'stats.mostUsedApp') {
+		} else if (indicator.name === 'stats.mostUsedApp' || indicator.name === 'stats.appDetails') {
 			exportParams += '&type=ACCESS';
 		} else if (indicator.name === 'stats.devices') {
 			exportParams += '&device=true';
