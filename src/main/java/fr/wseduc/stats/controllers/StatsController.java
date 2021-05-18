@@ -168,8 +168,11 @@ public class StatsController extends MongoDbControllerHelper {
 			} else if ("true".equals(request.params().get("structureClasses")) && "structure".equals(request.params().get("entityLevel"))) {
 				structureService.getClassesForStructure(request.params().get("entity"), either -> {
 					if (either.isRight()) {
-						request.params().set("entityLevel", "class");
-						request.params().set("entity", (List<String>) either.right().getValue().getJsonArray("ids").getList());
+						List<String> classIds = (List<String>) either.right().getValue().getJsonArray("ids").getList();
+						if (classIds != null && !classIds.isEmpty()) {
+							request.params().set("entityLevel", "class");
+							request.params().set("entity", classIds);
+						}
 						statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
 					} else {
 						renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
@@ -179,9 +182,12 @@ public class StatsController extends MongoDbControllerHelper {
 				UserUtils.getUserInfos(eb, request, user -> {
 					if (user != null) {
 						structureService.getUserClassesForStructure(request.params().get("entity"), user.getUserId(), either -> {
+							List<String> classIds = (List<String>) either.right().getValue().getJsonArray("ids").getList();
 							if (either.isRight()) {
-								request.params().set("entityLevel", "class");
-								request.params().set("entity", (List<String>) either.right().getValue().getJsonArray("ids").getList());
+								if (classIds != null && !classIds.isEmpty()) {
+									request.params().set("entityLevel", "class");
+									request.params().set("entity", classIds);
+								}
 								statsService.listStatsExport(request.params(), I18n.acceptLanguage(request), handler);
 							} else {
 								renderJson(request, new JsonObject().put("error", either.left().getValue()), 400);
