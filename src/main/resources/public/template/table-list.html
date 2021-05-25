@@ -47,6 +47,27 @@
 
         <!-- Information -->
         <h2>[[ lang.translate(state.currentIndicator.chartTitle) ]]</h2>
+        <!-- TODO : rendre cliquable les choix de la liste -->
+        <!-- <form class="select-box"
+                ng-if="displayAppsSelect()"
+                ng-model="state.selectedAppName" 
+                ng-change="openAppDetails()"
+        >
+            <input class="select-box__options-view-button" type="checkbox">
+            <div class="select-box__select-button">
+                <div class="select-box__selected-value">[[lang.translate(state.allAppsOrConnectorsI18nKey)]]</div>
+                <div class="chevrons">
+                    <i class="up-open"></i>
+                    <i class="down-open"></i>
+                </div>
+            </div>
+            <div class="select-box__options">
+                <div class="select-box__option" ng-repeat="appName in state.currentIndicator.appNames | orderBy: 'value'">
+                    <input class="select-box__radio" type="radio" value="[[appName.key]]">
+                    <span class="select-box__label" for="[[appName.key]]">[[appName.value]]</span>
+                </div>
+            </div>
+        </form> -->
 
         <select 
             class="styled-combo-box"
