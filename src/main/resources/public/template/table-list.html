@@ -47,42 +47,27 @@
 
         <!-- Information -->
         <h2>[[ lang.translate(state.currentIndicator.chartTitle) ]]</h2>
-        <!-- TODO : rendre cliquable les choix de la liste -->
-        <!-- <form class="select-box"
-                ng-if="displayAppsSelect()"
-                ng-model="state.selectedAppName" 
-                ng-change="openAppDetails()"
-        >
+
+        <form class="select-box" ng-if="displayAppsSelect()">
             <input class="select-box__options-view-button" type="checkbox">
             <div class="select-box__select-button">
-                <div class="select-box__selected-value">[[lang.translate(state.allAppsOrConnectorsI18nKey)]]</div>
+                <div class="select-box__selected-value">[[lang.translate(state.selectedAppName.toLowerCase())]]</div>
                 <div class="chevrons">
                     <i class="up-open"></i>
                     <i class="down-open"></i>
                 </div>
             </div>
             <div class="select-box__options">
+                <div class="select-box__option">
+                    <input class="select-box__radio" type="radio" value="[[state.allAppsOrConnectorsI18nKey]]" ng-click="openAppDetails(state.allAppsOrConnectorsI18nKey)">
+                    <span class="select-box__label" for="[[appName.key]]">[[lang.translate(state.allAppsOrConnectorsI18nKey)]]</span>
+                </div>
                 <div class="select-box__option" ng-repeat="appName in state.currentIndicator.appNames | orderBy: 'value'">
-                    <input class="select-box__radio" type="radio" value="[[appName.key]]">
+                    <input class="select-box__radio" type="radio" value="[[appName.key]]" ng-click="openAppDetails(appName.key)">
                     <span class="select-box__label" for="[[appName.key]]">[[appName.value]]</span>
                 </div>
             </div>
-        </form> -->
-
-        <select 
-            class="styled-combo-box"
-            style="margin: 10px"
-            ng-if="displayAppsSelect()"
-            ng-model="state.selectedAppName" 
-            ng-change="openAppDetails()"
-        >
-            <optgroup>
-                <option value="[[state.allAppsOrConnectorsI18nKey]]">[[lang.translate(state.allAppsOrConnectorsI18nKey)]]</option>
-            </optgroup>
-            <optgroup>
-                <option ng-repeat="appName in state.currentIndicator.appNames | orderBy: 'value'" value="[[appName.key]]">[[appName.value]]</option>
-            </optgroup>
-        </select>
+        </form>
 
         <p ng-if="isOnlyOneConnector(state.currentIndicator)">[[lang.translate(state.selectedAppName)]]</p>
 

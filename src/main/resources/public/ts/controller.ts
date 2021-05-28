@@ -57,7 +57,7 @@ interface StatsControllerScope {
 	openView(container: any, view: any);
 	selectEntity(id: string): Promise<void>;
 	selectEntityAndOpenIndicator(id: string, indicator: Indicator): Promise<void>;
-	openAppDetails(): void;
+	openAppDetails(appNameKey: string): void;
 	displayAppsSelect(): boolean;
 	isOnlyOneConnector(indicator: Indicator): boolean;
 	isIndicatorSelected(indicator: Indicator): boolean;
@@ -110,8 +110,8 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		currentEntity: null,
 		currentIndicator: null,
 		indicators: [],
-		selectedAppName: 'stats.mostUsedApps.allApps',
-		allAppsOrConnectorsI18nKey: 'stats.mostUsedApps.allApps',
+		selectedAppName: 'stats.mostusedapps.allapps',
+		allAppsOrConnectorsI18nKey: 'stats.mostusedapps.allapps',
 		exportType: null,
 		chart: null,
 		ctx: null,
@@ -253,7 +253,7 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 		$scope.state.currentIndicator = indicator;
 
 		if ($scope.state.currentIndicator.name === 'stats.mostUsedApp') {
-			$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedApps.allApps';
+			$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostusedapps.allapps';
 			$scope.state.selectedAppName = $scope.state.allAppsOrConnectorsI18nKey;
 		} else if ($scope.state.currentIndicator.name === 'stats.mostUsedConnector') {
 			// if only one connector then display details indicator
@@ -262,10 +262,10 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 			
 			if (connectorNames.length === 1) {
 				$scope.state.selectedAppName = connectorNames[0].key;
-				$scope.openAppDetails();
+				$scope.openAppDetails($scope.state.selectedAppName);
 				return;
 			} else {
-				$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostUsedConnector.allConnectors';
+				$scope.state.allAppsOrConnectorsI18nKey = 'stats.mostusedconnector.allconnectors';
 				$scope.state.selectedAppName = $scope.state.allAppsOrConnectorsI18nKey;
 			}
 		}
@@ -308,13 +308,15 @@ export const statsController = ng.controller('StatsController', ['$scope', '$tim
 
 	}
 
-	$scope.openAppDetails = async function() {
+	$scope.openAppDetails = async function(appNameKey: string) {
+		$scope.state.selectedAppName = appNameKey;
+		
 		if ($scope.state.selectedAppName) {
 			AppService.getInstance().setSelectedAppName($scope.state.selectedAppName);
 
-			if ($scope.state.selectedAppName === 'stats.mostUsedApps.allApps') {
+			if ($scope.state.selectedAppName === 'stats.mostusedapps.allapps') {
 				await $scope.openIndicator(MostUsedAppsIndicator.getInstance());
-			} else if ($scope.state.selectedAppName === 'stats.mostUsedConnector.allConnectors') {
+			} else if ($scope.state.selectedAppName === 'stats.mostusedconnector.allconnectors') {
 				await $scope.openIndicator(MostUsedConnectorsIndicator.getInstance());
 			} else {
 				let detailsIndicator;
