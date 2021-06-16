@@ -30,6 +30,12 @@ export class AppDetailsIndicator extends AbstractLineIndicator {
         return AppDetailsIndicator.INSTANCE;
     }
 
+    async getApiData(entity: Entity): Promise<Array<StatsResponse>> {
+        let apiData: Array<StatsResponse> = await cacheService.getData(this.api, 'month', entity.level, entity.id, false);
+        apiData = apiData.filter(x => x['type'] === 'ACCESS');
+        return apiData;
+    }
+
     async getChartData(entity: Entity): Promise<any> {
 		let cachedIndicatorData = await cacheService.getIndicatorData(this, entity);
         cachedIndicatorData = cachedIndicatorData.filter(data => data.module === AppService.getInstance().getSelectedAppName());
