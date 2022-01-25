@@ -66,7 +66,7 @@ export class ConnectionsWeeklyPeakIndicator extends AbstractStackedBarIndicator 
             chartData[profile] = [];
             Object.keys(dataGroupedByProfileAndDay[profile]).forEach((day, i) => {
                 let sum = dataGroupedByProfileAndDay[profile][day].reduce((acc, x) => acc + x);
-                chartData[profile].push(sum);
+                chartData[profile].push(sum || 0); // push 0 in case sum is null to prevent gaps in graph
             });
             // move Sunday value to the last array element
             let sundayValue = chartData[profile].shift();

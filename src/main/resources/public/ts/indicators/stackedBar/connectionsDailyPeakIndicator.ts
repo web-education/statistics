@@ -64,7 +64,7 @@ export class ConnectionsDailyPeakIndicator extends AbstractStackedBarIndicator {
             chartData[profile] = [];
             Object.keys(dataGroupedByProfileAndHours[profile]).forEach((day, i) => {
                 let sum = dataGroupedByProfileAndHours[profile][day].reduce((acc, x) => acc + x);
-                chartData[profile].push(sum);
+                chartData[profile].push(sum || 0); // push 0 in case sum is null to prevent gaps in graph
             });
         });
         
