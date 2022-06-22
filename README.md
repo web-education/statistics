@@ -151,3 +151,7 @@ Pour les détails techniques plus poussés relatifs à l'aggrégateur, se réfé
 #### Chart.js
 
 La restitution graphique sous forme de diagrammes se fait à l'aide de la librairie Chart.js.
+
+### Ajout d'un module
+
+Afin d'ajouter un module, il est nécessaire d'ajouter le nom du module dans le tableau "modules" dans le fichier "src/main/resources/api-allowed-values.json".
