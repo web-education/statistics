@@ -32,7 +32,7 @@ export class MostUsedAppsIndicator extends AbstractBarIndicator {
 
     async getApiData(entity: Entity): Promise<Array<StatsResponse>> {
         let apiData: Array<StatsResponse> = await cacheService.getData(this.api, 'month', entity.level, entity.id, false);
-        apiData = apiData.filter(x => x['type'] === 'ACCESS');
+        apiData = apiData.filter(data => data['type'] === 'ACCESS' || (data['type'] === 'CONNECTOR' && data['module'] === 'library'));
         return apiData;
     }
 

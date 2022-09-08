@@ -31,7 +31,7 @@ export class MostUsedConnectorsIndicator extends AbstractBarIndicator {
 
     async getApiData(entity: Entity): Promise<Array<StatsResponse>> {
         let apiData: Array<StatsResponse> = await cacheService.getData(this.api, 'month', entity.level, entity.id, false);
-        apiData = apiData.filter(x => x['type'] === 'CONNECTOR');
+        apiData = apiData.filter(data => data['type'] === 'CONNECTOR' && data['module'] !== 'library');
         return apiData;
     }
 
