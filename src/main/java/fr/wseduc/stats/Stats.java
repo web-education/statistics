@@ -24,6 +24,10 @@ package fr.wseduc.stats;
 
 import java.text.ParseException;
 
+import io.vertx.pgclient.PgConnectOptions;
+import io.vertx.pgclient.PgPool;
+import io.vertx.pgclient.SslMode;
+import io.vertx.sqlclient.PoolOptions;
 import org.entcore.common.aggregation.MongoConstants.COLLECTIONS;
 import org.entcore.common.events.EventHelper;
 import org.entcore.common.events.EventStore;
@@ -31,9 +35,6 @@ import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.mongodb.MongoDbConf;
 
-import io.reactiverse.pgclient.PgClient;
-import io.reactiverse.pgclient.PgPool;
-import io.reactiverse.pgclient.PgPoolOptions;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -85,23 +86,31 @@ public class Stats extends BaseServer {
 		final JsonObject readPGConfig = config.getJsonObject("read-pg-config");
 		final boolean oldStats = config.getBoolean("mongo-stats-service", false);
 		if (readPGConfig != null && !readPGConfig.isEmpty() && !oldStats) {
-			final PgPoolOptions options = new PgPoolOptions().setPort(readPGConfig.getInteger("port", 5432))
+			final PgConnectOptions connectOptions = new PgConnectOptions().setPort(readPGConfig.getInteger("port", 5432))
 					.setHost(readPGConfig.getString("host")).setDatabase(readPGConfig.getString("database"))
-					.setUser(readPGConfig.getString("user")).setPassword(readPGConfig.getString("password"))
-					.setMaxSize(readPGConfig.getInteger("pool-size", 5));
-			PgPool pgPool = PgClient.pool(vertx, options);
+					.setUser(readPGConfig.getString("user")).setPassword(readPGConfig.getString("password"));
+			final SslMode sslMode = SslMode.valueOf(readPGConfig.getString("ssl-mode", "DISABLE"));
+			if (!SslMode.DISABLE.equals(sslMode)) {
+				connectOptions.setSslMode(sslMode).setTrustAll(SslMode.ALLOW.equals(sslMode) || SslMode.PREFER.equals(sslMode) || SslMode.REQUIRE.equals(sslMode));
+			}
+			PoolOptions poolOptions = new PoolOptions().setMaxSize(readPGConfig.getInteger("pool-size", 5));
+			PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
 			statsService = new PGStatsService(platformId, config.getJsonObject("api-allowed-values"));
 			((PGStatsService) statsService).setReadPgPool(pgPool);
 		} else if (eventStoreConfig != null && eventStoreConfig.getJsonObject("postgresql-slave") != null && !oldStats) {
 			final JsonObject eventStorePGConfig = eventStoreConfig.getJsonObject("postgresql-slave");
-			final PgPoolOptions options = new PgPoolOptions()
+			final PgConnectOptions connectOptions = new PgConnectOptions()
 				.setPort(eventStorePGConfig.getInteger("port", 5432))
 				.setHost(eventStorePGConfig.getString("host"))
 				.setDatabase(eventStorePGConfig.getString("database"))
 				.setUser(eventStorePGConfig.getString("user"))
-				.setPassword(eventStorePGConfig.getString("password"))
-				.setMaxSize(eventStorePGConfig.getInteger("pool-size", 5));
-			PgPool pgPool = PgClient.pool(vertx, options);
+				.setPassword(eventStorePGConfig.getString("password"));
+			final SslMode sslMode = SslMode.valueOf(eventStorePGConfig.getString("ssl-mode", "DISABLE"));
+			if (!SslMode.DISABLE.equals(sslMode)) {
+				connectOptions.setSslMode(sslMode).setTrustAll(SslMode.ALLOW.equals(sslMode) || SslMode.PREFER.equals(sslMode) || SslMode.REQUIRE.equals(sslMode));
+			}
+			PoolOptions poolOptions = new PoolOptions().setMaxSize(eventStorePGConfig.getInteger("pool-size", 5));
+			PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
 			statsService = new PGStatsService(platformId, config.getJsonObject("api-allowed-values"));
 			((PGStatsService) statsService).setReadPgPool(pgPool);
         } else {
