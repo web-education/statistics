@@ -5,15 +5,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.time.LocalDateTime;
 
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 import org.entcore.common.utils.StringUtils;
 import org.entcore.common.validation.ValidationException;
 
 import fr.wseduc.webutils.Either;
 import fr.wseduc.webutils.Utils;
-import io.reactiverse.pgclient.PgPool;
-import io.reactiverse.pgclient.PgRowSet;
-import io.reactiverse.pgclient.Row;
-import io.reactiverse.pgclient.Tuple;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -87,7 +87,7 @@ public class PGStatsService implements StatsService {
             }
             log.info("query : " + query);
             log.info("tuple : " + deepToString(t));
-            readPgPool.preparedQuery(query, t, pgRowsToEither(handler));
+            readPgPool.preparedQuery(query).execute(t, pgRowsToEither(handler));
         } catch (Exception e) {
             handler.handle(new Either.Left<>(e.getMessage()));
         }
@@ -193,10 +193,10 @@ public class PGStatsService implements StatsService {
         return query;
     }
 
-    private Handler<AsyncResult<PgRowSet>> pgRowsToEither(Handler<Either<String, JsonArray>> handler) {
+    private Handler<AsyncResult<RowSet<Row>>> pgRowsToEither(Handler<Either<String, JsonArray>> handler) {
         return ar -> {
             if (ar.succeeded()) {
-                final PgRowSet rows = ar.result();
+                final RowSet<Row> rows = ar.result();
                 final List<String> columns = rows.columnsNames();
                 final JsonArray res = new JsonArray();
                 for (Row row: rows) {
