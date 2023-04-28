@@ -76,5 +76,10 @@
     "riot": "Riot",
     "wekan": "Wekan",
     "peertube": "Peertube",
-    "jupyter": "Jupyter"
+    "jupyter": "Jupyter",
+    "magneto": "Magneto",
+    "minetest": "Minetest",
+    "crre": "CRRE",
+    "minibadge": "MiniBadge",
+    "lystore": "Lystore"
 }
