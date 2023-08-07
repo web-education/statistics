@@ -44,13 +44,12 @@ public class StructureService {
 
     public void getStructuresHierarchyAndClasses(String userId, Handler<Either<String, JsonArray>> handler) {
         final String query =
-                "MATCH (u:User {id: {userId}})-[:IN]->(pg)-[:DEPENDS]->(s:Structure)" +
+                "MATCH (:User {id: {userId}})-[:IN]->(pg)-[:DEPENDS]->(s:Structure)" +
                 " WHERE (pg:ProfileGroup OR pg:FunctionGroup) " +
-                " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g)<-[:IN]-(u)" +
+                " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g)<-[:IN]-(:User {id: {userId}})" +
                 " WHERE (g:ProfileGroup OR g:FunctionGroup) " +
-                " WITH u, s, COLLECT(distinct {id: ps.id, name: ps.name}) as parents" +
-                " OPTIONAL MATCH (u)-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
-                " WITH u, s, parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
+                " OPTIONAL MATCH (:User {id: {userId}})-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
+                " WITH s, COLLECT(distinct {id: ps.id, name: ps.name}) as parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
                 " WITH DISTINCT s, CASE WHEN any(p in parents where p <> {id: null, name: null}) THEN parents END as parents," +
                 " CASE WHEN any(c in classes where c <> {id: null, name: null}) THEN classes END as classes " +
                 " RETURN DISTINCT s.id as id, s.name as name, parents, classes, length(coalesce(parents,[])) > 0 as notroot " +
