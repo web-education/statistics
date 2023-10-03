@@ -48,7 +48,7 @@ public class StructureService {
                 " WHERE (pg:ProfileGroup OR pg:FunctionGroup) " +
                 " OPTIONAL MATCH (s)-[:HAS_ATTACHMENT]->(ps:Structure)<-[:DEPENDS]-(g)<-[:IN]-(:User {id: {userId}})" +
                 " WHERE (g:ProfileGroup OR g:FunctionGroup) " +
-                " OPTIONAL MATCH (:User {id: {userId}})-[:IN]->(pg:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
+                " OPTIONAL MATCH (:User {id: {userId}})-[:IN]->(:ProfileGroup)-[:DEPENDS]->(c:Class)-[:BELONGS]->(s)" +
                 " WITH s, COLLECT(distinct {id: ps.id, name: ps.name}) as parents, COLLECT(distinct {id: c.id, name: c.name}) as classes" +
                 " WITH DISTINCT s, CASE WHEN any(p in parents where p <> {id: null, name: null}) THEN parents END as parents," +
                 " CASE WHEN any(c in classes where c <> {id: null, name: null}) THEN classes END as classes " +
