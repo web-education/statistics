@@ -1,4 +1,4 @@
-version: "3.3"
+version: "3"
 services:
   gradle:
     image: opendigitaleducation/gradle:4.5.1
@@ -7,9 +7,11 @@ services:
       - ./:/home/gradle/project
       - ~/.m2:/home/gradle/.m2
       - ~/.gradle:/home/gradle/.gradle
+
   node:
-    image: opendigitaleducation/node:10-alpine
+    image: opendigitaleducation/node:16-alpine
     working_dir: /home/node/app
     volumes:
       - ./:/home/node/app
       - ~/.npm:/.npm
+      - ../recette:/home/node/recette
