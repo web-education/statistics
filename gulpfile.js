@@ -27,7 +27,7 @@ function buildDev() {
 
 function build(done) {
   const refs = gulp
-    .src("./src/main/resources/view-src/**/*.+(html|json)")
+    .src("./src/main/resources/view-src/**/*.+(html|json|csv)")
     .pipe(replace("@@VERSION", Date.now()))
     .pipe(gulp.dest("./src/main/resources/view"));
 
