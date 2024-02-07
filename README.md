@@ -154,4 +154,8 @@ La restitution graphique sous forme de diagrammes se fait à l'aide de la librai
 
 ### Affichage d'un nouveau module
 
-Afin d'afficher un nouveau module (pour lequel des événements sont collectés), il est nécessaire d'ajouter le nom du module dans le tableau "modules" dans le fichier "src/main/resources/api-allowed-values.json". 
+Pour qu'un connecteur apparaisse dans les statistiques, il faut qu'il soit du type "CAS" et qu'il y ait une référence pour le type de CAS.
+
+Pour qu'une application (pour laquelle des événements sont collectés) apparaisse dans les statistiques, il est nécessaire d'ajouter le nom court du *verticle* dans le tableau `modules` dans le fichier `src/main/resources/api-allowed-values.json`.
+
+Processus : à l'ajout d'un nouveau module dont le verticle principal est la classe `org.entcore.xxx.xyz.MyVerticle`, il faut donc créer sur master une PR sur le module `statistics` avec l'ajout de la valeur `MyVerticle` au tableau `modules`.
