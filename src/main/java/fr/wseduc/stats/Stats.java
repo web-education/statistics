@@ -25,6 +25,7 @@ package fr.wseduc.stats;
 import java.text.ParseException;
 import java.util.Base64;
 
+import io.vertx.core.Promise;
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
 import io.vertx.pgclient.SslMode;
@@ -59,8 +60,8 @@ public class Stats extends BaseServer {
 	private static final Logger logger = LoggerFactory.getLogger(Stats.class);
 
 	@Override
-	public void start() throws Exception {
-		super.start();
+	public void start(final Promise<Void> startPromise) throws Exception {
+		super.start(startPromise);
 
 		// CRON
 		// Default at 00:00AM every day
@@ -166,6 +167,7 @@ public class Stats extends BaseServer {
 		addController(statsController);
 		MongoDbConf.getInstance().setCollection(COLLECTIONS.stats.name());
 		addFilter(new WorkflowFilter(this.vertx.eventBus(), "stats.view", "fr.wseduc.stats.controllers.StatsController|view"));
+		startPromise.tryComplete();
 	}
 
 }

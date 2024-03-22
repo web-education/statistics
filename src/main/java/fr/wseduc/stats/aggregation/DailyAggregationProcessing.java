@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.bson.conversions.Bson;
 import org.entcore.common.aggregation.AggregationTools;
 import org.entcore.common.aggregation.AggregationTools.HandlerChainer;
 import org.entcore.common.aggregation.MongoConstants.COLLECTIONS;
@@ -39,12 +40,11 @@ import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 
-import com.mongodb.QueryBuilder;
-
 import static org.entcore.common.aggregation.MongoConstants.*;
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.stats.aggregation.Indicators.UniqueVisitorIndicator;
+import static com.mongodb.client.model.Filters.*;
 
 /**
  * Daily traces aggregation routine for One.
@@ -64,7 +64,7 @@ public class DailyAggregationProcessing extends AggregationProcessing{
 		calendarDay.add(Calendar.DATE, 1);
 		Date higherDay = AggregationTools.setToMidnight(calendarDay);
 
-		QueryBuilder statsFilter = QueryBuilder.start().put(STATS_FIELD_DATE).greaterThanEquals(MongoDb.formatDate(lowerDay)).lessThan(MongoDb.formatDate(higherDay));
+		Bson statsFilter = and(gte(STATS_FIELD_DATE, MongoDb.formatDate(lowerDay)), lt(STATS_FIELD_DATE, MongoDb.formatDate(higherDay)));
 		mongo.delete(COLLECTIONS.stats.name(), MongoQueryBuilder.build(statsFilter), new Handler<Message<JsonObject>>() {
 			public void handle(Message<JsonObject> event) {
 				next.handle(null);

@@ -22,12 +22,9 @@
 
 package fr.wseduc.stats.aggregation.Indicators;
 
-import java.util.Collection;
 
 import static org.entcore.common.aggregation.MongoConstants.*;
 
-import org.entcore.common.aggregation.filters.mongo.IndicatorFilterMongoImpl;
-import org.entcore.common.aggregation.groups.IndicatorGroup;
 import org.entcore.common.aggregation.indicators.mongo.IndicatorMongoImpl;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
@@ -41,10 +38,6 @@ public class UniqueVisitorIndicator extends IndicatorMongoImpl{
 
 	public UniqueVisitorIndicator(){
 		super(TRACE_TYPE_CONNEXION);
-		this.setWriteKey(STATS_UNIQUEVISITORS_KEY);
-	}
-	public UniqueVisitorIndicator(Collection<IndicatorFilterMongoImpl> filters, Collection<IndicatorGroup> groups) {
-		super(TRACE_TYPE_CONNEXION, filters, groups);
 		this.setWriteKey(STATS_UNIQUEVISITORS_KEY);
 	}
 

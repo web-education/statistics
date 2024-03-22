@@ -5,10 +5,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.time.LocalDateTime;
 
-import io.vertx.pgclient.PgPool;
-import io.vertx.sqlclient.Row;
-import io.vertx.sqlclient.RowSet;
-import io.vertx.sqlclient.Tuple;
 import org.entcore.common.utils.StringUtils;
 import org.entcore.common.validation.ValidationException;
 
@@ -21,6 +17,10 @@ import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
+import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 
 public class PGStatsService implements StatsService {
 

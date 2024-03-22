@@ -29,6 +29,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.bson.conversions.Bson;
 import org.entcore.common.mongodb.MongoDbResult;
 import org.entcore.common.service.impl.MongoDbCrudService;
 import io.vertx.core.Handler;
@@ -36,11 +37,11 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
-import com.mongodb.QueryBuilder;
 
 import fr.wseduc.mongodb.MongoDb;
 import fr.wseduc.mongodb.MongoQueryBuilder;
 import fr.wseduc.webutils.Either;
+import static com.mongodb.client.model.Filters.*;
 
 /**
  * MongoDB implementation of the REST service.
@@ -59,7 +60,7 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 
 	public void listStats(MultiMap d, Handler<Either<String, JsonArray>> handler){
 		final List<Entry<String, String>> data = (d != null) ? d.entries() : new ArrayList<>();
-		QueryBuilder filterBuilder = QueryBuilder.start();
+		List<Bson> filters = new ArrayList<>();
 
 		//Gets rid of the annoying jQuery underscore query parameter
 		int i = 0;
@@ -86,16 +87,16 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 				else if(entry.getKey().equals("classes"))
 					classesCheck = true;
 
-				filterBuilder.and(entry.getKey()+"_id").is(entry.getValue());
+				filters.add(eq(entry.getKey()+"_id", entry.getValue()));
 			}
 
 			String groupedBy = classesCheck ? "structures/classes" : structuresCheck ? "structures" : "";
 			if(groupedByModifier.length() > 0)
 				groupedBy = groupedBy.length() == 0 ? groupedByModifier : groupedBy + "/" + groupedByModifier;
 
-			filterBuilder.and(STATS_FIELD_GROUPBY).is(groupedBy);
+			filters.add(eq(STATS_FIELD_GROUPBY, groupedBy));
 		} else {
-			filterBuilder.put(STATS_FIELD_GROUPBY).exists(false);
+			filters.add(exists(STATS_FIELD_GROUPBY, false));
 		}
 
 
@@ -108,12 +109,12 @@ public class StatsServiceMongoImpl extends MongoDbCrudService implements StatsSe
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 
-		filterBuilder.and(STATS_FIELD_DATE).greaterThanEquals(MongoDb.formatDate(cal.getTime()));
+		filters.add(gte(STATS_FIELD_DATE, MongoDb.formatDate(cal.getTime())));
 
 		//Sort by date - ascending
 		JsonObject sortObject = new JsonObject().put("date", -1);
 
-		mongo.find(collection, MongoQueryBuilder.build(filterBuilder), sortObject, new JsonObject(), MongoDbResult.validResultsHandler(handler));
+		mongo.find(collection, MongoQueryBuilder.build(and(filters)), sortObject, new JsonObject(), MongoDbResult.validResultsHandler(handler));
 	}
 
 	@Override
