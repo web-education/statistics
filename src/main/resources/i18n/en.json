@@ -81,5 +81,6 @@
     "minetest": "Minetest",
     "crre": "CRRE",
     "minibadge": "MiniBadge",
-    "lystore": "Lystore"
+    "lystore": "Lystore",
+	"webgerest": "WebGerest"
 }
