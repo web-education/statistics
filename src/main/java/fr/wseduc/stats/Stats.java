@@ -40,9 +40,12 @@ import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import fr.wseduc.cron.CronTrigger;
+import fr.wseduc.stats.controllers.JobsController;
 import fr.wseduc.stats.controllers.StatsController;
 import fr.wseduc.stats.cron.CronAggregationTask;
 import fr.wseduc.stats.filters.WorkflowFilter;
+import fr.wseduc.stats.services.DefaultJobsServiceImpl;
+import fr.wseduc.stats.services.JobsService;
 import fr.wseduc.stats.services.PGStatsService;
 import fr.wseduc.stats.services.StatsService;
 import fr.wseduc.stats.services.StatsServiceMongoImpl;
@@ -84,7 +87,25 @@ public class Stats extends BaseServer {
 
 		final StatsService statsService;
 		final JsonObject readPGConfig = config.getJsonObject("read-pg-config");
+		final JsonObject pgConfig = config.getJsonObject("pg-config");
 		final boolean oldStats = config.getBoolean("mongo-stats-service", false);
+		if (pgConfig != null && !pgConfig.isEmpty() && !oldStats) {
+			final PgConnectOptions connectOptions = new PgConnectOptions().setPort(pgConfig.getInteger("port", 5432))
+					.setHost(pgConfig.getString("host")).setDatabase(pgConfig.getString("database"))
+					.setUser(pgConfig.getString("user")).setPassword(pgConfig.getString("password"));
+			final SslMode sslMode = SslMode.valueOf(pgConfig.getString("ssl-mode", "DISABLE"));
+			if (!SslMode.DISABLE.equals(sslMode)) {
+				connectOptions.setSslMode(sslMode).setTrustAll(SslMode.ALLOW.equals(sslMode) || SslMode.PREFER.equals(sslMode) || SslMode.REQUIRE.equals(sslMode));
+			}
+			PoolOptions poolOptions = new PoolOptions().setMaxSize(pgConfig.getInteger("pool-size", 5));
+			PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
+
+			final DefaultJobsServiceImpl jobsService = new DefaultJobsServiceImpl(vertx, platformId, config.getJsonObject("api-allowed-values"));
+			jobsService.setPgPool(pgPool);
+			final JobsController jobsController = new JobsController();
+			jobsController.setJobsService(jobsService);
+			addController(jobsController);
+		}
 		if (readPGConfig != null && !readPGConfig.isEmpty() && !oldStats) {
 			final PgConnectOptions connectOptions = new PgConnectOptions().setPort(readPGConfig.getInteger("port", 5432))
 					.setHost(readPGConfig.getString("host")).setDatabase(readPGConfig.getString("database"))
