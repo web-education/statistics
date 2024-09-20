@@ -3,7 +3,9 @@ package fr.wseduc.stats.utils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import fr.wseduc.stats.exceptions.ImportException;
 import io.vertx.core.Vertx;
@@ -17,6 +19,8 @@ import static org.entcore.common.utils.FileUtils.deleteImportPath;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.core.parsetools.RecordParser;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
 public final class CsvUtils {
@@ -88,4 +92,29 @@ public final class CsvUtils {
 			}
 		});
 	}
+
+    public static void rowSetToCsv(HttpServerRequest request, RowSet<Row> rowSet) {
+        request.response().putHeader("Content-Type", "text/csv");
+		// request.response().putHeader("Content-Disposition", "attachment; filename=export.csv");
+		request.response().setChunked(true);
+		final List<String> columnsNames = rowSet.columnsNames();
+		request.response().write(columnsNames.stream().collect(Collectors.joining("\";\"", "\"", "\"\n")));
+		for (Row row : rowSet) {
+			final StringBuilder line = new StringBuilder("");
+			for (String column: columnsNames) {
+				final Object value = row.getValue(column);
+				if (value instanceof String[]) {
+					line.append("[").append(String.join(",", (String[]) value)).append("];");
+				} else if (value != null){
+					line.append("\"").append(value).append("\";");
+				} else {
+					line.append(";");
+				}
+			}
+			line.deleteCharAt(line.length() - 1);
+			request.response().write(line.toString() + "\n");
+		}
+		request.response().end();
+    }
+
 }

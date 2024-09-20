@@ -1,6 +1,5 @@
 package fr.wseduc.stats.controllers;
 
-
 import fr.wseduc.rs.Get;
 import fr.wseduc.rs.Put;
 import fr.wseduc.security.SecuredAction;
@@ -18,7 +17,7 @@ public class JobsController extends BaseController {
     @Put("/import/stats/:indicator")
     @SecuredAction("stats.import")
     public void importStats(HttpServerRequest request) {
-        CsvUtils.uploadImport(vertx, request, config.getString("stats-impory-path", System.getProperty("java.io.tmpdir")), res -> {
+        CsvUtils.uploadImport(vertx, request, config.getString("stats-import-path", System.getProperty("java.io.tmpdir")), res -> {
 			if (res.succeeded()) {
 				jobsService.importStats(res.result(), asyncVoidResponseHandler(request));
 			} else {
@@ -26,6 +25,21 @@ public class JobsController extends BaseController {
 			}
 		});
     }
+
+	@Get("/export/referential/:entity")
+	@SecuredAction("stats.export.referential")
+	public void exportReferential(HttpServerRequest request) {
+		final String entity = request.params().get("entity");
+		final String partition = request.params().get("partition");
+		final String partitionValue = request.params().get("suffix");
+		jobsService.exportReferential(entity, partition, partitionValue, ar -> {
+			if (ar.succeeded()) {
+				CsvUtils.rowSetToCsv(request, ar.result());
+			} else {
+				badRequest(request, ar.cause().getMessage());
+			}
+		});
+	}
 
 	public void setJobsService(JobsService jobsService) {
 		this.jobsService = jobsService;
