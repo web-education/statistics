@@ -29,5 +29,7 @@
             "smartphone" : ["smartphone", "phablet"]
         }
     },
-    "languages" : ["fr", "en", "es", "pt", "it", "de"]
+    "languages" : ["fr", "en", "es", "pt", "it", "de"],
+    "referential-entities" : ["business_mapping","classes", "platforms", "structures", "tenants", "users_classes", "users", "users_structures", "users_tenants"],
+    "referential-partitions": ["id", "user_id"]
 }

@@ -1,5 +1,7 @@
 package fr.wseduc.stats.services;
 
+import static fr.wseduc.webutils.Utils.isNotEmpty;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +23,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.pgclient.PgPool;
+import io.vertx.sqlclient.Row;
+import io.vertx.sqlclient.RowSet;
+import io.vertx.sqlclient.Tuple;
 
 public class DefaultJobsServiceImpl implements JobsService {
 
@@ -30,22 +35,26 @@ public class DefaultJobsServiceImpl implements JobsService {
     private final Vertx vertx;
     private final Set<String> allowedTables;
     private PgPool pgPool;
-    private final JsonObject allowedValues;
     private final String platformId;
+    private final List<String> allowedPartitions;
+    private final List<String> allowedEntities;
 
-    public DefaultJobsServiceImpl(Vertx vertx, String platformId, JsonObject allowedValues) {
+    public DefaultJobsServiceImpl(Vertx vertx, String platformId, JsonObject allowedValuesConf) {
         this.vertx = vertx;
-        if (allowedValues == null || allowedValues.isEmpty()) {
-            this.allowedValues = Utils.loadFromResource("api-allowed-values.json");
+        final JsonObject allowedValues;
+        if (allowedValuesConf == null || allowedValuesConf.isEmpty()) {
+            allowedValues = Utils.loadFromResource("api-allowed-values.json");
         } else {
-            this.allowedValues = allowedValues;
+            allowedValues = allowedValuesConf;
         }
         this.platformId = platformId;
-        final List<String> indicators = this.allowedValues.getJsonArray("indicators").getList();
-        final List<String> levels = this.allowedValues.getJsonArray("entities-levels").getList();
-        final List<String> frequencies = this.allowedValues.getJsonArray("frequencies").getList();
+        final List<String> indicators = allowedValues.getJsonArray("indicators").getList();
+        final List<String> levels = allowedValues.getJsonArray("entities-levels").getList();
+        final List<String> frequencies = allowedValues.getJsonArray("frequencies").getList();
         final List<String> devices = Arrays.asList("", "_device");
         this.allowedTables = initAllowedTables(indicators, levels, frequencies, devices);
+        this.allowedEntities = allowedValues.getJsonArray("referential-entities").getList();
+        this.allowedPartitions = allowedValues.getJsonArray("referential-partitions").getList();
     }
 
     private Set<String> initAllowedTables(List<String> indicators, List<String> levels, List<String> frequencies, List<String> devices) {
@@ -105,6 +114,25 @@ public class DefaultJobsServiceImpl implements JobsService {
 
     public void setPgPool(PgPool pgPool) {
         this.pgPool = pgPool;
+    }
+
+    @Override
+    public void exportReferential(String entity, String partition, String partitionValue, Handler<AsyncResult<RowSet<Row>>> handler) {
+        if (!allowedEntities.contains(entity)) {
+            handler.handle(Future.failedFuture(new ValidationException("invalid.entity.name")));
+            return;
+        }
+        String query = "SELECT * FROM repository." + entity;
+        if (allowedPartitions.contains(partition) && isNotEmpty(partitionValue)) {
+            query += " WHERE " + partition + " LIKE $1";
+        }
+        pgPool.preparedQuery(query).execute(partitionValue != null ? Tuple.of("%" + partitionValue) : Tuple.tuple(), ar -> {
+            if (ar.succeeded()) {
+                handler.handle(Future.succeededFuture(ar.result()));
+            } else {
+                handler.handle(Future.failedFuture(ar.cause()));
+            }
+        });
     }
 
 }
