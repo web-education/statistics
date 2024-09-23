@@ -41,6 +41,12 @@ public class JobsController extends BaseController {
 		});
 	}
 
+	@Put("/sync/repository")
+	@SecuredAction("stats.sync.repository")
+	public void syncRepository(HttpServerRequest request) {
+		jobsService.syncRepository(asyncVoidResponseHandler(request));
+	}
+
 	public void setJobsService(JobsService jobsService) {
 		this.jobsService = jobsService;
 	}

@@ -23,6 +23,7 @@
 package fr.wseduc.stats;
 
 import java.text.ParseException;
+import java.util.Base64;
 
 import io.vertx.pgclient.PgConnectOptions;
 import io.vertx.pgclient.PgPool;
@@ -35,6 +36,7 @@ import org.entcore.common.events.EventStoreFactory;
 import org.entcore.common.http.BaseServer;
 import org.entcore.common.mongodb.MongoDbConf;
 
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -49,6 +51,8 @@ import fr.wseduc.stats.services.JobsService;
 import fr.wseduc.stats.services.PGStatsService;
 import fr.wseduc.stats.services.StatsService;
 import fr.wseduc.stats.services.StatsServiceMongoImpl;
+
+import com.opendigitaleducation.repository.SyncRepository;
 
 public class Stats extends BaseServer {
 
@@ -100,8 +104,22 @@ public class Stats extends BaseServer {
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(pgConfig.getInteger("pool-size", 5));
 			PgPool pgPool = PgPool.pool(vertx, connectOptions, poolOptions);
 
+			// SyncRepository with neo4j config
+			final String neo4jConfig = (String) vertx.sharedData().getLocalMap("server").get("neo4jConfig");
+			final JsonObject neo4jConfigJson = new JsonObject(neo4jConfig);
+			final String neo4jUserName = neo4jConfigJson.getString("username");
+			final String neo4jPassword = neo4jConfigJson.getString("password");
+			final String neo4jUri = neo4jConfigJson.getJsonArray("server-uris",
+					new JsonArray().add(neo4jConfigJson.getString("server-uri"))).getString(0);
+			final JsonObject syncRepositoryConfig = new JsonObject()
+					.put("neo4j-uri", neo4jUri)
+					.put("platform-id", platformId)
+					.put("neo4j-auth", Base64.getEncoder().encodeToString((neo4jUserName + ":" + neo4jPassword).getBytes()));
+			final SyncRepository syncRepository = new SyncRepository(vertx, new JsonArray().add(syncRepositoryConfig));
+
 			final DefaultJobsServiceImpl jobsService = new DefaultJobsServiceImpl(vertx, platformId, config.getJsonObject("api-allowed-values"));
 			jobsService.setPgPool(pgPool);
+			jobsService.setSyncRepository(syncRepository);
 			final JobsController jobsController = new JobsController();
 			jobsController.setJobsService(jobsService);
 			addController(jobsController);
