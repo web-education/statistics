@@ -14,6 +14,8 @@ public interface JobsService {
 
     void exportReferential(String entity, String partition, String partitionValue, Handler<AsyncResult<RowSet<Row>>> handler);
 
+    void syncRepository(Handler<AsyncResult<Void>> handler);
+
     Set<String> getAllowedTables();
 
 }

@@ -27,6 +27,8 @@ import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
 import io.vertx.sqlclient.Tuple;
 
+import com.opendigitaleducation.repository.SyncRepository;
+
 public class DefaultJobsServiceImpl implements JobsService {
 
     private static final Logger log = LoggerFactory.getLogger(DefaultJobsServiceImpl.class);
@@ -38,6 +40,7 @@ public class DefaultJobsServiceImpl implements JobsService {
     private final String platformId;
     private final List<String> allowedPartitions;
     private final List<String> allowedEntities;
+    private SyncRepository syncRepository;
 
     public DefaultJobsServiceImpl(Vertx vertx, String platformId, JsonObject allowedValuesConf) {
         this.vertx = vertx;
@@ -133,6 +136,17 @@ public class DefaultJobsServiceImpl implements JobsService {
                 handler.handle(Future.failedFuture(ar.cause()));
             }
         });
+    }
+
+    @Override
+    public void syncRepository(Handler<AsyncResult<Void>> handler) {
+        syncRepository.setMasterPgPool(pgPool);
+        syncRepository.setSlavePgPool(pgPool);
+        syncRepository.sync(handler);
+    }
+
+    public void setSyncRepository(SyncRepository syncRepository) {
+        this.syncRepository = syncRepository;
     }
 
 }

@@ -1,19 +1,19 @@
-{
-    "name": "fr.wseduc~stats~1.12-SNAPSHOT",
-    "config": {
-        "main" : "fr.wseduc.stats.Stats",
-        "port" : 8225,
-        "app-name" : "Statistiques",
-        "app-address" : "/stats",
-        "app-icon" : "stats-large",
-        "app-displayName" : "stats",
-        "app-type" : "END_USER",
-        "ssl" : $ssl,
-        "integration-mode" : "HTTP",
-        "app-registry.port" : 8012,
-        "auto-redeploy": false,
-        "mode" : "${mode}",
-        "aggregation-cron": "0 0 0 * * ?",
-        "entcore.port" : 8009
-   }
-}
+    {
+        "name": "fr.wseduc~stats~1.13-SNAPSHOT",
+        "config": {
+            "main" : "fr.wseduc.stats.Stats",
+            "port" : 8225,
+            "app-name" : "Statistiques",
+            "app-address" : "/stats",
+            "app-icon" : "stats-large",
+            "app-displayName" : "stats",
+            "app-type" : "END_USER",
+            "ssl" : $ssl,
+            "integration-mode" : "HTTP",
+            "app-registry.port" : 8012,
+            "auto-redeploy": false,
+            "mode" : "${mode}",
+            "aggregation-cron": "0 0 0 * * ?",
+            "entcore.port" : 8009
+        }
+    }
