@@ -14,7 +14,7 @@ public class JobsController extends BaseController {
 
     private JobsService jobsService;
 
-    @Put("/import/stats/:indicator")
+    @Put("/jobs/import/stats/:indicator")
     @SecuredAction("stats.import")
     public void importStats(HttpServerRequest request) {
         CsvUtils.uploadImport(vertx, request, config.getString("stats-import-path", System.getProperty("java.io.tmpdir")), res -> {
@@ -26,7 +26,7 @@ public class JobsController extends BaseController {
 		});
     }
 
-	@Get("/export/referential/:entity")
+	@Get("/jobs/export/referential/:entity")
 	@SecuredAction("stats.export.referential")
 	public void exportReferential(HttpServerRequest request) {
 		final String entity = request.params().get("entity");
@@ -41,7 +41,7 @@ public class JobsController extends BaseController {
 		});
 	}
 
-	@Put("/sync/repository")
+	@Put("/jobs/sync/repository")
 	@SecuredAction("stats.sync.repository")
 	public void syncRepository(HttpServerRequest request) {
 		jobsService.syncRepository(asyncVoidResponseHandler(request));

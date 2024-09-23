@@ -34,6 +34,7 @@ import io.vertx.core.http.HttpServerRequest;
 
 import fr.wseduc.webutils.http.Renders;
 import fr.wseduc.webutils.request.filter.Filter;
+import fr.wseduc.webutils.security.SecureHttpServerRequest;
 
 public class WorkflowFilter implements Filter {
 
@@ -57,6 +58,12 @@ public class WorkflowFilter implements Filter {
 	public void canAccess(final HttpServerRequest request, final Handler<Boolean> handler) {
 		UserUtils.getUserInfos(eb, request, new Handler<UserInfos>() {
 			public void handle(UserInfos user) {
+				if (user == null && request instanceof SecureHttpServerRequest &&
+						((SecureHttpServerRequest) request).getAttribute("client_id") != null) {
+					handler.handle(true);
+					return;
+				}
+
 				if(user.getFunctions().containsKey(SUPER_ADMIN)) {
 					handler.handle(true);
 					return;
