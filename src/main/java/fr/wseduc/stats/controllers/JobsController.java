@@ -48,6 +48,18 @@ public class JobsController extends BaseController {
 		jobsService.syncRepository(asyncVoidResponseHandler(request));
 	}
 
+	@Get("/jobs/allowed-tables-with-last-update")
+	@SecuredAction("stats.allowed.tables.with.last.update")
+	public void allowedTables(HttpServerRequest request) {
+		jobsService.getAllowedTablesWithLastUpdate(ar -> {
+			if (ar.succeeded()) {
+				request.response().end(Json.encode(ar.result()));
+			} else {
+				badRequest(request, ar.cause().getMessage());
+			}
+		});
+	}
+
 	public void setJobsService(JobsService jobsService) {
 		this.jobsService = jobsService;
 	}

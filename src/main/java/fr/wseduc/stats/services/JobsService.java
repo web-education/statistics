@@ -1,8 +1,10 @@
 package fr.wseduc.stats.services;
 
+import java.util.List;
 import java.util.Set;
 
 import fr.wseduc.stats.utils.ImportCsvTable;
+import fr.wseduc.stats.utils.StatsTable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.sqlclient.Row;
@@ -17,5 +19,7 @@ public interface JobsService {
     void syncRepository(Handler<AsyncResult<Void>> handler);
 
     Set<String> getAllowedTables();
+
+    void getAllowedTablesWithLastUpdate(Handler<AsyncResult<List<StatsTable>>> handler);
 
 }

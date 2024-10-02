@@ -2,9 +2,13 @@ package fr.wseduc.stats.services;
 
 import static fr.wseduc.webutils.Utils.isNotEmpty;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -14,6 +18,7 @@ import org.entcore.common.validation.ValidationException;
 import fr.wseduc.stats.utils.CsvUtils;
 import fr.wseduc.stats.utils.DataTable;
 import fr.wseduc.stats.utils.ImportCsvTable;
+import fr.wseduc.stats.utils.StatsTable;
 import fr.wseduc.webutils.Utils;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
@@ -54,7 +59,7 @@ public class DefaultJobsServiceImpl implements JobsService {
         final List<String> indicators = allowedValues.getJsonArray("indicators").getList();
         final List<String> levels = allowedValues.getJsonArray("entities-levels").getList();
         final List<String> frequencies = allowedValues.getJsonArray("frequencies").getList();
-        final List<String> devices = Arrays.asList("", "_device");
+        final List<String> devices = Arrays.asList("", "device_");
         this.allowedTables = initAllowedTables(indicators, levels, frequencies, devices);
         this.allowedEntities = allowedValues.getJsonArray("referential-entities").getList();
         this.allowedPartitions = allowedValues.getJsonArray("referential-partitions").getList();
@@ -147,6 +152,33 @@ public class DefaultJobsServiceImpl implements JobsService {
 
     public void setSyncRepository(SyncRepository syncRepository) {
         this.syncRepository = syncRepository;
+    }
+
+    @Override
+    public void getAllowedTablesWithLastUpdate(Handler<AsyncResult<List<StatsTable>>> handler) {
+        final StringBuilder query = new StringBuilder();
+        for (String allowedTable: allowedTables) {
+            query.append("SELECT platform_id, '").append(allowedTable).append("' as name, MAX(date) as lastdate FROM ")
+                    .append(allowedTable).append(" WHERE platform_id = $1 GROUP BY 1, 2 UNION ");
+        }
+        pgPool.preparedQuery(query.substring(0, query.length() - 6)).execute(Tuple.of(platformId), ar -> {
+            if (ar.succeeded()) {
+                final Map<String, StatsTable> statsTables = new HashMap<>();
+                for (Row row : ar.result()) {
+                    statsTables.put(row.getString("name"), new StatsTable(row.getString("name"),
+                            row.getString("platform_id"),
+                            row.getLocalDateTime("lastdate")));
+                }
+                if (statsTables.size() != allowedTables.size()) {
+                    allowedTables.stream().filter(t -> !statsTables.containsKey(t)).forEach(t -> {
+                        statsTables.put(t, new StatsTable(t, platformId, LocalDateTime.now().minusMonths(NB_MONTHS)));
+                    });
+                }
+                handler.handle(Future.succeededFuture(statsTables.values().stream().collect(Collectors.toList())));
+            } else {
+                handler.handle(Future.failedFuture(ar.cause()));
+            }
+        });
     }
 
 }
