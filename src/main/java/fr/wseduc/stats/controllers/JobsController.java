@@ -7,6 +7,8 @@ import fr.wseduc.stats.services.JobsService;
 import fr.wseduc.stats.utils.CsvUtils;
 import fr.wseduc.webutils.http.BaseController;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.asyncVoidResponseHandler;
 
@@ -45,6 +47,18 @@ public class JobsController extends BaseController {
 	@SecuredAction("stats.sync.repository")
 	public void syncRepository(HttpServerRequest request) {
 		jobsService.syncRepository(asyncVoidResponseHandler(request));
+	}
+
+	@Get("/jobs/allowed-tables-with-last-update")
+	@SecuredAction("stats.allowed.tables.with.last.update")
+	public void allowedTables(HttpServerRequest request) {
+		jobsService.getAllowedTablesWithLastUpdate(ar -> {
+			if (ar.succeeded()) {
+				request.response().end(Json.encode(ar.result()));
+			} else {
+				badRequest(request, ar.cause().getMessage());
+			}
+		});
 	}
 
 	public void setJobsService(JobsService jobsService) {
