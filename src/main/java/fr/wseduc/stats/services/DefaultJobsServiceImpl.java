@@ -25,6 +25,8 @@ import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import io.vertx.pgclient.PgPool;
 import io.vertx.sqlclient.Row;
 import io.vertx.sqlclient.RowSet;
@@ -33,6 +35,8 @@ import io.vertx.sqlclient.Tuple;
 import com.opendigitaleducation.repository.SyncRepository;
 
 public class DefaultJobsServiceImpl implements JobsService {
+
+    private static final Logger log = LoggerFactory.getLogger(DefaultJobsServiceImpl.class);
 
     private static final long NB_MONTHS = 13;
     private final Vertx vertx;
@@ -80,6 +84,7 @@ public class DefaultJobsServiceImpl implements JobsService {
     public void importStats(ImportCsvTable importCsvTable, Handler<AsyncResult<Void>> handler) {
         final String tableName = importCsvTable.getTableName();
         if (!allowedTables.contains(tableName)) { // prevent SQL injection or table name manipulation
+            log.error("Invalid table name : " + tableName);
             handler.handle(Future.failedFuture(new ValidationException("invalid.table.name")));
             return;
         }
@@ -95,14 +100,17 @@ public class DefaultJobsServiceImpl implements JobsService {
                             .filter(c -> !"id".equals(c)).map(c -> c + " = EXCLUDED." + c)
                             .collect(Collectors.joining(", "));
                 }
+                log.info(query);
                 pgPool.preparedQuery(query).executeBatch(dataTable.getData(), ar2 -> {
                     if (ar2.succeeded()) {
                         handler.handle(Future.succeededFuture());
                     } else {
+                        log.error("Error when insert data in table : " + tableName, ar2.cause());
                         handler.handle(Future.failedFuture(ar2.cause()));
                     }
                 });
             } else {
+                log.error("Error when read csv", ar.cause());
                 handler.handle(Future.failedFuture(ar.cause()));
             }
         });
