@@ -34,6 +34,7 @@ import com.opendigitaleducation.repository.SyncRepository;
 
 public class DefaultJobsServiceImpl implements JobsService {
 
+    private static final long NB_MONTHS = 13;
     private final Vertx vertx;
     private final Set<String> allowedTables;
     private PgPool pgPool;
@@ -163,7 +164,7 @@ public class DefaultJobsServiceImpl implements JobsService {
                 }
                 if (statsTables.size() != allowedTables.size()) {
                     allowedTables.stream().filter(t -> !statsTables.containsKey(t)).forEach(t -> {
-                        statsTables.put(t, new StatsTable(t, platformId, LocalDateTime.of(2020, 9, 1, 0, 0)));
+                        statsTables.put(t, new StatsTable(t, platformId, LocalDateTime.now().minusMonths(NB_MONTHS)));
                     });
                 }
                 handler.handle(Future.succeededFuture(statsTables.values().stream().collect(Collectors.toList())));
