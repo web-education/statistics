@@ -3,6 +3,7 @@ package fr.wseduc.stats.utils;
 public class ImportCsvTable {
     private String importId;
     private String path;
+    private String file;
     private String schema;
     private String separator;
     private String table;
@@ -57,6 +58,14 @@ public class ImportCsvTable {
 
     public String getTableName() {
         return schema + "." + table;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
     }
 
 }

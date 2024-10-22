@@ -33,26 +33,29 @@ public final class CsvUtils {
 		request.pause();
 		final String importId = UUID.randomUUID().toString();
 		final String path = basePath + File.separator + importId;
+		final ImportCsvTable importCsvTable = new ImportCsvTable();
+		importCsvTable.setId(importId);
+		importCsvTable.setPath(path);
+		importCsvTable.setSchema(request.params().get("schema"));
+		importCsvTable.setTable(request.params().get("table"));
+		importCsvTable.setSeparator(Utils.getOrElse(request.params().get("separator"), ";"));
 		request.setExpectMultipart(true);
 		request.endHandler(v -> {
-			final ImportCsvTable importCsvTable = new ImportCsvTable();
-			importCsvTable.setId(importId);
-			importCsvTable.setPath(path);
-			importCsvTable.setSchema(request.params().get("schema"));
-			importCsvTable.setTable(request.params().get("table"));
-			importCsvTable.setSeparator(Utils.getOrElse(request.params().get("separator"), ";"));
 			handler.handle(Future.succeededFuture(importCsvTable));
 		});
 		request.exceptionHandler(event -> {
 			handler.handle(Future.failedFuture(event));
 			deleteImportPath(vertx, path);
 		});
+		request.response().endHandler(ar -> deleteImportPath(vertx, path));
 		request.uploadHandler(upload -> {
 			if (!upload.filename().toLowerCase().endsWith(".csv")) {
+				log.error("Invalid file extension");
 				handler.handle(Future.failedFuture(new ImportException("invalid.file.extension")));
 				return;
 			}
 			final String filename = path + File.separator + upload.name();
+			importCsvTable.setFile(filename);
 			upload.endHandler(event -> log.info("File " + upload.filename() + " uploaded as " + upload.name()));
 			upload.streamToFileSystem(filename);
 			request.resume();
@@ -67,7 +70,7 @@ public final class CsvUtils {
 	}
 
 	public static void readCsv(Vertx vertx, ImportCsvTable importCsvTable, Handler<AsyncResult<DataTable>> handler) {
-		vertx.fileSystem().open(importCsvTable.getPath(), new OpenOptions().setRead(true), ar -> {
+		vertx.fileSystem().open(importCsvTable.getFile(), new OpenOptions().setRead(true), ar -> {
 			if (ar.succeeded()) {
 				final DataTable dataTable = new DataTable();
 				RecordParser.newDelimited("\n", ar.result())
