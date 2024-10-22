@@ -8,7 +8,6 @@ import fr.wseduc.stats.utils.CsvUtils;
 import fr.wseduc.webutils.http.BaseController;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
 
 import static org.entcore.common.http.response.DefaultResponseHandler.asyncVoidResponseHandler;
 
@@ -16,7 +15,7 @@ public class JobsController extends BaseController {
 
     private JobsService jobsService;
 
-    @Put("/jobs/import/stats/:indicator")
+    @Put("/jobs/import/stats/:schema/:table")
     @SecuredAction("stats.import")
     public void importStats(HttpServerRequest request) {
         CsvUtils.uploadImport(vertx, request, config.getString("stats-import-path", System.getProperty("java.io.tmpdir")), res -> {

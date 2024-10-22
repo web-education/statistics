@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import fr.wseduc.stats.exceptions.ImportException;
+import fr.wseduc.webutils.Utils;
 import io.vertx.core.Vertx;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpServerRequest;
@@ -39,7 +40,7 @@ public final class CsvUtils {
 			importCsvTable.setPath(path);
 			importCsvTable.setSchema(request.params().get("schema"));
 			importCsvTable.setTable(request.params().get("table"));
-			importCsvTable.setSeparator(request.params().get("separator"));
+			importCsvTable.setSeparator(Utils.getOrElse(request.params().get("separator"), ";"));
 			handler.handle(Future.succeededFuture(importCsvTable));
 		});
 		request.exceptionHandler(event -> {
