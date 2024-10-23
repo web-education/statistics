@@ -42,6 +42,7 @@ public final class CsvUtils {
 		importCsvTable.setSchema(request.params().get("schema"));
 		importCsvTable.setTable(request.params().get("table"));
 		importCsvTable.setSeparator(Utils.getOrElse(request.params().get("separator"), ";"));
+		importCsvTable.setOnConflictUpdate("update".equals(request.params().get("onconflict")));
 		request.setExpectMultipart(true);
 		request.endHandler(v -> {
 			handler.handle(Future.succeededFuture(importCsvTable));
