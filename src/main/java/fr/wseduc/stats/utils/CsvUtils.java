@@ -103,16 +103,13 @@ public final class CsvUtils {
 
     private static Object stringToObject(String x) {
 		try {
-			return LocalDateTime.parse(x, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			return LocalDateTime.parse(x, DateTimeFormatter.ofPattern(
+					(x != null && x.contains(":")) ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd"));
 		} catch (DateTimeParseException dateException) {
 			try {
-				return LocalDateTime.parse(x, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-			} catch (DateTimeParseException dateException2) {
-				try {
-					return Long.valueOf(x);
-				} catch (NumberFormatException numberException) {
-					return x;
-				}
+				return Long.valueOf(x);
+			} catch (NumberFormatException numberException) {
+				return x;
 			}
 		}
 	}
