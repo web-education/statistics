@@ -96,7 +96,7 @@ public class DefaultJobsServiceImpl implements JobsService {
                         "INSERT INTO " + tableName + columnsNames.stream().collect(Collectors.joining(",", "(", ")")) +
                         " VALUES " + IntStream.rangeClosed(1, columnsNames.size()).boxed().map(i -> "$" + i).collect(Collectors.joining(",", "(", ")"));
                 if (importCsvTable.isOnConflictUpdate()) {
-                    query += "ON CONFLICT (id) DO UPDATE SET " + columnsNames.stream()
+                    query += " ON CONFLICT (id) DO UPDATE SET " + columnsNames.stream()
                             .filter(c -> !"id".equals(c)).map(c -> c + " = EXCLUDED." + c)
                             .collect(Collectors.joining(", "));
                 }
