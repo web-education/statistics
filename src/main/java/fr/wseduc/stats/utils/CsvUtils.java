@@ -45,6 +45,7 @@ public final class CsvUtils {
 		importCsvTable.setOnConflictUpdate("update".equals(request.params().get("onconflict")));
 		request.setExpectMultipart(true);
 		request.endHandler(v -> {
+			log.info("endHandler request upload import : " + importCsvTable.getFile());
 			handler.handle(Future.succeededFuture(importCsvTable));
 		});
 		request.exceptionHandler(event -> {
@@ -62,7 +63,6 @@ public final class CsvUtils {
 			importCsvTable.setFile(filename);
 			upload.endHandler(event -> log.info("File " + upload.filename() + " uploaded as " + upload.name()));
 			upload.streamToFileSystem(filename);
-			request.resume();
 		});
 		vertx.fileSystem().mkdir(path, event -> {
 			if (event.succeeded()) {
@@ -74,6 +74,7 @@ public final class CsvUtils {
 	}
 
 	public static void readCsv(Vertx vertx, ImportCsvTable importCsvTable, Handler<AsyncResult<DataTable>> handler) {
+		log.info("Start parsing csv file : " + importCsvTable.getFile());
 		vertx.fileSystem().open(importCsvTable.getFile(), new OpenOptions().setRead(true), ar -> {
 			if (ar.succeeded()) {
 				final DataTable dataTable = new DataTable();
@@ -93,10 +94,12 @@ public final class CsvUtils {
 						}
 					}).endHandler(v -> {
 						ar.result().close();
+						log.info("endHandler parsing csv file : " + importCsvTable.getFile());
 						handler.handle(Future.succeededFuture(dataTable));
 					});
 			} else {
 				log.error("Error reading file", ar.cause());
+				handler.handle(Future.failedFuture(ar.cause()));
 			}
 		});
 	}
