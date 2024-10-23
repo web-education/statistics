@@ -3,7 +3,9 @@ package fr.wseduc.stats.utils;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +32,15 @@ import io.vertx.sqlclient.Tuple;
 public final class CsvUtils {
 
 	private static final Logger log = LoggerFactory.getLogger(CsvUtils.class);
+	private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+			.appendPattern("yyyy-MM-dd")
+			.optionalStart()
+			.appendPattern(" HH:mm:ss")
+			.optionalEnd()
+			.parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+			.parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+			.parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
+			.toFormatter();
 
 	public static void uploadImport(Vertx vertx, final HttpServerRequest request, String basePath,
 			final Handler<AsyncResult<ImportCsvTable>> handler) {
@@ -105,8 +116,7 @@ public final class CsvUtils {
 
     private static Object stringToObject(String x) {
 		try {
-			return LocalDateTime.parse(x, DateTimeFormatter.ofPattern(
-					(x != null && x.contains(":")) ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd"));
+			return LocalDateTime.parse(x, DATE_TIME_FORMATTER);
 		} catch (DateTimeParseException dateException) {
 			try {
 				return Long.valueOf(x);
