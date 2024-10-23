@@ -2,6 +2,7 @@ package fr.wseduc.stats.utils;
 
 import java.io.File;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,7 +102,7 @@ public final class CsvUtils {
 
     private static Object stringToObject(String x) {
 		try {
-			return LocalDateTime.parse(x);
+			return LocalDateTime.parse(x, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		} catch (DateTimeParseException dateException) {
 			try {
 				return Long.valueOf(x);
