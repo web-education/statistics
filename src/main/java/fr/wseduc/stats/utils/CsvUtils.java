@@ -44,10 +44,6 @@ public final class CsvUtils {
 		importCsvTable.setSeparator(Utils.getOrElse(request.params().get("separator"), ";"));
 		importCsvTable.setOnConflictUpdate("update".equals(request.params().get("onconflict")));
 		request.setExpectMultipart(true);
-		request.endHandler(v -> {
-			log.info("endHandler request upload import : " + importCsvTable.getFile());
-			handler.handle(Future.succeededFuture(importCsvTable));
-		});
 		request.exceptionHandler(event -> {
 			handler.handle(Future.failedFuture(event));
 			deleteImportPath(vertx, path);
@@ -61,7 +57,10 @@ public final class CsvUtils {
 			}
 			final String filename = path + File.separator + upload.name();
 			importCsvTable.setFile(filename);
-			upload.endHandler(event -> log.info("File " + upload.filename() + " uploaded as " + upload.name()));
+			upload.endHandler(event -> {
+				log.info("File " + upload.filename() + " uploaded as " + upload.name());
+				handler.handle(Future.succeededFuture(importCsvTable));
+			});
 			upload.streamToFileSystem(filename);
 		});
 		vertx.fileSystem().mkdir(path, event -> {
