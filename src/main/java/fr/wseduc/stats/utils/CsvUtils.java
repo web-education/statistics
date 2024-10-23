@@ -1,6 +1,8 @@
 package fr.wseduc.stats.utils;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,7 +86,7 @@ public final class CsvUtils {
 							dataTable.setData(new ArrayList<>());
 						} else {
 							final Tuple tuple = Tuple.tuple();
-							Arrays.stream(line.split(importCsvTable.getSeparator())).forEach(tuple::addValue);
+							Arrays.stream(line.split(importCsvTable.getSeparator())).forEach(x -> tuple.addValue(stringToObject(x)));
 							dataTable.getData().add(tuple);
 						}
 					}).endHandler(v -> {
@@ -97,7 +99,19 @@ public final class CsvUtils {
 		});
 	}
 
-    public static void rowSetToCsv(HttpServerRequest request, RowSet<Row> rowSet) {
+    private static Object stringToObject(String x) {
+		try {
+			return LocalDateTime.parse(x);
+		} catch (DateTimeParseException dateException) {
+			try {
+				return Long.valueOf(x);
+			} catch (NumberFormatException numberException) {
+				return x;
+			}
+		}
+	}
+
+	public static void rowSetToCsv(HttpServerRequest request, RowSet<Row> rowSet) {
         request.response().putHeader("Content-Type", "text/csv");
 		// request.response().putHeader("Content-Disposition", "attachment; filename=export.csv");
 		request.response().setChunked(true);
