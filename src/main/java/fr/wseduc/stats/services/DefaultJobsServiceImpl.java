@@ -100,7 +100,6 @@ public class DefaultJobsServiceImpl implements JobsService {
                             .filter(c -> !"id".equals(c)).map(c -> c + " = EXCLUDED." + c)
                             .collect(Collectors.joining(", "));
                 }
-                log.info(query);
                 pgPool.preparedQuery(query).executeBatch(dataTable.getData(), ar2 -> {
                     if (ar2.succeeded()) {
                         handler.handle(Future.succeededFuture());
