@@ -106,9 +106,13 @@ public final class CsvUtils {
 			return LocalDateTime.parse(x, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 		} catch (DateTimeParseException dateException) {
 			try {
-				return Long.valueOf(x);
-			} catch (NumberFormatException numberException) {
-				return x;
+				return LocalDateTime.parse(x, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			} catch (DateTimeParseException dateException2) {
+				try {
+					return Long.valueOf(x);
+				} catch (NumberFormatException numberException) {
+					return x;
+				}
 			}
 		}
 	}
